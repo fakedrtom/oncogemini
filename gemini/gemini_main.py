@@ -1222,6 +1222,54 @@ def main():
         run(parser, args)
     parser_qc.set_defaults(func=qc_fn)
 
+    #########################################
+    # $ gemini truncal
+    #########################################
+    parser_truncal = subparsers.add_parser('truncal',
+            help='Report truncal mutations')
+    parser_truncal.add_argument('db',
+            metavar='db',
+            help='The name of the database to be queried.')
+    parser_truncal.add_argument('--maxNorm',
+            dest='maxNorm',
+            metavar='STRING',
+            help='Optional: specify a maximum normal sample AF to allow (default is 0)')
+    parser_truncal.add_argument('--patient',
+            dest='patient',
+            metavar='STRING',
+            help='Specify a patient to filter (should correspond to a patient_id in ped file)')
+    parser_truncal.add_argument('--increase',
+            dest='increase',
+            metavar='STRING',
+            help='Optional: add amount to increase truncal AF filter between normal and tumor samples (default is 0)')
+    parser_truncal.add_argument('--columns',
+            dest='columns',
+            metavar='STRING',
+            help='A list of columns that you would like returned ( default is "*")')
+    parser_truncal.add_argument('--filter',
+            dest='filter',
+            metavar='STRING',
+            help='Restrictions to apply to variants (SQL syntax)')
+
+    def truncal_fn(parser, args):
+        from gemini.gemini_truncal import truncal
+        truncal(parser, args)
+    parser_truncal.set_defaults(func=truncal_fn)
+
+    #########################################
+    # $ gemini loh
+    #########################################
+    parser_loh = subparsers.add_parser('loh',
+            help='Report LOH mutations')
+    parser_loh.add_argument('db',
+            metavar='db',
+            help='The name of the database to be queried.')
+
+    def loh_fn(parser, args):
+        from gemini.gemini_loh import loh
+        loh(parser, args)
+    parser_loh.set_defaults(func=loh_fn)
+
     #######################################################
     # parse the args and call the selected function
     #######################################################
