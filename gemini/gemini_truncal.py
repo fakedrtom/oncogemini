@@ -11,6 +11,9 @@ from . import GeminiQuery
 # in the normal sample, but all tumor samples
 # must have allele frequencies greater than that 
 # maximum allowed normal allele frequency.
+# If more separation from the normal allele frequency
+# is desired, an increase parameter can be 
+# specified 
 
 def truncal(parser, args):
 
@@ -27,9 +30,6 @@ def truncal(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
-#        raise NameError('No patient specified; please add a patient_id to --patient')
-#    else:
-#        patient = args.patient
     if args.maxNorm is None:
         maxNorm = str(0)
     else:
@@ -93,9 +93,7 @@ def truncal(parser, args):
     if args.filter is not None:
         # add any non-genotype column limits to the where clause
         query += " WHERE " + args.filter
-#    query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
-#    query = sql_utils.ensure_columns(query, ['variant_id', 'gene'])
-#    print query
+    # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
     filter_cmd = ""
@@ -114,8 +112,3 @@ def truncal(parser, args):
     # iterate through each row of the truncal results and print
     for row in gq:
         print(row)
-
-# To Add
-# Make truncal query customizable so you use the "select..." from command
-# Error for wrong samples table info???
-# Adjust tumor gt-filters to go off of gt_alt_freqs.Norm rather than maxNorm???  
