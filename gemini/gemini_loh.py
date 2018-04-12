@@ -29,13 +29,17 @@ def loh(parser, args):
     if args.patient is not None:
         patient = args.patient
     if args.maxNorm is None:
-        maxNorm = str(0)
+        maxNorm = str(0.7)
     else:
         maxNorm = args.maxNorm
-    if args.increase is None:
-        increase = str(0)
+    if args.minNorm is None:
+        minNorm = str(0.3)
     else:
-        increase = args.increase
+        minNorm = args.minNorm
+    if args.minTumor is None:
+        minTumor = str(0.8)
+    else:
+        minTumor = args.minTumor
 
     # designating which patient to perform the query on
     # if no patient is specified at the command line
@@ -76,12 +80,12 @@ def loh(parser, args):
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
     # get from the args the maxNorm value
-    if args.maxNorm is None:
-        maxNorm = str(0)
-    elif args.maxNorm is not None:
-        maxNorm = args.maxNorm
+    #if args.maxNorm is None:
+    #    maxNorm = str(0)
+    #elif args.maxNorm is not None:
+    #    maxNorm = args.maxNorm
 
-    # define the truncal query
+    # define the loh query
     if args.columns is not None:
         # the user only wants to report a subset of the columns
         query = "SELECT " + args.columns + " FROM variants"
@@ -96,12 +100,12 @@ def loh(parser, args):
     # create gt_filter command using saved sample info
     filter_cmd = ""
     for sample in normal_samples:
-        filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
+        filter_cmd += "(gt_alt_freqs." + sample + " >= " + minNorm + " and gt_alt_freqs." + sample + " <= " + maxNorm + ") and "
     for sample in other_samples:
         if sample == other_samples[len(other_samples)-1]:
-            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
+            filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor
             continue 
-        filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and " 
+        filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor + " and " 
     gt_filter = filter_cmd
 
     # execute the truncal query (but don't do anything with the results)"
