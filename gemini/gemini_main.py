@@ -1245,7 +1245,7 @@ def main():
     parser_truncal.add_argument('--columns',
             dest='columns',
             metavar='STRING',
-            help='A list of columns that you would like returned ( default is "*")')
+            help='A list of columns that you would like returned (default is "*")')
     parser_truncal.add_argument('--filter',
             dest='filter',
             metavar='STRING',
@@ -1264,6 +1264,30 @@ def main():
     parser_loh.add_argument('db',
             metavar='db',
             help='The name of the database to be queried.')
+    parser_loh.add_argument('--maxNorm',
+            dest='maxNorm',
+            metavar='STRING',
+            help='Optional: specify a maximum normal sample AF to allow (default is 0.7)')
+    parser_loh.add_argument('--minNorm',
+            dest='minNorm',
+            metavar='STRING',
+            help='Optional: specify a minimum normal sample AF to allow (default is 0.3)')
+    parser_loh.add_argument('--minTumor',
+            dest='minTumor',
+            metavar='STRING',
+            help='Optional: specify a minimum AF for tumor samples to require (default is 0.8)')
+    parser_loh.add_argument('--patient',
+            dest='patient',
+            metavar='STRING',
+            help='Specify a patient to filter (should correspond to a patient_id in ped file)')
+    parser_loh.add_argument('--columns',
+            dest='columns',
+            metavar='STRING',
+            help='A list of columns that you would like returned (default is "*")')
+    parser_loh.add_argument('--filter',
+            dest='filter',
+            metavar='STRING',
+            help='Restrictions to apply to variants (SQL syntax)')
 
     def loh_fn(parser, args):
         from gemini.gemini_loh import loh
