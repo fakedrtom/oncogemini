@@ -19,12 +19,6 @@ def loh(parser, args):
     # passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db)
 
-    # define sample search query
-    query = "select patient_id, name, time from samples"
-    
-    # execute the sample search query
-    gq.run(query)
-
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
@@ -40,6 +34,12 @@ def loh(parser, args):
         minTumor = str(0.8)
     else:
         minTumor = args.minTumor
+
+    # define sample search query
+    query = "select patient_id, name, time from samples"
+
+    # execute the sample search query
+    gq.run(query)
 
     # designating which patient to perform the query on
     # if no patient is specified at the command line
@@ -79,12 +79,6 @@ def loh(parser, args):
     # using the database passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
-    # get from the args the maxNorm value
-    #if args.maxNorm is None:
-    #    maxNorm = str(0)
-    #elif args.maxNorm is not None:
-    #    maxNorm = args.maxNorm
-
     # define the loh query
     if args.columns is not None:
         # the user only wants to report a subset of the columns
