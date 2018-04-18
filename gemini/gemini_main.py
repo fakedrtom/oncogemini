@@ -1294,6 +1294,44 @@ def main():
         loh(parser, args)
     parser_loh.set_defaults(func=loh_fn)
 
+    #########################################
+    # $ gemini bottleneck
+    #########################################
+    parser_bottleneck = subparsers.add_parser('bottleneck',
+            help='Report bottleneck mutations')
+    parser_bottleneck.add_argument('db',
+            metavar='db',
+            help='The name of the database to be queried.')
+    parser_bottleneck.add_argument('--maxNorm',
+            dest='maxNorm',
+            metavar='STRING',
+            help='Optional: specify a maximum normal sample AF to allow (default is 0)')
+    parser_bottleneck.add_argument('--increase',
+            dest='increase',
+            metavar='STRING',
+            help='Optional: add amount to increase the AF filter between each timepoint (default is 0)')
+    parser_bottleneck.add_argument('--endDiff',
+            dest='endDiff',
+            metavar='STRING',
+            help='Optional: add amount to increase the difference between normal sample AFs and the final timepoint AF (default is 0)')
+    parser_bottleneck.add_argument('--patient',
+            dest='patient',
+            metavar='STRING',
+            help='Specify a patient to filter (should correspond to a patient_id in ped file)')
+    parser_bottleneck.add_argument('--columns',
+            dest='columns',
+            metavar='STRING',
+            help='A list of columns that you would like returned (default is "*")')
+    parser_bottleneck.add_argument('--filter',
+            dest='filter',
+            metavar='STRING',
+            help='Restrictions to apply to variants (SQL syntax)')
+
+    def bottleneck_fn(parser, args):
+        from gemini.gemini_bottleneck import bottleneck
+        bottleneck(parser, args)
+    parser_bottleneck.set_defaults(func=bottleneck_fn)
+
     #######################################################
     # parse the args and call the selected function
     #######################################################
