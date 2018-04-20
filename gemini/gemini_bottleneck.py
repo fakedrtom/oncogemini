@@ -9,14 +9,15 @@ from . import GeminiQuery
 # tumor samples.
 # Here we allow for a maximum allele frequency in the
 # normal sample(s) (default is 0).
-# Tumor samples are ordered by their timepoints and  
-# each exhibits a higher allele frequency than its
-# predecessor.
-# A required amount of increase between timepoints
-# can be specified (default is 0).
-# Additionally a total end difference between the 
-# normal samples and last timepoint can be specified
-# (default is 0).
+# Tumor samples are ordered by their timepoints.
+# If the slope of the allele frequencies across 
+# timpoints meets the required slope
+# the variant is returned.
+# Minimum endpoint frequencies can be specified.
+# Minimum differences between first and last
+# timepoints can be specified and required.
+# Rather than process all samples, a selection
+# of samples can be specified.
 
 def bottleneck(parser, args):
 
@@ -31,10 +32,18 @@ def bottleneck(parser, args):
         maxNorm = str(0)
     else:
         maxNorm = args.maxNorm
-    if args.increase is None:
-        increase = str(0)
+    if args.slope is None:
+        slope = str(0.05)
     else:
-        increase = args.increase
+        slope = args.increase
+    if args.slope_samples is None:
+        slope_samples = 'All'
+    else:
+        slope_samples = args.slope_samples.split(',')
+    if args.minEnd is None:
+        minEnd = str(0)
+    else:
+        minEnd = args.minEnd
     if args.endDiff is None:
         endDiff = str(0)
     else:
@@ -52,8 +61,10 @@ def bottleneck(parser, args):
     # that patient will be used
     # also verify that patient is among possible patient_ids
     patients = []
+    names = []
     for row in gq:
         patients.append(row['patient_id'])
+        names.append(row['name'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
@@ -61,9 +72,15 @@ def bottleneck(parser, args):
     if patient not in patients:
         raise NameError('Specified patient is not found, check the ped file for available patient_ids')
     
+    # check that specified samples with slope_samples are present
+    if slope_samples != 'All':
+        for sample in slope_samples:
+            if sample not in names:
+                raise NameError('Specified slope_samples, ' + sample + ', is not found')
+
     # iterate again through each sample and save which sample is the normal
     # non-normal sample names are saved to a list
-    # establish which timepoint is the last
+    # establish which timepoints belong to which samples names
     gq.run(query)
     normal_samples = []
     other_samples = []
@@ -74,12 +91,23 @@ def bottleneck(parser, args):
         elif int(row['time']) > 0 and row['patient_id'] == patient:
             other_samples.append(row['name'])
         if row['patient_id'] == patient:
-            if int(row['time']) not in timepoints:
-                timepoints[int(row['time'])] = []
-            timepoints[int(row['time'])].append(row['name'])
+            if slope_samples == 'All':
+                if int(row['time']) not in timepoints:
+                    timepoints[int(row['time'])] = []
+                timepoints[int(row['time'])].append(row['name'])
+            else:
+                if row['name'] in slope_samples:
+                    if int(row['time']) not in timepoints:
+                        timepoints[int(row['time'])] = []
+                    timepoints[int(row['time'])].append(row['name'])
+    all_samples = normal_samples + other_samples
+
+    for key in timepoints:
+        print key, timepoints[key]
+
     endpoint = max(timepoints.keys())
     times = sorted(timepoints.keys(), reverse=True)
-
+    
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
@@ -118,8 +146,8 @@ def bottleneck(parser, args):
         filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
     endpoint = timepoints[times[0]]
     for last in endpoint:
-        for sample in normal_samples:
-            filter_cmd += "gt_alt_freqs." + last + " > " + "gt_alt_freqs." + sample + " and "
+#        for sample in normal_samples:
+        filter_cmd += "gt_alt_freqs." + last + " > " + str(float(maxNorm) + float(endDiff)) + " and "
 #    for sample in other_samples:
 #        if sample == other_samples[len(other_samples)-1]:
 #            filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor

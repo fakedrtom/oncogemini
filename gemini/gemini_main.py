@@ -1306,14 +1306,22 @@ def main():
             dest='maxNorm',
             metavar='STRING',
             help='Optional: specify a maximum normal sample AF to allow (default is 0)')
-    parser_bottleneck.add_argument('--increase',
-            dest='increase',
+    parser_bottleneck.add_argument('--slope',
+            dest='slope',
             metavar='STRING',
-            help='Optional: add amount to increase the AF filter between each timepoint (default is 0)')
+            help='Optional: the minimum slope required for the AFs across samples (default is 0.05)')
+    parser_bottleneck.add_argument('--slope_samples',
+            dest='slope_samples',
+            metavar='STRING',
+            help='Optional: rather than comparing all samples, a string samples to use for slope calculation (default is "All")')
+    parser_bottleneck.add_argument('--minEnd',
+            dest='minEnd',
+            metavar='STRING',
+            help='Optional: minimum AF required of the sample representing the final timepoint (default is 0)')                        
     parser_bottleneck.add_argument('--endDiff',
             dest='endDiff',
             metavar='STRING',
-            help='Optional: add amount to increase the difference between normal sample AFs and the final timepoint AF (default is 0)')
+            help='Optional: minimum required AF difference between the samples representing the first and final timepoints (default is 0)')
     parser_bottleneck.add_argument('--patient',
             dest='patient',
             metavar='STRING',
