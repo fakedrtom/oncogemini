@@ -1306,14 +1306,14 @@ def main():
             dest='maxNorm',
             metavar='STRING',
             help='Optional: specify a maximum normal sample AF to allow (default is 0)')
-    parser_bottleneck.add_argument('--slope',
-            dest='slope',
+    parser_bottleneck.add_argument('--minSlope',
+            dest='minSlope',
             metavar='STRING',
             help='Optional: the minimum slope required for the AFs across samples (default is 0.05)')
-    parser_bottleneck.add_argument('--slope_samples',
-            dest='slope_samples',
+    parser_bottleneck.add_argument('--samples',
+            dest='samples',
             metavar='STRING',
-            help='Optional: rather than comparing all samples, a string samples to use for slope calculation (default is "All")')
+            help='Optional: rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
     parser_bottleneck.add_argument('--minEnd',
             dest='minEnd',
             metavar='STRING',

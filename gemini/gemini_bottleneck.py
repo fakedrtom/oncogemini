@@ -3,6 +3,8 @@ from __future__ import absolute_import
 
 from . import GeminiQuery
 #from . import sql_utils
+from scipy import stats
+import numpy as np
 
 # Bottleneck mutations are categorized as exhibiting 
 # increasing allele frequencies over time in multiple 
@@ -32,14 +34,14 @@ def bottleneck(parser, args):
         maxNorm = str(0)
     else:
         maxNorm = args.maxNorm
-    if args.slope is None:
-        slope = str(0.05)
+    if args.minSlope is None:
+        minSlope = float(0.05)
     else:
-        slope = args.increase
-    if args.slope_samples is None:
-        slope_samples = 'All'
+        minSlope = float(args.minSlope)
+    if args.samples is None or args.samples == 'All':
+        samples = 'All'
     else:
-        slope_samples = args.slope_samples.split(',')
+        samples = args.samples.split(',')
     if args.minEnd is None:
         minEnd = str(0)
     else:
@@ -73,10 +75,10 @@ def bottleneck(parser, args):
         raise NameError('Specified patient is not found, check the ped file for available patient_ids')
     
     # check that specified samples with slope_samples are present
-    if slope_samples != 'All':
-        for sample in slope_samples:
+    if samples != 'All':
+        for sample in samples:
             if sample not in names:
-                raise NameError('Specified slope_samples, ' + sample + ', is not found')
+                raise NameError('Specified samples, ' + sample + ', is not found')
 
     # iterate again through each sample and save which sample is the normal
     # non-normal sample names are saved to a list
@@ -91,21 +93,22 @@ def bottleneck(parser, args):
         elif int(row['time']) > 0 and row['patient_id'] == patient:
             other_samples.append(row['name'])
         if row['patient_id'] == patient:
-            if slope_samples == 'All':
+            if samples == 'All':
                 if int(row['time']) not in timepoints:
                     timepoints[int(row['time'])] = []
                 timepoints[int(row['time'])].append(row['name'])
             else:
-                if row['name'] in slope_samples:
+                if row['name'] in samples:
                     if int(row['time']) not in timepoints:
                         timepoints[int(row['time'])] = []
                     timepoints[int(row['time'])].append(row['name'])
     all_samples = normal_samples + other_samples
 
-    for key in timepoints:
-        print key, timepoints[key]
+#    for key in timepoints:
+#        print key, timepoints[key]
 
     endpoint = max(timepoints.keys())
+    startpoint = min(timepoints.keys())
     times = sorted(timepoints.keys(), reverse=True)
     
     # check arrays to see if samples have been added
@@ -159,7 +162,20 @@ def bottleneck(parser, args):
 
     # execute the truncal query (but don't do anything with the results)"
     gq.run(query, gt_filter)
+    smp2idx = gq.sample_to_idx
 
     # iterate through each row of the truncal results and print
     for row in gq:
-        print(row)
+        x = []
+        y = []
+        count = 0
+        for key in timepoints:
+            x.append(count)
+#            x.append(key)
+            smpidx = smp2idx[timepoints[key][0]]
+            y.append(row['gt_alt_freqs'][smpidx])
+            count += 1
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+        if slope >= minSlope:
+            print slope
+            print(row)
