@@ -31,9 +31,9 @@ def bottleneck(parser, args):
     if args.patient is not None:
         patient = args.patient
     if args.maxNorm is None:
-        maxNorm = str(0)
+        maxNorm = float(0)
     else:
-        maxNorm = args.maxNorm
+        maxNorm = float(args.maxNorm)
     if args.minSlope is None:
         minSlope = float(0.05)
     else:
@@ -43,13 +43,13 @@ def bottleneck(parser, args):
     else:
         samples = args.samples.split(',')
     if args.minEnd is None:
-        minEnd = str(0)
+        minEnd = float(0)
     else:
-        minEnd = args.minEnd
+        minEnd = float(args.minEnd)
     if args.endDiff is None:
-        endDiff = str(0)
+        endDiff = float(0)
     else:
-        endDiff = args.endDiff
+        endDiff = float(args.endDiff)
 
     # define sample search query
     query = "select patient_id, name, time from samples"
@@ -79,6 +79,8 @@ def bottleneck(parser, args):
         for sample in samples:
             if sample not in names:
                 raise NameError('Specified samples, ' + sample + ', is not found')
+    elif samples == 'All':
+        samples = names
 
     # iterate again through each sample and save which sample is the normal
     # non-normal sample names are saved to a list
@@ -103,10 +105,6 @@ def bottleneck(parser, args):
                         timepoints[int(row['time'])] = []
                     timepoints[int(row['time'])].append(row['name'])
     all_samples = normal_samples + other_samples
-
-#    for key in timepoints:
-#        print key, timepoints[key]
-
     endpoint = max(timepoints.keys())
     startpoint = min(timepoints.keys())
     times = sorted(timepoints.keys(), reverse=True)
@@ -136,46 +134,63 @@ def bottleneck(parser, args):
     # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
-    filter_cmd = ""
-    count = 0
-    while(count < len(times)-1):
-        samplesA = timepoints[times[count]]
-        samplesB = timepoints[times[count+1]]
-        for a in samplesA:
-            for b in samplesB:
-                filter_cmd += "gt_alt_freqs." + a + " >= gt_alt_freqs." + b + " and "
-        count += 1
-    for sample in normal_samples:
-        filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-    endpoint = timepoints[times[0]]
-    for last in endpoint:
-#        for sample in normal_samples:
-        filter_cmd += "gt_alt_freqs." + last + " > " + str(float(maxNorm) + float(endDiff)) + " and "
-#    for sample in other_samples:
-#        if sample == other_samples[len(other_samples)-1]:
-#            filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor
-#            continue 
-#        filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor + " and " 
-    gt_filter = filter_cmd
-    if gt_filter.endswith(' and '):
-        gt_filter = gt_filter[:-5]
+#    filter_cmd = ""
+#    count = 0
+#    while(count < len(times)-1):
+#        samplesA = timepoints[times[count]]
+#        samplesB = timepoints[times[count+1]]
+#        for a in samplesA:
+#            for b in samplesB:
+#                filter_cmd += "gt_alt_freqs." + a + " >= gt_alt_freqs." + b + " and "
+#        count += 1
+#    for sample in normal_samples:
+#        filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
+#    endpoint = timepoints[times[0]]
+#    for last in endpoint:
+#        filter_cmd += "gt_alt_freqs." + last + " > " + str(float(maxNorm) + float(endDiff)) + " and "
+#    gt_filter = filter_cmd
+#    if gt_filter.endswith(' and '):
+#        gt_filter = gt_filter[:-5]
 
-    # execute the truncal query (but don't do anything with the results)"
-    gq.run(query, gt_filter)
+    # execute the query (but don't do anything with the results)"
+#    gq.run(query, gt_filter)
+    gq.run(query)
     smp2idx = gq.sample_to_idx
 
-    # iterate through each row of the truncal results and print
+    # iterate through each row of the query results
+    # make sure that all args parameters are being met
+    # print results that meet the requirements
     for row in gq:
+        normAFs = []
+        endAFs = []
+        startAFs = []
+        count = 0
         x = []
         y = []
-        count = 0
         for key in timepoints:
-            x.append(count)
-#            x.append(key)
-            smpidx = smp2idx[timepoints[key][0]]
-            y.append(row['gt_alt_freqs'][smpidx])
-            count += 1
+            for s in timepoints[key]:
+                if s in samples:
+                    if s in normal_samples:
+                        normidx = smp2idx[s]
+                        normAFs.append(row['gt_alt_freqs'][normidx])
+                    if key == endpoint:
+                        lastidx = smp2idx[s]
+                        endAFs.append(row['gt_alt_freqs'][lastidx])
+                    if key == startpoint:
+                        startidx = smp2idx[s]
+                        startAFs.append(row['gt_alt_freqs'][startidx])
+                    x.append(count)
+#                        x.append(key)
+                    smpidx = smp2idx[s]
+                    y.append(row['gt_alt_freqs'][smpidx])
+                    count += 1
+        if len(normAFs) > 0 and max(normAFs) > maxNorm:
+            continue
+        if min(endAFs) < minEnd:
+            continue
+        if min(endAFs) - max(startAFs) < endDiff:
+            continue
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
-        if slope >= minSlope:
-            print slope
-            print(row)
+        if slope < minSlope:
+            continue
+        print(row), slope
