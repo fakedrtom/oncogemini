@@ -156,6 +156,16 @@ def bottleneck(parser, args):
 #    gq.run(query, gt_filter)
     gq.run(query)
     smp2idx = gq.sample_to_idx
+    
+    # print header and add the AFs of included samples and the calculated slope
+    addHeader = []
+    for key in timepoints:
+        for s in timepoints[key]:
+            if s in samples:
+                af = 'alt_AF.' + s
+                addHeader.append(af)
+    addHeader.append('slope')
+    print(gq.header) + "\t" + '\t'.join(addHeader)
 
     # iterate through each row of the query results
     # make sure that all args parameters are being met
@@ -167,6 +177,7 @@ def bottleneck(parser, args):
         count = 0
         x = []
         y = []
+        addEnd = []
         for key in timepoints:
             for s in timepoints[key]:
                 if s in samples:
@@ -182,7 +193,9 @@ def bottleneck(parser, args):
                     x.append(count)
 #                        x.append(key)
                     smpidx = smp2idx[s]
+                    sampleAF = row['gt_alt_freqs'][smpidx]
                     y.append(row['gt_alt_freqs'][smpidx])
+                    addEnd.append(str(sampleAF))
                     count += 1
         if len(normAFs) > 0 and max(normAFs) > maxNorm:
             continue
@@ -191,6 +204,7 @@ def bottleneck(parser, args):
         if min(endAFs) - max(startAFs) < endDiff:
             continue
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+        addEnd.append(str(slope))
         if slope < minSlope:
             continue
-        print(row), slope
+        print str(row) + "\t" + '\t'.join(addEnd)
