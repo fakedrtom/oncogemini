@@ -30,10 +30,14 @@ def bottleneck(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
-    if args.minDepth is None:
-        minDepth = int(0)
+    if args.minDP is None:
+        minDP = int(0)
     else:
-        minDepth = int(args.minDepth)
+        minDP = int(args.minDP)
+    if args.minGQ is None:
+        minGQ = int(0)
+    else:
+        minGQ = int(args.minGQ)
     if args.maxNorm is None:
         maxNorm = float(0)
     else:
@@ -176,13 +180,12 @@ def bottleneck(parser, args):
     # make sure that all args parameters are being met
     # print results that meet the requirements
     for row in gq:
-#        if min(row['gt_depths']) < minDepth:
-#            continue
         normAFs = []
         tumsAFs = []
         endAFs = []
         startAFs = []
         depths = []
+        quals = []
         count = 0
         x = []
         y = []
@@ -203,15 +206,16 @@ def bottleneck(parser, args):
                         startidx = smp2idx[s]
                         startAFs.append(row['gt_alt_freqs'][startidx])
                     x.append(count)
-#                        x.append(key)
                     smpidx = smp2idx[s]
                     sampleAF = row['gt_alt_freqs'][smpidx]
                     y.append(row['gt_alt_freqs'][smpidx])
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
+                    sampleGQ = row['gt_quals'][smpidx]
+                    quals.append(sampleGQ)
                     addEnd.append(str(sampleAF))
                     count += 1
-        if min(depths) < minDepth:
+        if min(depths) < minDP or min(quals) < minGQ:
             continue
         if len(normAFs) > 0 and max(normAFs) > maxNorm:
             continue

@@ -1301,11 +1301,15 @@ def main():
             help='Report bottleneck mutations')
     parser_bottleneck.add_argument('db',
             metavar='db',
-            help='The name of the database to be queried.')
-    parser_bottleneck.add_argument('--minDepth',
-            dest='minDepth',
+            help='The name of the database to be queried')
+    parser_bottleneck.add_argument('--minDP',
+            dest='minDP',
             metavar='STRING',                       
-            help='Minimum depth required in all samples')                       
+            help='Minimum depth required in all samples default is 0)')                       
+    parser_bottleneck.add_argument('--minGQ',
+            dest='minGQ',
+            metavar='STRING',
+            help='Minimum genotype quality required in all samples (default is 0)')
     parser_bottleneck.add_argument('--maxNorm',
             dest='maxNorm',
             metavar='STRING',
