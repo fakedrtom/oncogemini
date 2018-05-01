@@ -30,6 +30,10 @@ def bottleneck(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
+    if args.minDepth is None:
+        minDepth = int(0)
+    else:
+        minDepth = int(args.minDepth)
     if args.maxNorm is None:
         maxNorm = float(0)
     else:
@@ -165,15 +169,20 @@ def bottleneck(parser, args):
                 af = 'alt_AF.' + s
                 addHeader.append(af)
     addHeader.append('slope')
+    addHeader.append('intercept')
     print(gq.header) + "\t" + '\t'.join(addHeader)
 
     # iterate through each row of the query results
     # make sure that all args parameters are being met
     # print results that meet the requirements
     for row in gq:
+#        if min(row['gt_depths']) < minDepth:
+#            continue
         normAFs = []
+        tumsAFs = []
         endAFs = []
         startAFs = []
+        depths = []
         count = 0
         x = []
         y = []
@@ -184,6 +193,9 @@ def bottleneck(parser, args):
                     if s in normal_samples:
                         normidx = smp2idx[s]
                         normAFs.append(row['gt_alt_freqs'][normidx])
+                    if s in other_samples:
+                        tumidx = smp2idx[s]
+                        tumsAFs.append(row['gt_alt_freqs'][tumidx])
                     if key == endpoint:
                         lastidx = smp2idx[s]
                         endAFs.append(row['gt_alt_freqs'][lastidx])
@@ -195,8 +207,12 @@ def bottleneck(parser, args):
                     smpidx = smp2idx[s]
                     sampleAF = row['gt_alt_freqs'][smpidx]
                     y.append(row['gt_alt_freqs'][smpidx])
+                    sampleDP = row['gt_depths'][smpidx]
+                    depths.append(sampleDP)
                     addEnd.append(str(sampleAF))
                     count += 1
+        if min(depths) < minDepth:
+            continue
         if len(normAFs) > 0 and max(normAFs) > maxNorm:
             continue
         if min(endAFs) < minEnd:
@@ -205,6 +221,12 @@ def bottleneck(parser, args):
             continue
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
         addEnd.append(str(slope))
+        addEnd.append(str(intercept))
         if slope < minSlope:
             continue
+        if len(tumsAFs) > 1:
+            tumsx = range(len(tumsAFs))
+            slope, intercept, r_value, p_value, std_err = stats.linregress(tumsx,tumsAFs)
+            if slope < 0:
+                continue
         print str(row) + "\t" + '\t'.join(addEnd)

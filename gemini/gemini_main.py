@@ -1302,6 +1302,10 @@ def main():
     parser_bottleneck.add_argument('db',
             metavar='db',
             help='The name of the database to be queried.')
+    parser_bottleneck.add_argument('--minDepth',
+            dest='minDepth',
+            metavar='STRING',                       
+            help='Minimum depth required in all samples')                       
     parser_bottleneck.add_argument('--maxNorm',
             dest='maxNorm',
             metavar='STRING',
