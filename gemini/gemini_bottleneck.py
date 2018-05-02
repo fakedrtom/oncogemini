@@ -11,10 +11,11 @@ import numpy as np
 # tumor samples.
 # Here we allow for a maximum allele frequency in the
 # normal sample(s) (default is 0).
-# Tumor samples are ordered by their timepoints.
 # If the slope of the allele frequencies across 
 # timpoints meets the required slope
 # the variant is returned.
+# The slope of the tumor only allele frequencies
+# must also be positive (not including normal AFs).
 # Minimum endpoint frequencies can be specified.
 # Minimum differences between first and last
 # timepoints can be specified and required.
@@ -31,11 +32,11 @@ def bottleneck(parser, args):
     if args.patient is not None:
         patient = args.patient
     if args.minDP is None:
-        minDP = int(0)
+        minDP = int(-1)
     else:
         minDP = int(args.minDP)
     if args.minGQ is None:
-        minGQ = int(0)
+        minGQ = int(-1)
     else:
         minGQ = int(args.minGQ)
     if args.maxNorm is None:
@@ -70,61 +71,77 @@ def bottleneck(parser, args):
     # and only 1 patient is present in the database
     # that patient will be used
     # also verify that patient is among possible patient_ids
+    # sample names are saved to patient specific dict
     patients = []
-    names = []
+    names = {}
     for row in gq:
         patients.append(row['patient_id'])
-        names.append(row['name'])
+        if row['patient_id'] not in names:
+            names[row['patient_id']] = []
+        names[row['patient_id']].append(row['name'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
         raise NameError('More than 1 patient is present, specify a patient_id with --patient')
     if patient not in patients:
         raise NameError('Specified patient is not found, check the ped file for available patient_ids')
-    
-    # check that specified samples with slope_samples are present
+
+    # check that specified samples with --samples are present
+    # otherwise all names for given patient from ped will asigned to samples list
     if samples != 'All':
         for sample in samples:
-            if sample not in names:
+            if sample not in names[patient]:
                 raise NameError('Specified samples, ' + sample + ', is not found')
     elif samples == 'All':
-        samples = names
+        samples = names[patient]
 
     # iterate again through each sample and save which sample is the normal
-    # non-normal sample names are saved to a list
+    # non-normal, tumor sample names are saved to a list
     # establish which timepoints belong to which samples names
+    # this is done for the specified --patient and --samples
+    # designate the last and first time points
     gq.run(query)
     normal_samples = []
-    other_samples = []
+    tumor_samples = []
     timepoints = {}
     for row in gq:
-        if int(row['time']) == 0 and row['patient_id'] == patient:
-            normal_samples.append(row['name'])
-        elif int(row['time']) > 0 and row['patient_id'] == patient:
-            other_samples.append(row['name'])
-        if row['patient_id'] == patient:
-            if samples == 'All':
-                if int(row['time']) not in timepoints:
-                    timepoints[int(row['time'])] = []
-                timepoints[int(row['time'])].append(row['name'])
-            else:
-                if row['name'] in samples:
-                    if int(row['time']) not in timepoints:
-                        timepoints[int(row['time'])] = []
-                    timepoints[int(row['time'])].append(row['name'])
-    all_samples = normal_samples + other_samples
+        if row['patient_id'] == patient and row['name'] in samples:
+            if int(row['time']) == 0:
+                normal_samples.append(row['name'])
+            elif int(row['time']) > 0:
+                tumor_samples.append(row['name'])
+            if int(row['time']) not in timepoints:
+                timepoints[int(row['time'])] = []
+            timepoints[int(row['time'])].append(row['name'])
+#        if int(row['time']) == 0 and row['patient_id'] == patient and row['name'] in samples:
+#            normal_samples.append(row['name'])
+#        elif int(row['time']) > 0 and row['patient_id'] == patient and row['name'] in samples:
+#            tumor_samples.append(row['name'])
+#        if row['patient_id'] == patient:
+#            if samples == 'All':
+#                if int(row['time']) not in timepoints:
+#                    timepoints[int(row['time'])] = []
+#                timepoints[int(row['time'])].append(row['name'])
+#            else:
+#                if row['name'] in samples:
+#                    if int(row['time']) not in timepoints:
+#                        timepoints[int(row['time'])] = []
+#                    timepoints[int(row['time'])].append(row['name'])
+#    all_samples = normal_samples + tumor_samples
     endpoint = max(timepoints.keys())
     startpoint = min(timepoints.keys())
-    times = sorted(timepoints.keys(), reverse=True)
+#    times = sorted(timepoints.keys(), reverse=True)
     
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
-    if len(normal_samples) == 0:
-        raise NameError('There are no normal samples; check the ped file for proper format and loading')
-    if len(other_samples) == 0:
-        raise NameError('There are no tumor samples; check the ped file for proper format and loading')
-
+    if len(normal_samples) == 0 and len(tumor_samples) == 0:
+        raise NameError('There are no samples; check the ped file for proper format and loading')
+#    if len(normal_samples) == 0:
+#        raise NameError('There are no normal samples; check the ped file for proper format and loading')
+#    if len(tumor_samples) == 0:
+#        raise NameError('There are no tumor samples; check the ped file for proper format and loading')
+    
     # create a new connection to the database that includes the genotype columns
     # using the database passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
@@ -160,9 +177,11 @@ def bottleneck(parser, args):
 #    if gt_filter.endswith(' and '):
 #        gt_filter = gt_filter[:-5]
 
-    # execute the query (but don't do anything with the results)"
+    # execute a new query to process the variants
 #    gq.run(query, gt_filter)
     gq.run(query)
+    
+    # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
     smp2idx = gq.sample_to_idx
     
     # print header and add the AFs of included samples and the calculated slope
@@ -178,7 +197,6 @@ def bottleneck(parser, args):
 
     # iterate through each row of the query results
     # make sure that all args parameters are being met
-    # print results that meet the requirements
     for row in gq:
         normAFs = []
         tumsAFs = []
@@ -196,7 +214,7 @@ def bottleneck(parser, args):
                     if s in normal_samples:
                         normidx = smp2idx[s]
                         normAFs.append(row['gt_alt_freqs'][normidx])
-                    if s in other_samples:
+                    if s in tumor_samples:
                         tumidx = smp2idx[s]
                         tumsAFs.append(row['gt_alt_freqs'][tumidx])
                     if key == endpoint:
@@ -224,13 +242,24 @@ def bottleneck(parser, args):
         if min(endAFs) - max(startAFs) < endDiff:
             continue
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+        spear, spear_p = stats.spearmanr(x,y)
+        pear, pear_p = stats.pearsonr(x,y)
         addEnd.append(str(slope))
         addEnd.append(str(intercept))
+        addEnd.append(str(spear))
+        addEnd.append(str(pear))
+        addEnd.append(str(r_value))
         if slope < minSlope:
             continue
+
+        # check that the slope of the non-normal sample allele frequencies
+        # is positive
         if len(tumsAFs) > 1:
             tumsx = range(len(tumsAFs))
             slope, intercept, r_value, p_value, std_err = stats.linregress(tumsx,tumsAFs)
             if slope < 0:
                 continue
+
+        # print results that meet the requirements
+        # add selected sample AFs and slope to the end of the line 
         print str(row) + "\t" + '\t'.join(addEnd)
