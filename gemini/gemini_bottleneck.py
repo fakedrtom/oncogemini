@@ -254,11 +254,11 @@ def bottleneck(parser, args):
 
         # check that the slope of the non-normal sample allele frequencies
         # is positive
-        if len(tumsAFs) > 1:
-            tumsx = range(len(tumsAFs))
-            slope, intercept, r_value, p_value, std_err = stats.linregress(tumsx,tumsAFs)
-            if slope < 0:
-                continue
+#        if len(tumsAFs) > 1:
+#            tumsx = range(len(tumsAFs))
+#            slope, intercept, r_value, p_value, std_err = stats.linregress(tumsx,tumsAFs)
+#            if slope < 0:
+#                continue
 
         # print results that meet the requirements
         # add selected sample AFs and slope to the end of the line 
