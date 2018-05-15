@@ -30,6 +30,18 @@ def truncal(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
+    if args.minDP is None:
+        minDP = int(-1)
+    else:
+        minDP = int(args.minDP)
+    if args.minGQ is None:
+        minGQ = int(-1)
+    else:
+        minGQ = int(args.minGQ)
+    if args.samples is None or args.samples == 'All':
+        samples = 'All'
+    else:
+        samples = args.samples.split(',')
     if args.maxNorm is None:
         maxNorm = str(0)
     else:
@@ -58,19 +70,19 @@ def truncal(parser, args):
     # non-normal sample names are saved to a list
     gq.run(query)
     normal_samples = []
-    other_samples = []
+    tumor_samples = []
     for row in gq:
         if int(row['time']) == 0 and row['patient_id'] == patient:
             normal_samples.append(row['name'])
         elif int(row['time']) > 0 and row['patient_id'] == patient:
-            other_samples.append(row['name'])
+            tumor_samples.append(row['name'])
 
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
     if len(normal_samples) == 0:
         raise NameError('There are no normal samples; check the ped file for proper format and loading')
-    if len(other_samples) == 0:
+    if len(tumor_samples) == 0:
         raise NameError('There are no tumor samples; check the ped file for proper format and loading')
 
     # create a new connection to the database that includes the genotype columns
@@ -99,8 +111,8 @@ def truncal(parser, args):
     filter_cmd = ""
     for sample in normal_samples:
         filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-    for sample in other_samples:
-        if sample == other_samples[len(other_samples)-1]:
+    for sample in tumor_samples:
+        if sample == tumor_samples[len(tumor_samples)-1]:
             filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
             continue 
         filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and " 

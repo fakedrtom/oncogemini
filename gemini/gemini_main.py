@@ -1230,6 +1230,14 @@ def main():
     parser_truncal.add_argument('db',
             metavar='db',
             help='The name of the database to be queried.')
+    parser_bottleneck.add_argument('--minDP',
+            dest='minDP',
+            metavar='STRING',
+            help='Minimum depth required in all samples default is 0)')
+    parser_bottleneck.add_argument('--minGQ',
+            dest='minGQ',
+            metavar='STRING',
+            help='Minimum genotype quality required in all samples (default is 0)')
     parser_truncal.add_argument('--maxNorm',
             dest='maxNorm',
             metavar='STRING',
@@ -1238,6 +1246,10 @@ def main():
             dest='patient',
             metavar='STRING',
             help='Specify a patient to filter (should correspond to a patient_id in ped file)')
+    parser_bottleneck.add_argument('--samples',
+            dest='samples',
+            metavar='STRING',
+            help='Optional: rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
     parser_truncal.add_argument('--increase',
             dest='increase',
             metavar='STRING',
