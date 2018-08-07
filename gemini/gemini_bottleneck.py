@@ -61,7 +61,10 @@ def bottleneck(parser, args):
         endDiff = float(args.endDiff)
 
     # define sample search query
-    query = "select patient_id, name, time from samples"
+    if args.purity:
+        query = "select patient_id, name, time, purity from samples"
+    else:
+        query = "select patient_id, name, time from samples"
 
     # execute the sample search query
     gq.run(query)
@@ -74,11 +77,14 @@ def bottleneck(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
+    purity = {}
     for row in gq:
         patients.append(row['patient_id'])
         if row['patient_id'] not in names:
             names[row['patient_id']] = []
         names[row['patient_id']].append(row['name'])
+        if args.purity:
+            purity[row['name']] = float(row['purity'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
@@ -211,22 +217,23 @@ def bottleneck(parser, args):
         for key in timepoints:
             for s in timepoints[key]:
                 if s in samples:
-                    if s in normal_samples:
-                        normidx = smp2idx[s]
-                        normAFs.append(row['gt_alt_freqs'][normidx])
-                    if s in tumor_samples:
-                        tumidx = smp2idx[s]
-                        tumsAFs.append(row['gt_alt_freqs'][tumidx])
-                    if key == endpoint:
-                        lastidx = smp2idx[s]
-                        endAFs.append(row['gt_alt_freqs'][lastidx])
-                    if key == startpoint:
-                        startidx = smp2idx[s]
-                        startAFs.append(row['gt_alt_freqs'][startidx])
-                    x.append(count)
                     smpidx = smp2idx[s]
-                    sampleAF = row['gt_alt_freqs'][smpidx]
-                    y.append(row['gt_alt_freqs'][smpidx])
+                    if args.purity:
+                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    else:
+                        sampleAF = row['gt_alt_freqs'][smpidx]
+                    if sampleAF > 1:
+                        sampleAF = 1
+                    if s in normal_samples:
+                        normAFs.append(sampleAF)
+                    if s in tumor_samples:
+                        tumsAFs.append(sampleAF)
+                    if key == endpoint:
+                        endAFs.append(sampleAF)
+                    if key == startpoint:
+                        startAFs.append(sampleAF)
+                    x.append(count)
+                    y.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
                     sampleGQ = row['gt_quals'][smpidx]
@@ -246,9 +253,9 @@ def bottleneck(parser, args):
         pear, pear_p = stats.pearsonr(x,y)
         addEnd.append(str(slope))
         addEnd.append(str(intercept))
-        addEnd.append(str(spear))
-        addEnd.append(str(pear))
-        addEnd.append(str(r_value))
+        #addEnd.append(str(spear))
+        #addEnd.append(str(pear))
+        #addEnd.append(str(r_value))
         if slope < minSlope:
             continue
 
