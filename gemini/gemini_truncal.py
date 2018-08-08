@@ -22,7 +22,10 @@ def truncal(parser, args):
     gq = GeminiQuery.GeminiQuery(args.db)
 
     # define sample search query
-    query = "select patient_id, name, time from samples"
+    if args.purity:
+        query = "select patient_id, name, time, purity from samples"
+    else:
+        query = "select patient_id, name, time from samples"
     
     # execute the sample search query
     gq.run(query)
@@ -43,13 +46,13 @@ def truncal(parser, args):
     else:
         samples = args.samples.split(',')
     if args.maxNorm is None:
-        maxNorm = str(0)
+        maxNorm = float(0)
     else:
-        maxNorm = args.maxNorm
+        maxNorm = float(args.maxNorm)
     if args.increase is None:
-        increase = str(0)
+        increase = float(0)
     else:
-        increase = args.increase
+        increase = float(args.increase)
 
     # designating which patient to perform the query on
     # if no patient is specified at the command line
@@ -59,11 +62,14 @@ def truncal(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
+    purity = {}
     for row in gq:
         patients.append(row['patient_id'])
         if row['patient_id'] not in names:
             names[row['patient_id']] = []
         names[row['patient_id']].append(row['name'])
+        if args.purity:
+            purity[row['name']] = float(row['purity'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
@@ -117,10 +123,10 @@ def truncal(parser, args):
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
     # get from the args the maxNorm value
-    if args.maxNorm is None:
-        maxNorm = str(0)
-    elif args.maxNorm is not None:
-        maxNorm = args.maxNorm
+    #if args.maxNorm is None:
+    #    maxNorm = str(0)
+    #elif args.maxNorm is not None:
+    #    maxNorm = args.maxNorm
 
     # define the truncal query
     if args.columns is not None:
@@ -135,18 +141,28 @@ def truncal(parser, args):
     # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
-    filter_cmd = ""
-    for sample in normal_samples:
-        filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-    for sample in tumor_samples:
-        if sample == tumor_samples[len(tumor_samples)-1]:
-            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
-            continue 
-        filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and " 
-    gt_filter = filter_cmd
+#    if args.purity:
+#        filter_cmd = ""
+#        for sample in normal_samples:
+#            filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
+#        for sample in tumor_samples:
+#            if sample == tumor_samples[len(tumor_samples)-1]:
+#                filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
+#                continue
+#            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and "
+#    else:
+#        filter_cmd = ""
+#        for sample in normal_samples:
+#            filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
+#        for sample in tumor_samples:
+#            if sample == tumor_samples[len(tumor_samples)-1]:
+#                filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
+#                continue 
+#            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and " 
+#    gt_filter = filter_cmd
 
     # execute the truncal query (but don't do anything with the results)"
-    gq.run(query, gt_filter)
+    gq.run(query)#, gt_filter)
 
     # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
     smp2idx = gq.sample_to_idx
@@ -162,6 +178,8 @@ def truncal(parser, args):
 
     # iterate through each row of the truncal results and print
     for row in gq:
+        normAFs = []
+        tumsAFs = []
         depths = []
         quals = []
         addEnd = []
@@ -169,15 +187,29 @@ def truncal(parser, args):
             for s in timepoints[key]:
                 if s in samples:
                     smpidx = smp2idx[s]
+                    if args.purity:
+                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    else:
+                        sampleAF = row['gt_alt_freqs'][smpidx]
+                    if sampleAF > 1:
+                        sampleAF = 1
+                    if s in normal_samples:
+                        normAFs.append(sampleAF)
+                    if s in tumor_samples:
+                        tumsAFs.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
                     sampleGQ = row['gt_quals'][smpidx]
                     quals.append(sampleGQ)
-                    sampleAF = row['gt_alt_freqs'][smpidx]
                     addEnd.append(str(sampleAF))
-        
         if min(depths) < minDP or min(quals) < minGQ:
             continue
+        if len(normAFs) > 0 and max(normAFs) > maxNorm:
+            continue
+        if any(af <= (maxNorm + increase) for af in tumsAFs):
+            continue
+#        if len(tumsAFs) > 0 and min(tumsAFs) < maxNorm + increase:
+#            continue
         # print results that meet the requirements
         # add selected sample AFs
         print str(row) + "\t" + '\t'.join(addEnd)

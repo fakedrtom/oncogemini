@@ -1262,6 +1262,9 @@ def main():
             dest='filter',
             metavar='STRING',
             help='Restrictions to apply to variants (SQL syntax)')
+    parser_truncal.add_argument('--purity',
+            action="store_true",
+            help='Using purity estimates in ped file, make corrections to AF to be used')
 
     def truncal_fn(parser, args):
         from gemini.gemini_truncal import truncal
