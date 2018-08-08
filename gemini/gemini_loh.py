@@ -35,20 +35,23 @@ def loh(parser, args):
     else:
         samples = args.samples.split(',')
     if args.maxNorm is None:
-        maxNorm = str(0.7)
+        maxNorm = float(0.7)
     else:
         maxNorm = args.maxNorm
     if args.minNorm is None:
-        minNorm = str(0.3)
+        minNorm = float(0.3)
     else:
         minNorm = args.minNorm
     if args.minTumor is None:
-        minTumor = str(0.8)
+        minTumor = float(0.8)
     else:
         minTumor = args.minTumor
 
     # define sample search query
-    query = "select patient_id, name, time from samples"
+    if args.purity:
+        query = "select patient_id, name, time, purity from samples"
+    else:
+        query = "select patient_id, name, time from samples"
 
     # execute the sample search query
     gq.run(query)
@@ -61,11 +64,14 @@ def loh(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
+    purity = {}
     for row in gq:
         patients.append(row['patient_id'])
         if row['patient_id'] not in names:
             names[row['patient_id']] = []
         names[row['patient_id']].append(row['name'])
+        if args.purity:
+            purity[row['name']] = float(row['purity'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
@@ -131,18 +137,18 @@ def loh(parser, args):
     # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
-    filter_cmd = ""
-    for sample in normal_samples:
-        filter_cmd += "(gt_alt_freqs." + sample + " >= " + minNorm + " and gt_alt_freqs." + sample + " <= " + maxNorm + ") and "
-    for sample in tumor_samples:
-        if sample == tumor_samples[len(tumor_samples)-1]:
-            filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor
-            continue 
-        filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor + " and " 
-    gt_filter = filter_cmd
+#    filter_cmd = ""
+#    for sample in normal_samples:
+#        filter_cmd += "(gt_alt_freqs." + sample + " >= " + minNorm + " and gt_alt_freqs." + sample + " <= " + maxNorm + ") and "
+#    for sample in tumor_samples:
+#        if sample == tumor_samples[len(tumor_samples)-1]:
+#            filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor
+#            continue 
+#        filter_cmd += "gt_alt_freqs." + sample + " > " + minTumor + " and " 
+#    gt_filter = filter_cmd
 
     # execute the truncal query (but don't do anything with the results)"
-    gq.run(query, gt_filter)
+    gq.run(query)#, gt_filter)
 
     # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
     smp2idx = gq.sample_to_idx
@@ -158,6 +164,8 @@ def loh(parser, args):
 
     # iterate through each row of the truncal results and print
     for row in gq:
+        normAFs = []
+        tumsAFs = []
         depths = []
         quals = []
         addEnd = []
@@ -165,16 +173,28 @@ def loh(parser, args):
             for s in timepoints[key]:
                 if s in samples:
                     smpidx = smp2idx[s]
+                    if args.purity:
+                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    else:
+                        sampleAF = row['gt_alt_freqs'][smpidx]
+                    if sampleAF > 1:
+                        sampleAF = 1
+                    if s in normal_samples:
+                        normAFs.append(sampleAF)
+                    if s in tumor_samples:
+                        tumsAFs.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
                     sampleGQ = row['gt_quals'][smpidx]
                     quals.append(sampleGQ)
-                    sampleAF = row['gt_alt_freqs'][smpidx]
                     addEnd.append(str(sampleAF))
         
         if min(depths) < minDP or min(quals) < minGQ:
             continue
-
+        if any(af < minNorm or af > maxNorm for af in normAFs):
+            continue
+        if any(af < minTumor for af in tumsAFs):
+            continue
         # print results that meet the requirements
         # add selected sample AFs
         print str(row) + "\t" + '\t'.join(addEnd)

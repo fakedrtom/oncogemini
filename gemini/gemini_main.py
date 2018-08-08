@@ -1315,6 +1315,9 @@ def main():
             dest='filter',
             metavar='STRING',
             help='Restrictions to apply to variants (SQL syntax)')
+    parser_loh.add_argument('--purity',
+            action="store_true",
+            help='Using purity estimates in ped file, make corrections to AF to be used')
 
     def loh_fn(parser, args):
         from gemini.gemini_loh import loh
