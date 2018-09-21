@@ -47,7 +47,7 @@ def bottleneck(parser, args):
         minSlope = float(0.05)
     else:
         minSlope = float(args.minSlope)
-    if args.samples is None or args.samples == 'All':
+    if args.samples is None or args.samples.lower() == 'all':
         samples = 'All'
     else:
         samples = args.samples.split(',')
