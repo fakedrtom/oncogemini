@@ -1318,6 +1318,10 @@ def main():
     parser_loh.add_argument('--purity',
             action="store_true",
             help='Using purity estimates in ped file, make corrections to AF to be used')
+    parser_loh.add_argument('--cancers',
+            dest='cancers',
+            metavar='STRING',
+            help='Optional: restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations')
 
     def loh_fn(parser, args):
         from gemini.gemini_loh import loh

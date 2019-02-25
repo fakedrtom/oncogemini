@@ -34,6 +34,10 @@ def loh(parser, args):
         samples = 'All'
     else:
         samples = args.samples.split(',')
+    if args.cancers is None:
+        cancers = 'none'
+    else:
+        cancers = args.cancers.split(',')
     if args.maxNorm is None:
         maxNorm = float(0.7)
     else:
@@ -197,4 +201,13 @@ def loh(parser, args):
             continue
         # print results that meet the requirements
         # add selected sample AFs
-        print str(row) + "\t" + '\t'.join(addEnd)
+        if cancers != 'none':
+            abbrevs = str(row['civic_abbreviations']).split(',') + str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_abbreviations']).split(',') + str(row['cgi_gene_abbreviations']).split(',')
+            include = 0
+            for c in cancers:
+                if c in abbrevs:
+                    include += 1
+            if include > 0:
+                print str(row) + "\t" + '\t'.join(addEnd)
+        else:
+            print str(row) + "\t" + '\t'.join(addEnd)
