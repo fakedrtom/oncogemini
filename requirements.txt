@@ -1,1 +1,10 @@
 numpy>=1.7.1
+inheritance>=0.1.3
+sqlalchemy>=1
+PyYAML>=3.10
+pybedtools>=0.6.2
+scipy>=0.12.0
+pysam>=0.6
+Unidecode>=0.04.14
+cyordereddict==0.2.2
+#cancer_gemini==0.19.3
