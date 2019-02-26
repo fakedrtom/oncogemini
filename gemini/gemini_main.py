@@ -68,13 +68,6 @@ def add_inheritance_args(parser, min_kindreds=1, depth=True, gt_ll=False,
 
 def examples(parser, args):
 
-    print("")
-    print( "[load] - load a VCF file into a gemini database:")
-    print( "   gemini load -v my.vcf my.db")
-    print( "   gemini load -v my.vcf -t snpEff my.db")
-    print( "   gemini load -v my.vcf -t VEP my.db")
-    print("")
-
     print( "[stats] - report basic statistics about your variants:")
     print( "   gemini stats --tstv my.db")
     print( "   gemini stats --tstv-coding my.db")
@@ -127,85 +120,6 @@ def main():
     parser_examples.set_defaults(func=examples)
 
     #########################################
-    # $ gemini load
-    #########################################
-    parser_load = subparsers.add_parser('load',
-                                        help='load a VCF file in gemini database')
-    parser_load.add_argument('db', metavar='db',
-                             help='The name of the database to be created.')
-    parser_load.add_argument('-v', dest='vcf',
-                             help='The VCF file to be loaded.')
-    parser_load.add_argument('-t', dest='anno_type',
-                             default=None, choices=["snpEff", "VEP",  "BCFT", "all"],
-                             help="The annotations to be used with the input vcf.")
-    parser_load.add_argument('-p', dest='ped_file',
-                             help='Sample information file in PED+ format.',
-                             default=None)
-    parser_load.add_argument('--skip-gerp-bp',
-                             dest='skip_gerp_bp',
-                             action='store_true',
-                             help='Do not load GERP scores at base pair resolution. Loaded by default.',
-                             default=False)
-    parser_load.add_argument('--skip-cadd',
-                             dest='skip_cadd',
-                             action='store_true',
-                             help='Do not load CADD scores. Loaded by default',
-                             default=False)
-    parser_load.add_argument('--skip-gene-tables',
-                             dest='skip_gene_tables',
-                             action='store_true',
-                             help='Do not load gene tables. Loaded by default.',
-                             default=False)
-    parser_load.add_argument('--save-info-string',
-                             dest='skip_info_string',
-                             action='store_false',
-                             help='Load INFO string from VCF file. Not loaded by default',
-                             default=True)
-    parser_load.add_argument('--no-load-genotypes',
-                             dest='no_load_genotypes',
-                             action='store_true',
-                             help='Genotypes exist in the file, but should not be stored.',
-                             default=False)
-    parser_load.add_argument('--no-genotypes',
-                             dest='no_genotypes',
-                             action='store_true',
-                             help='There are no genotypes in the file (e.g. some 1000G VCFs)',
-                             default=False)
-    parser_load.add_argument('--cores', dest='cores',
-                             default=1,
-                             type=int,
-                             help="Number of cores to use to load in parallel.")
-    parser_load.add_argument('--scheduler', dest='scheduler', default=None,
-                             choices=["lsf", "sge", "slurm", "torque"],
-                             help='Cluster scheduler to use.')
-    parser_load.add_argument('--queue', dest='queue',
-                             default=None, help='Cluster queue to use.')
-    parser_load.add_argument('--tempdir', dest='tempdir',
-                             default=tempfile.gettempdir(),
-                             help='Temp directory for storing intermediate files when loading in parallel.')
-    parser_load.add_argument('--passonly',
-                             dest='passonly',
-                             default=False,
-                             action='store_true',
-                             help="Keep only variants that pass all filters.")
-    parser_load.add_argument('--test-mode',
-                         dest='test_mode',
-                         action='store_true',
-                         help='Load in test mode (faster)',
-                         default=False)
-    parser_load.add_argument('--skip-pls',
-                         action='store_true',
-                         help='dont create columns for phred-scaled genotype likelihoods',
-                         default=False)
-    def load_fn(parser, args):
-        from gemini import gemini_load
-        if args.vcf != "-":
-            args.vcf = os.path.abspath(args.vcf)
-        gemini_load.load(parser, args)
-
-    parser_load.set_defaults(func=load_fn)
-
-    #########################################
     # $ gemini amend
     #########################################
     parser_amend = subparsers.add_parser('amend',
@@ -226,90 +140,6 @@ def main():
         from gemini import gemini_amend
         gemini_amend.amend(parser, args)
     parser_amend.set_defaults(func=amend_fn)
-
-    #########################################
-    # $ gemini load_chunk
-    #########################################
-    parser_loadchunk = subparsers.add_parser('load_chunk',
-                                             help='load a VCF file in gemini database')
-    parser_loadchunk.add_argument('db',
-                                  metavar='db',
-                                  help='The name of the database to be created.')
-    parser_loadchunk.add_argument('-v',
-                                  dest='vcf',
-                                  help='The VCF file to be loaded.')
-    parser_loadchunk.add_argument('-t',
-                                  dest='anno_type',
-                                  default=None,
-                                  metavar='STRING',
-                                  help="The annotations to be used with the input vcf. Options are:\n"
-                                  "  snpEff  - Annotations as reported by snpEff.\n"
-                                  "  BCFT  - Annotations as reported by bcftools.\n"
-                                  "  VEP     - Annotations as reported by VEP.\n"
-                                  )
-    parser_loadchunk.add_argument('-o',
-                                  dest='offset',
-                                  help='The starting number for the variant_ids',
-                                  default=None)
-    parser_loadchunk.add_argument('-p',
-                                  dest='ped_file',
-                                  help='Sample information file in PED+ format.',
-                                  default=None)
-    parser_loadchunk.add_argument('--no-load-genotypes',
-                                  dest='no_load_genotypes',
-                                  action='store_true',
-                                  help='Genotypes exist in the file, but should not be stored.',
-                                  default=False)
-    parser_loadchunk.add_argument('--no-genotypes',
-                                  dest='no_genotypes',
-                                  action='store_true',
-                                  help='There are no genotypes in the file (e.g. some 1000G VCFs)',
-                                  default=False)
-    parser_loadchunk.add_argument('--skip-gerp-bp',
-                                  dest='skip_gerp_bp',
-                                  action='store_true',
-                                  help='Do not load GERP scores at base pair resolution. Loaded by default.',
-                                  default=False)
-    parser_loadchunk.add_argument('--skip-cadd',
-                                 dest='skip_cadd',
-                                 action='store_true',
-                                 help='Do not load CADD scores. Loaded by default',
-                                 default=False)
-    parser_loadchunk.add_argument('--skip-gene-tables',
-                             dest='skip_gene_tables',
-                             action='store_true',
-                             help='Do not load gene tables. Loaded by default.',
-                             default=False)
-    parser_loadchunk.add_argument('--skip-info-string',
-                                  dest='skip_info_string',
-                                  action='store_true',
-                                  help='Do not load INFO string from VCF file to reduce DB size. Loaded by default',
-                                  default=False)
-    parser_loadchunk.add_argument('--passonly',
-                                  dest='passonly',
-                                  default=False,
-                                  action='store_true',
-                                  help="Keep only variants that pass all filters.")
-    parser_loadchunk.add_argument('--test-mode',
-                         dest='test_mode',
-                         action='store_true',
-                         help='Load in test mode (faster)',
-                         default=False)
-    parser_loadchunk.add_argument('--skip-pls',
-                         action='store_true',
-                         help='dont create columns for phred-scaled genotype likelihoods',
-                         default=False)
-    parser_loadchunk.add_argument('--tempdir', dest='tempdir',
-                                  default=tempfile.gettempdir(),
-                                  help='Local (non-NFS) temp directory to use for working around SQLite locking issues '
-                                       'on NFS drives.')
-
-    def loadchunk_fn(parser, args):
-        from gemini import gemini_load_chunk
-        if args.vcf != "-":
-            args.vcf = os.path.abspath(args.vcf)
-        gemini_load_chunk.load(parser, args)
-    parser_loadchunk.set_defaults(func=loadchunk_fn)
 
     #########################################
     # $ gemini merge_chunks
