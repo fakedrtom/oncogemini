@@ -784,27 +784,6 @@ def main():
 
 
     #########################################
-    # $ gemini browser
-    #########################################
-    parser_browser = subparsers.add_parser('browser',
-            help='Browser interface to gemini')
-    parser_browser.add_argument('db', metavar='db',
-            help='The name of the database to be queried.')
-    parser_browser.add_argument('--use', metavar='use', default='builtin',
-            help='Which browser to use: builtin or puzzle', choices=('builtin', 'puzzle'))
-    parser_browser.add_argument('--host', metavar='host', default='localhost',
-            help='Hostname, default: localhost.')
-    parser_browser.add_argument('--port', metavar='port', default='8088',
-            help='Port, default: 8088.')
-
-
-    def browser_fn(parser, args):
-        from gemini import gemini_browser
-        gemini_browser.browser_main(parser, args)
-    parser_browser.set_defaults(func=browser_fn)
-
-
-    #########################################
     # $ gemini set_somatic
     #########################################
     parser_set_somatic = subparsers.add_parser("set_somatic",
