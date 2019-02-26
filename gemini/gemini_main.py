@@ -789,29 +789,6 @@ def main():
     parser_genewise.set_defaults(func=genewise_run)
 
     #########################################
-    # $ gemini QC
-    #########################################
-    parser_qc = subparsers.add_parser('qc',
-            help='Quality control tools')
-    parser_qc.add_argument('db',
-            metavar='db',
-            help='The name of the database to be queried.')
-    parser_qc.add_argument('--mode',
-            dest='mode',
-            metavar="STRING",
-            default='sex',
-            help='What type of QC should be run? [sex]')
-    parser_qc.add_argument('--chrom',
-            dest='chrom',
-            metavar="STRING",
-            default='chrX',
-            help='Which chromosome should the sex test be applied to? [chrX]')
-    def qc_fn(parser, args):
-        from gemini.tool_qc import run
-        run(parser, args)
-    parser_qc.set_defaults(func=qc_fn)
-
-    #########################################
     # $ gemini truncal
     #########################################
     parser_truncal = subparsers.add_parser('truncal',
