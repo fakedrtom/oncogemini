@@ -608,62 +608,6 @@ def main():
     parser_lof_sieve.set_defaults(func=lof_sieve_fn)
 
     #########################################
-    # $ gemini burden
-    #########################################
-    burden_help = ("Gene-level genetic burden tests. By default counts all "
-                   "variants with high impact in coding regions "
-                   "as contributing to burden.")
-
-    parser_burden = subparsers.add_parser('burden',
-                                          help=burden_help)
-    parser_burden.add_argument('--nonsynonymous', action='store_true',
-                               default=False,
-                               help=("Count all nonsynonymous variants as "
-                                     "contributing burden."))
-    parser_burden.add_argument('--cases',
-                               dest='cases',
-                               nargs='*',
-                               help=('Space separated list of cases for '
-                                     'association testing.'))
-    parser_burden.add_argument('--controls',
-                               nargs='*',
-                               dest='controls',
-                               help=('Space separated list of controls for '
-                                     'association testing.'))
-    parser_burden.add_argument('--calpha',
-                               action='store_true',
-                               default=False,
-                               help="Run the C-alpha association test.")
-    parser_burden.add_argument('--permutations',
-                               default=0,
-                               type=int,
-                               help=("Number of permutations to run for the "
-                                     "C-alpha test (try 1000 to start)."))
-    parser_burden.add_argument('--min-aaf',
-                               dest='min_aaf',
-                               type=float,
-                               default=0.0,
-                               help='The min. alt. allele frequency for a '
-                                     'variant to be included.')
-    parser_burden.add_argument('--max-aaf',
-                               dest='max_aaf',
-                               type=float,
-                               default=1.0,
-                               help='The max. alt. allele frequency for a '
-                                     'variant to be included.')
-    parser_burden.add_argument('--save_tscores', default=False,
-                               action='store_true',
-                               help='Save the permuted T-scores to a file.')
-    parser_burden.add_argument('db',
-                               metavar='db',
-                               help='The name of the database to be queried.')
-
-    def burden_fn(parser, args):
-        from gemini import tool_burden_tests
-        tool_burden_tests.burden(parser, args)
-    parser_burden.set_defaults(func=burden_fn)
-
-    #########################################
     # $ gemini interactions
     #########################################
     parser_interaction = subparsers.add_parser('interactions',
