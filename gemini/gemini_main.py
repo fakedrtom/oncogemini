@@ -885,19 +885,6 @@ def main():
     parser_set_somatic.set_defaults(func=set_somatic_fn)
 
     #########################################
-    # $ gemini actionable_mutations
-    #########################################
-    parser_actionable_mut = subparsers.add_parser("actionable_mutations",
-                          help="Retrieve genes with actionable somatic mutations via COSMIC and DGIdb.")
-    parser_actionable_mut.add_argument('db', metavar='db',
-            help='The name of the database to be queried.')
-    def get_actionable_mut_fn(parser, args):
-        from gemini import gemini_actionable_mutations
-        gemini_actionable_mutations.get_actionable_mutations(parser, args)
-    parser_actionable_mut.set_defaults(func=get_actionable_mut_fn)
-
-
-    #########################################
     # $ gemini update
     #########################################
     parser_update = subparsers.add_parser("update", help="Update gemini software and data files.")
