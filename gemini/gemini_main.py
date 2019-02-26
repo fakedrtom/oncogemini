@@ -535,31 +535,6 @@ def main():
     parser_xdn.set_defaults(func=x_denovo_fn)
 
     #########################################
-    # $ gemini pathways
-    #########################################
-    parser_pathway = subparsers.add_parser('pathways',
-            help='Map genes and variants to KEGG pathways')
-    parser_pathway.add_argument('db',
-            metavar='db',
-            help='The name of the database to be queried')
-    parser_pathway.add_argument('-v',
-            dest='version',
-            default='68',
-            metavar='STRING',
-            help="Version of ensembl genes to use. "
-                 "Supported versions: 66 to 71\n"
-            )
-    parser_pathway.add_argument('--lof',
-            dest='lof',
-            action='store_true',
-            help='Report pathways for indivs/genes/sites with LoF variants',
-            default=False)
-    def pathway_fn(parser, args):
-        from gemini import tool_pathways
-        tool_pathways.pathways(parser, args)
-    parser_pathway.set_defaults(func=pathway_fn)
-
-    #########################################
     # $ gemini autosomal_recessive
     #########################################
     parser_auto_rec = subparsers.add_parser('autosomal_recessive',
