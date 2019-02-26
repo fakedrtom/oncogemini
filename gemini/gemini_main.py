@@ -142,41 +142,6 @@ def main():
     parser_amend.set_defaults(func=amend_fn)
 
     #########################################
-    # $ gemini merge_chunks
-    #########################################
-    parser_mergechunks = subparsers.add_parser('merge_chunks',
-            help='combine intermediate db files into the final gemini ')
-    parser_mergechunks.add_argument('--db',
-            dest='db',
-            help='The name of the final database to be loaded.')
-    parser_mergechunks.add_argument('--vcf',
-            dest='vcf',
-            help='Original VCF file, for retrieving extra annotation fields.')
-    parser_mergechunks.add_argument('-t', dest='anno_type',
-            default=None, choices=["snpEff", "VEP",  "BCFT", "all"],
-            help="The annotations to be used with the input vcf.")
-    parser_mergechunks.add_argument('--chunkdb',
-            nargs='*',
-            dest='chunkdbs',
-            action='append')
-    parser_mergechunks.add_argument('--tempdir', dest='tempdir',
-            default=tempfile.gettempdir(),
-            help='Local (non-NFS) temp directory to use for working around SQLite locking issues on NFS drives.')
-    parser_mergechunks.add_argument('--index', dest='index',
-            action='store_true',
-            help='Create all database indexes. If multiple merges are used to create a database, only the last merge '
-                 'should create the indexes.')
-    parser_mergechunks.add_argument('--skip-pls',
-                         action='store_true',
-                         help='dont create columns for phred-scaled genotype likelihoods',
-                         default=False)
-
-    def mergechunk_fn(parser, args):
-        from gemini import gemini_merge_chunks
-        gemini_merge_chunks.merge_chunks(parser, args)
-    parser_mergechunks.set_defaults(func=mergechunk_fn)
-
-    #########################################
     # $ gemini query
     #########################################
     parser_query = subparsers.add_parser('query',
@@ -1044,18 +1009,6 @@ def main():
     args = parser.parse_args()
 
     # make sure database is found if provided
-    if len(sys.argv) > 2 and sys.argv[1] not in \
-       ["load", "merge_chunks", "load_chunk"]:
-        if hasattr(args, "db") and args.db is not None and not os.path.exists(args.db):
-            if not "://" in args.db:
-                sys.stderr.write("Requested GEMINI database (%s) not found. "
-                                 "Please confirm the provided filename.\n"
-                                 % args.db)
-    elif len(sys.argv) > 2 and sys.argv[1] == "load":
-        if xor(args.scheduler, args.queue):
-            parser.error("If you are using the IPython parallel loading, you "
-                         "must specify both a scheduler with --scheduler and a "
-                         "queue to use with --queue.")
     try:
         args.func(parser, args)
     except IOError as e:
