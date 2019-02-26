@@ -608,59 +608,6 @@ def main():
     parser_lof_sieve.set_defaults(func=lof_sieve_fn)
 
     #########################################
-    # $ gemini interactions
-    #########################################
-    parser_interaction = subparsers.add_parser('interactions',
-            help='Find interaction partners for a gene in sample variants(default mode)')
-    parser_interaction.add_argument('db',
-            metavar='db',
-            help='The name of the database to be queried')
-    parser_interaction.add_argument('-g',
-            dest='gene',
-            help='Gene to be used as a root in BFS/shortest_path')
-    parser_interaction.add_argument('-r',
-            dest='radius',
-            type=int,
-            help="Set filter for BFS:\n"
-                 "valid numbers starting from 0")
-    parser_interaction.add_argument("--edges",
-            help="edges file (default is hprd). Format is geneA|geneB\ngeneA|geneC...")
-
-    parser_interaction.add_argument('--var',
-            dest='var_mode',
-            help='var mode: Returns variant info (e.g. impact, biotype) for interacting genes',
-            action='store_true',
-            default=False)
-    def interactions_fn(parser, args):
-        from gemini import tool_interactions
-        tool_interactions.genequery(parser, args)
-    parser_interaction.set_defaults(func=interactions_fn)
-
-    #########################################
-    # gemini lof_interactions
-    #########################################
-    parser_interaction = subparsers.add_parser('lof_interactions',
-            help='Find interaction partners for a lof gene in sample variants(default mode)')
-    parser_interaction.add_argument('db',
-            metavar='db',
-            help='The name of the database to be queried')
-    parser_interaction.add_argument('-r',
-            dest='radius',
-            type=int,
-            help="set filter for BFS:\n")
-    parser_interaction.add_argument("--edges",
-            help="edges file (default is hprd). Format is geneA|geneB\ngeneA|geneC...")
-    parser_interaction.add_argument('--var',
-            dest='var_mode',
-            help='var mode: Returns variant info (e.g. impact, biotype) for interacting genes',
-            action='store_true',
-            default=False)
-    def lof_interactions_fn(parser, args):
-        from gemini import tool_interactions
-        tool_interactions.lofgenequery(parser, args)
-    parser_interaction.set_defaults(func=lof_interactions_fn)
-
-    #########################################
     # $ gemini autosomal_recessive
     #########################################
     parser_auto_rec = subparsers.add_parser('autosomal_recessive',
