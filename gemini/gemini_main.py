@@ -595,19 +595,6 @@ def main():
     parser_pathway.set_defaults(func=pathway_fn)
 
     #########################################
-    # $ gemini lof_sieve
-    #########################################
-    parser_lof_sieve = subparsers.add_parser('lof_sieve',
-            help='Prioritize LoF mutations')
-    parser_lof_sieve.add_argument('db',
-            metavar='db',
-            help='The name of the database to be queried')
-    def lof_sieve_fn(parser, args):
-        from gemini import tool_lof_sieve
-        tool_lof_sieve.lof_sieve(parser, args)
-    parser_lof_sieve.set_defaults(func=lof_sieve_fn)
-
-    #########################################
     # $ gemini autosomal_recessive
     #########################################
     parser_auto_rec = subparsers.add_parser('autosomal_recessive',
