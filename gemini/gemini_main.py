@@ -696,7 +696,7 @@ def main():
     parser_loh.add_argument('--cancers',
             dest='cancers',
             metavar='STRING',
-            help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) AND db must include civic_gene_abbrevations and/or cgi_gene_abbreviations')
+            help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) REQUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def loh_fn(parser, args):
         from gemini.gemini_loh import loh

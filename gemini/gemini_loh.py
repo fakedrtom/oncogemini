@@ -25,11 +25,11 @@ def loh(parser, args):
     if args.minDP is None:
         minDP = int(-1)
     else:
-        minDP = args.minDP
+        minDP = int(args.minDP)
     if args.minGQ is None:
         minGQ = int(-1)
     else:
-        minGQ = args.minGQ
+        minGQ = int(args.minGQ)
     if args.samples is None or args.samples.lower() == 'all':
         samples = 'All'
     else:
@@ -41,19 +41,32 @@ def loh(parser, args):
     if args.cancers is None:
         cancers = 'none'
     else:
+#        query = "pragma table_info(variants)"
+#        gq.run(query)
+#        cancer_abbrevs = 0
+#        for row in gq:
+#            fields = str(row).rstrip('\n').split('\t')
+#            if fields[1] == 'civic_gene_abbreviations':
+#                cancer_abbrevs += 1
+#                print "FOUND CIVIC"
+#            if fields[1] == 'cgi_gene_abbreviations':
+#                cancer_abbrevs += 1
+#                print "FOUND CGI"
+#        if cancer_abbrevs == 0:
+#            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
     if args.maxNorm is None:
         maxNorm = float(0.7)
     else:
-        maxNorm = args.maxNorm
+        maxNorm = float(args.maxNorm)
     if args.minNorm is None:
         minNorm = float(0.3)
     else:
-        minNorm = args.minNorm
+        minNorm = float(args.minNorm)
     if args.minTumor is None:
         minTumor = float(0.8)
     else:
-        minTumor = args.minTumor
+        minTumor = float(args.minTumor)
 
     # define sample search query
     if args.purity:
@@ -96,7 +109,7 @@ def loh(parser, args):
     elif samples == 'All':
         samples = names[patient]
     if somatic != 'none' and somatic not in samples:
-        raise NameError('Specified --somatic sample name is not found, check the ped file for available sample names')
+        raise NameError('Specified --somatic sample name is not found, make sure single sample only is provided and check the ped file for available sample names')
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -194,7 +207,7 @@ def loh(parser, args):
         af = 'alt_AF.' + somatic
         addHeader.append(af)
         if args.purity:
-            raw = 'raw.alt_AF.' + samples[0]
+            raw = 'raw.alt_AF.' + somatic
             addHeader.append(raw)
     print(gq.header) + "\t" + '\t'.join(addHeader)
 
@@ -229,9 +242,27 @@ def loh(parser, args):
                         if args.purity:
                             addEnd.append(str(rawAF))
         elif somatic != 'none':
+            preceding = samples_tps[somatic] - 1
+            for s in timepoints[preceding]:
+                smpidx = smp2idx[s]
+                if args.purity:
+                    sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    rawAF = row['gt_alt_freqs'][smpidx]
+                else:
+                    sampleAF = row['gt_alt_freqs'][smpidx]
+                if sampleAF > 1:
+                    sampleAF = 1
+                normAFs.append(sampleAF)
+                sampleDP = row['gt_depths'][smpidx]
+                depths.append(sampleDP)
+                sampleGQ = row['gt_quals'][smpidx]
+                quals.append(sampleGQ)
+                addEnd.append(str(sampleAF))
+                if args.purity:
+                    addEnd.append(str(rawAF))
             smpidx = smp2idx[somatic]
             if args.purity:
-                sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[somatic])
                 rawAF = row['gt_alt_freqs'][smpidx]
             else:
                 sampleAF = row['gt_alt_freqs'][smpidx]
@@ -245,25 +276,7 @@ def loh(parser, args):
             addEnd.append(str(sampleAF))
             if args.purity:
                 addEnd.append(str(rawAF))
-            preceding = samples_tps[somatic] - 1
-            for s in timepoints[preceding]:
-                smpidx = smp2idx[s]
-                if args.purity:
-                    sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
-                    rawAF = row['gt_alt_freqs'][smpidx]
-                else:
-                    sampleAF = row['gt_alt_freqs'][smpidx]
-                if sampleAF > 1:
-                    sampleAF = 1
-                normAFs.append(sampleAF)    
-                sampleDP = row['gt_depths'][smpidx]
-                depths.append(sampleDP)
-                sampleGQ = row['gt_quals'][smpidx]
-                quals.append(sampleGQ)
-                addEnd.append(str(sampleAF))
-                if args.purity:
-                    addEnd.append(str(rawAF))
-                    
+                                
         #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
             continue
@@ -276,7 +289,7 @@ def loh(parser, args):
         # if args.cancer has been used, filter results to cancer matches
         # add selected sample AFs
         if cancers != 'none':
-            abbrevs = str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_gene_abbreviations']).split(',')
+            abbrevs = str(row['civic_abbreviations']).split(',') + str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_abbreviations']).split(',') + str(row['cgi_gene_abbreviations']).split(',')
             include = 0
             for c in cancers:
                 if c in abbrevs:
