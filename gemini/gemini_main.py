@@ -646,30 +646,30 @@ def main():
     # $ gemini loh
     #########################################
     parser_loh = subparsers.add_parser('loh',
-            help='Report LOH mutations')
+            help='Report loss of heterozygosity (LOH) mutations between normal tissue and all tumor samples')
     parser_loh.add_argument('db',
             metavar='db',
             help='The name of the database to be queried.')
     parser_loh.add_argument('--minDP',
             dest='minDP',
-            metavar='STRING',
+            metavar='INTEGER',
             help='Minimum depth required in all samples default is 0)')
     parser_loh.add_argument('--minGQ',
             dest='minGQ',
-            metavar='STRING',
+            metavar='INTEGER',
             help='Minimum genotype quality required in all samples (default is 0)')
     parser_loh.add_argument('--maxNorm',
             dest='maxNorm',
-            metavar='STRING',
-            help='Optional: specify a maximum normal sample AF to allow (default is 0.7)')
+            metavar='FLOAT',
+            help='Specify a maximum normal sample AF to allow (default is 0.7)')
     parser_loh.add_argument('--minNorm',
             dest='minNorm',
-            metavar='STRING',
-            help='Optional: specify a minimum normal sample AF to allow (default is 0.3)')
+            metavar='FLOAT',
+            help='Specify a minimum normal sample AF to allow (default is 0.3)')
     parser_loh.add_argument('--minTumor',
             dest='minTumor',
-            metavar='STRING',
-            help='Optional: specify a minimum AF for tumor samples to require (default is 0.8)')
+            metavar='FLOAT',
+            help='Specify a minimum AF for tumor samples to require (default is 0.8)')
     parser_loh.add_argument('--patient',
             dest='patient',
             metavar='STRING',
@@ -677,22 +677,26 @@ def main():
     parser_loh.add_argument('--samples',
             dest='samples',
             metavar='STRING',
-            help='Optional: rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
+            help='Rather than including all samples, enter a string of comma-separated specified samples to use (default is "All")')
     parser_loh.add_argument('--columns',
             dest='columns',
             metavar='STRING',
-            help='A list of columns that you would like returned (default is "*")')
+            help='A comma-separated list of columns that you would like returned (default is "*")')
     parser_loh.add_argument('--filter',
             dest='filter',
             metavar='STRING',
             help='Restrictions to apply to variants (SQL syntax)')
     parser_loh.add_argument('--purity',
             action="store_true",
-            help='Using purity estimates in ped file, make corrections to AF to be used')
+            help='Using purity estimates in cancer manidest, make corrections to AF to be used')
+    parser_loh.add_argument('--somatic',
+            dest='somatic',
+            metavar='STRING',
+            help='Search for LOH variants in a single sample compared to the sample(s) that precede it (must specify single sample included among --samples, also --minNorm, --maxNorm will now apply to the preceding sample)')
     parser_loh.add_argument('--cancers',
             dest='cancers',
             metavar='STRING',
-            help='Optional: restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations')
+            help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) AND db must include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def loh_fn(parser, args):
         from gemini.gemini_loh import loh

@@ -25,15 +25,19 @@ def loh(parser, args):
     if args.minDP is None:
         minDP = int(-1)
     else:
-        minDP = int(args.minDP)
+        minDP = args.minDP
     if args.minGQ is None:
         minGQ = int(-1)
     else:
-        minGQ = int(args.minGQ)
-    if args.samples is None or args.samples == 'All':
+        minGQ = args.minGQ
+    if args.samples is None or args.samples.lower() == 'all':
         samples = 'All'
     else:
         samples = args.samples.split(',')
+    if args.somatic is None:
+        somatic = 'none'
+    else:
+        somatic = args.somatic
     if args.cancers is None:
         cancers = 'none'
     else:
@@ -83,7 +87,7 @@ def loh(parser, args):
     if patient not in patients:
         raise NameError('Specified patient is not found, check the ped file for available patient_ids')
 
-    # check that specified samples with --samples are present
+    # check that specified samples with --samples and/or --somatic are present
     # otherwise all names for given patient from ped will asigned to samples list
     if samples != 'All':
         for sample in samples:
@@ -91,7 +95,9 @@ def loh(parser, args):
                 raise NameError('Specified samples, ' + sample + ', is not found')
     elif samples == 'All':
         samples = names[patient]
-    
+    if somatic != 'none' and somatic not in samples:
+        raise NameError('Specified --somatic sample name is not found, check the ped file for available sample names')
+
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
     # establish which timepoints belong to which samples names
@@ -101,6 +107,7 @@ def loh(parser, args):
     normal_samples = []
     tumor_samples = []
     timepoints = {}
+    samples_tps = {}
     for row in gq:
         if row['patient_id'] == patient and row['name'] in samples:
             if int(row['time']) == 0:
@@ -110,8 +117,15 @@ def loh(parser, args):
             if int(row['time']) not in timepoints:
                 timepoints[int(row['time'])] = []
             timepoints[int(row['time'])].append(row['name'])
-#    endpoint = max(timepoints.keys())
-#    startpoint = min(timepoints.keys())
+            samples_tps[row['name']] = int(row['time'])
+    endpoint = max(timepoints.keys())
+    startpoint = min(timepoints.keys())
+
+    # if only sample included with --somatic is the first timepoint, --somatic won't work
+    if somatic != 'none':
+        if samples_tps[somatic] == startpoint:
+            raise NameError('Specified sample with --somatic is the first timepoint, specify sample that has a preceding sample')
+
 #    times = sorted(timepoints.keys(), reverse=True)
     
     # check arrays to see if samples have been added
@@ -119,9 +133,9 @@ def loh(parser, args):
     # check the ped file being loaded into the db
     if len(normal_samples) == 0 and len(tumor_samples) == 0:
         raise NameError('There are no samples; check the ped file for proper format and loading')
-    if len(normal_samples) == 0:
+    if len(normal_samples) == 0 and somatic == 'none':
         raise NameError('There are no normal samples; check the ped file for proper format and loading')
-    if len(tumor_samples) == 0:
+    if len(tumor_samples) == 0 and somatic == 'none':
         raise NameError('There are no tumor samples; check the ped file for proper format and loading')
 
     # create a new connection to the database that includes the genotype columns
@@ -157,58 +171,112 @@ def loh(parser, args):
     # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
     smp2idx = gq.sample_to_idx
 
-    # print header and add the AFs of included samples and the calculated slope
+    # print header and add the AFs of included samples
     addHeader = []
-    for key in timepoints:
-        for s in timepoints[key]:
+    if somatic == 'none':
+        for key in timepoints:
+            for s in timepoints[key]:
+                if s in samples:
+                    af = 'alt_AF.' + s
+                    addHeader.append(af)
+                    if args.purity:
+                        raw = 'raw.alt_AF.' + s
+                        addHeader.append(raw)
+    elif somatic != 'none':
+        preceding = samples_tps[somatic] - 1
+        for s in timepoints[preceding]:
             if s in samples:
                 af = 'alt_AF.' + s
                 addHeader.append(af)
                 if args.purity:
                     raw = 'raw.alt_AF.' + s
                     addHeader.append(raw)
+        af = 'alt_AF.' + somatic
+        addHeader.append(af)
+        if args.purity:
+            raw = 'raw.alt_AF.' + samples[0]
+            addHeader.append(raw)
     print(gq.header) + "\t" + '\t'.join(addHeader)
 
-    # iterate through each row of the truncal results and print
+    # iterate through each row of the results and print
     for row in gq:
         normAFs = []
         tumsAFs = []
         depths = []
         quals = []
         addEnd = []
-        for key in timepoints:
-            for s in timepoints[key]:
-                if s in samples:
-                    smpidx = smp2idx[s]
-                    if args.purity:
-                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
-                        rawAF = row['gt_alt_freqs'][smpidx]
-                    else:
-                        sampleAF = row['gt_alt_freqs'][smpidx]
-                    if sampleAF > 1:
-                        sampleAF = 1
-                    if s in normal_samples:
-                        normAFs.append(sampleAF)
-                    if s in tumor_samples:
-                        tumsAFs.append(sampleAF)
-                    sampleDP = row['gt_depths'][smpidx]
-                    depths.append(sampleDP)
-                    sampleGQ = row['gt_quals'][smpidx]
-                    quals.append(sampleGQ)
-                    addEnd.append(str(sampleAF))
-                    if args.purity:
-                        addEnd.append(str(rawAF))
-        
+        if somatic == 'none':
+            for key in timepoints:
+                for s in timepoints[key]:
+                    if s in samples:
+                        smpidx = smp2idx[s]
+                        if args.purity:
+                            sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                            rawAF = row['gt_alt_freqs'][smpidx]
+                        else:
+                            sampleAF = row['gt_alt_freqs'][smpidx]
+                        if sampleAF > 1:
+                            sampleAF = 1
+                        if s in normal_samples:
+                            normAFs.append(sampleAF)
+                        if s in tumor_samples:
+                            tumsAFs.append(sampleAF)
+                        sampleDP = row['gt_depths'][smpidx]
+                        depths.append(sampleDP)
+                        sampleGQ = row['gt_quals'][smpidx]
+                        quals.append(sampleGQ)
+                        addEnd.append(str(sampleAF))
+                        if args.purity:
+                            addEnd.append(str(rawAF))
+        elif somatic != 'none':
+            smpidx = smp2idx[somatic]
+            if args.purity:
+                sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                rawAF = row['gt_alt_freqs'][smpidx]
+            else:
+                sampleAF = row['gt_alt_freqs'][smpidx]
+            if sampleAF > 1:
+                sampleAF = 1
+            tumsAFs.append(sampleAF)
+            sampleDP = row['gt_depths'][smpidx]
+            depths.append(sampleDP)
+            sampleGQ = row['gt_quals'][smpidx]
+            quals.append(sampleGQ)
+            addEnd.append(str(sampleAF))
+            if args.purity:
+                addEnd.append(str(rawAF))
+            preceding = samples_tps[somatic] - 1
+            for s in timepoints[preceding]:
+                smpidx = smp2idx[s]
+                if args.purity:
+                    sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    rawAF = row['gt_alt_freqs'][smpidx]
+                else:
+                    sampleAF = row['gt_alt_freqs'][smpidx]
+                if sampleAF > 1:
+                    sampleAF = 1
+                normAFs.append(sampleAF)    
+                sampleDP = row['gt_depths'][smpidx]
+                depths.append(sampleDP)
+                sampleGQ = row['gt_quals'][smpidx]
+                quals.append(sampleGQ)
+                addEnd.append(str(sampleAF))
+                if args.purity:
+                    addEnd.append(str(rawAF))
+                    
+        #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
             continue
         if any(af < minNorm or af > maxNorm for af in normAFs):
             continue
         if any(af < minTumor for af in tumsAFs):
             continue
+
         # print results that meet the requirements
+        # if args.cancer has been used, filter results to cancer matches
         # add selected sample AFs
         if cancers != 'none':
-            abbrevs = str(row['civic_abbreviations']).split(',') + str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_abbreviations']).split(',') + str(row['cgi_gene_abbreviations']).split(',')
+            abbrevs = str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_gene_abbreviations']).split(',')
             include = 0
             for c in cancers:
                 if c in abbrevs:
