@@ -59,6 +59,21 @@ def bottleneck(parser, args):
         endDiff = float(0)
     else:
         endDiff = float(args.endDiff)
+    if args.cancers is None:
+        cancers = 'none'
+    else:
+        query = "pragma table_info(variants)"
+        gq.run(query)
+        cancer_abbrevs = 0
+        for row in gq:
+            fields = str(row).rstrip('\n').split('\t')
+            if fields[1] == 'civic_gene_abbreviations':
+                cancer_abbrevs += 1
+            if fields[1] == 'cgi_gene_abbreviations':
+                cancer_abbrevs += 1
+        if cancer_abbrevs == 0:
+            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        cancers = args.cancers.split(',')
 
     # define sample search query
     if args.purity:
@@ -155,7 +170,10 @@ def bottleneck(parser, args):
     # define the loh query
     if args.columns is not None:
         # the user only wants to report a subset of the columns
-        query = "SELECT " + args.columns + " FROM variants"
+        if cancers == 'none':
+            query = "SELECT " + args.columns + " FROM variants"
+        elif cancers != 'none':
+            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
     else:
         # report the kitchen sink
         query = "SELECT * FROM variants"
@@ -192,6 +210,11 @@ def bottleneck(parser, args):
     
     # print header and add the AFs of included samples and the calculated slope
     addHeader = []
+    header = gq.header.split('\t')
+    if cancers != 'none':
+        addHeader.extend(header[:len(header)-2])
+    else:
+        addHeader.extend(header)
     for key in timepoints:
         for s in timepoints[key]:
             if s in samples:
@@ -202,11 +225,17 @@ def bottleneck(parser, args):
                     addHeader.append(raw)
     addHeader.append('slope')
     addHeader.append('intercept')
-    print(gq.header) + "\t" + '\t'.join(addHeader)
+    print '\t'.join(addHeader)
 
     # iterate through each row of the query results
     # make sure that all args parameters are being met
     for row in gq:
+        output = []
+        out = str(row).split('\t')
+        if cancers != 'none':
+            output.extend(out[:len(out)-2])
+        else:
+            output.extend(out)
         normAFs = []
         tumsAFs = []
         endAFs = []
@@ -276,5 +305,16 @@ def bottleneck(parser, args):
                 continue
 
         # print results that meet the requirements
+        # if args.cancer has been used, filter results to cancer matches
         # add selected sample AFs and slope to the end of the line 
-        print str(row) + "\t" + '\t'.join(addEnd)
+        output.extend(addEnd)
+        if cancers != 'none':
+            abbrevs = str(row['civic_gene_abbreviations']).split(',')  + str(row['cgi_gene_abbreviations']).split(',')
+            include = 0
+            for c in cancers:
+                if c in abbrevs:
+                    include += 1
+            if include > 0:
+                print '\t'.join(output)
+        else:
+            print '\t'.join(output)
