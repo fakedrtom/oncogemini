@@ -717,19 +717,19 @@ def main():
             help='The name of the database to be queried')
     parser_bottleneck.add_argument('--minDP',
             dest='minDP',
-            metavar='STRING',                       
+            metavar='INTEGER',                       
             help='Minimum depth required in all samples default is 0)')                       
     parser_bottleneck.add_argument('--minGQ',
             dest='minGQ',
-            metavar='STRING',
+            metavar='INTEGER',
             help='Minimum genotype quality required in all samples (default is 0)')
     parser_bottleneck.add_argument('--maxNorm',
             dest='maxNorm',
-            metavar='STRING',
+            metavar='FLOAT',
             help='Optional: specify a maximum normal sample AF to allow (default is 0)')
     parser_bottleneck.add_argument('--minSlope',
             dest='minSlope',
-            metavar='STRING',
+            metavar='FLOAT',
             help='Optional: the minimum slope required for the AFs across samples (default is 0.05)')
     parser_bottleneck.add_argument('--samples',
             dest='samples',
@@ -737,11 +737,11 @@ def main():
             help='Optional: rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
     parser_bottleneck.add_argument('--minEnd',
             dest='minEnd',
-            metavar='STRING',
+            metavar='FLOAT',
             help='Optional: minimum AF required of the sample representing the final timepoint (default is 0)')                        
     parser_bottleneck.add_argument('--endDiff',
             dest='endDiff',
-            metavar='STRING',
+            metavar='FLOAT',
             help='Optional: minimum required AF difference between the samples representing the first and final timepoints (default is 0)')
     parser_bottleneck.add_argument('--patient',
             dest='patient',
@@ -750,7 +750,7 @@ def main():
     parser_bottleneck.add_argument('--columns',
             dest='columns',
             metavar='STRING',
-            help='A list of columns that you would like returned (default is "*")')
+            help='A list of columns that you would like returned (default is "*", which returns every column)')
     parser_bottleneck.add_argument('--filter',
             dest='filter',
             metavar='STRING',
@@ -758,6 +758,11 @@ def main():
     parser_bottleneck.add_argument('--purity',
             action="store_true",                       
             help='Using purity estimates in ped file, make corrections to AF to be used')
+    parser_bottleneck.add_argument('--cancers',
+            dest='cancers',
+            metavar='STRING',
+            help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) REQUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
+
     def bottleneck_fn(parser, args):
         from gemini.gemini_bottleneck import bottleneck
         bottleneck(parser, args)
