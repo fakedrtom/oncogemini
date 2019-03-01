@@ -21,15 +21,6 @@ def truncal(parser, args):
     # passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db)
 
-    # define sample search query
-    if args.purity:
-        query = "select patient_id, name, time, purity from samples"
-    else:
-        query = "select patient_id, name, time from samples"
-    
-    # execute the sample search query
-    gq.run(query)
-
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
@@ -53,6 +44,30 @@ def truncal(parser, args):
         increase = float(0)
     else:
         increase = float(args.increase)
+    if args.cancers is None:
+        cancers = 'none'
+    else:
+        query = "pragma table_info(variants)"
+        gq.run(query)
+        cancer_abbrevs = 0
+        for row in gq:
+            fields = str(row).rstrip('\n').split('\t')
+            if fields[1] == 'civic_gene_abbreviations':
+                cancer_abbrevs += 1
+            if fields[1] == 'cgi_gene_abbreviations':
+                cancer_abbrevs += 1
+        if cancer_abbrevs == 0:
+            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        cancers = args.cancers.split(',')
+
+    # define sample search query                                                                                                                                                                  
+    if args.purity:
+        query = "select patient_id, name, time, purity from samples"
+    else:
+        query = "select patient_id, name, time from samples"
+
+    # execute the sample search query                                                                                                                                                             
+    gq.run(query)
 
     # designating which patient to perform the query on
     # if no patient is specified at the command line
@@ -131,7 +146,10 @@ def truncal(parser, args):
     # define the truncal query
     if args.columns is not None:
         # the user only wants to report a subset of the columns
-        query = "SELECT " + args.columns + " FROM variants"
+        if cancers == 'none':
+            query = "SELECT " + args.columns + " FROM variants"
+        elif cancers != 'none':
+            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
     else:
         # report the kitchen sink
         query = "SELECT * FROM variants"
@@ -169,6 +187,11 @@ def truncal(parser, args):
 
     # print header and add the AFs of included samples and the calculated slope
     addHeader = []
+    header = gq.header.split('\t')
+    if cancers != 'none':
+        addHeader.extend(header[:len(header)-2])
+    else:
+        addHeader.extend(header)
     for key in timepoints:
         for s in timepoints[key]:
             if s in samples:
@@ -177,10 +200,16 @@ def truncal(parser, args):
                 if args.purity:
                     raw = 'raw.alt_AF.' + s
                     addHeader.append(raw)
-    print(gq.header) + "\t" + '\t'.join(addHeader)
+    print '\t'.join(addHeader)
 
     # iterate through each row of the truncal results and print
     for row in gq:
+        output = []
+        out = str(row).split('\t')
+        if cancers != 'none':
+            output.extend(out[:len(out)-2])
+        else:
+            output.extend(out)
         normAFs = []
         tumsAFs = []
         depths = []
@@ -218,6 +247,18 @@ def truncal(parser, args):
             continue
 #        if len(tumsAFs) > 0 and min(tumsAFs) < maxNorm + increase:
 #            continue
+
         # print results that meet the requirements
+        # if args.cancer has been used, filter results to cancer matches
         # add selected sample AFs
-        print str(row) + "\t" + '\t'.join(addEnd)
+        output.extend(addEnd)
+        if cancers != 'none':
+            abbrevs = str(row['civic_gene_abbreviations']).split(',') + str(row['cgi_gene_abbreviations']).split(',')
+            include = 0
+            for c in cancers:
+                if c in abbrevs:
+                    include += 1
+            if include > 0:
+                print '\t'.join(output)
+        else:
+            print '\t'.join(output)
