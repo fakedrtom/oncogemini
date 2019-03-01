@@ -188,7 +188,10 @@ def loh(parser, args):
     # print header and add the AFs of included samples
     addHeader = []
     header = gq.header.split('\t')
-    addHeader.extend(header[:len(header)-2])
+    if cancers != 'none':
+        addHeader.extend(header[:len(header)-2])
+    else:
+        addHeader.extend(header)
     if somatic == 'none':
         for key in timepoints:
             for s in timepoints[key]:
@@ -219,7 +222,10 @@ def loh(parser, args):
     for row in gq:
         output = []
         out = str(row).split('\t')
-        output.extend(out[:len(out)-2])
+        if cancers != 'none':
+            output.extend(out[:len(out)-2])
+        else:
+            output.extend(out)
         normAFs = []
         tumsAFs = []
         depths = []

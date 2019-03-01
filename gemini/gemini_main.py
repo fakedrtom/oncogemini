@@ -681,7 +681,7 @@ def main():
     parser_loh.add_argument('--columns',
             dest='columns',
             metavar='STRING',
-            help='A comma-separated list of columns that you would like returned (default is "*")')
+            help='A comma-separated list of columns that you would like returned (default is "*", which returns every column)')
     parser_loh.add_argument('--filter',
             dest='filter',
             metavar='STRING',
