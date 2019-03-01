@@ -174,6 +174,9 @@ def truncal(parser, args):
             if s in samples:
                 af = 'alt_AF.' + s
                 addHeader.append(af)
+                if args.purity:
+                    raw = 'raw.alt_AF.' + s
+                    addHeader.append(raw)
     print(gq.header) + "\t" + '\t'.join(addHeader)
 
     # iterate through each row of the truncal results and print
@@ -189,6 +192,7 @@ def truncal(parser, args):
                     smpidx = smp2idx[s]
                     if args.purity:
                         sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                        rawAF = row['gt_alt_freqs'][smpidx]
                     else:
                         sampleAF = row['gt_alt_freqs'][smpidx]
                     if sampleAF > 1:
@@ -202,6 +206,10 @@ def truncal(parser, args):
                     sampleGQ = row['gt_quals'][smpidx]
                     quals.append(sampleGQ)
                     addEnd.append(str(sampleAF))
+                    if args.purity:
+                        addEnd.append(str(rawAF))
+
+        #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
             continue
         if len(normAFs) > 0 and max(normAFs) > maxNorm:
