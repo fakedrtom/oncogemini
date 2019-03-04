@@ -768,6 +768,65 @@ def main():
         bottleneck(parser, args)
     parser_bottleneck.set_defaults(func=bottleneck_fn)
 
+    #########################################
+    # $ gemini unique
+    #########################################
+    parser_unique = subparsers.add_parser('unique',
+            help='Report unique mutations for specified sample(s)')
+    parser_unique.add_argument('db',
+            metavar='db',
+            help='The name of the database to be queried.')
+    parser_unique.add_argument('--minDP',
+            dest='minDP',
+            metavar='INTEGER',
+            help='Minimum depth required in all samples default is 0)')
+    parser_unique.add_argument('--minGQ',
+            dest='minGQ',
+            metavar='INTEGER',
+            help='Minimum genotype quality required in all samples (default is 0)')
+    parser_unique.add_argument('--specific',
+            dest='specific',
+            metavar='STRING',
+            help='Identify unique variants that exist only in samples from this comma-separated list')
+    parser_unique.add_argument('--maxOthers',
+            dest='maxOthers',
+            metavar='FLOAT',
+            help='Specify a maximum sample AF to allow in other samples (default is 0)')
+    parser_unique.add_argument('--patient',
+            dest='patient',
+            metavar='STRING',
+            help='Specify a patient to filter (should correspond to a patient_id in ped file)')
+    parser_unique.add_argument('--samples',
+            dest='samples',
+            metavar='STRING',
+            help='Rather than including all samples in filters, a string of comma-separated specified samples to use (default is "All")')
+    parser_unique.add_argument('--increase',
+            dest='increase',
+            metavar='FLOAT',
+            help='Add amount to increase AF filter between unique and other samples (default is 0)')
+    parser_unique.add_argument('--columns',
+            dest='columns',
+            metavar='STRING',
+            help='A list of columns that you would like returned (default is "*", which returns every column)')
+    parser_unique.add_argument('--filter',
+            dest='filter',
+            metavar='STRING',
+            help='Restrictions to apply to variants (SQL syntax)')
+    parser_unique.add_argument('--purity',
+            action="store_true",
+            help='Using purity estimates in ped file, make corrections to AF to be used')
+    parser_unique.add_argument('--cancers',
+            dest='cancers',
+            metavar='STRING',
+            help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) RE\
+QUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
+
+    def unique_fn(parser, args):
+        from gemini.gemini_unique import unique
+        unique(parser, args)
+    parser_unique.set_defaults(func=unique_fn)
+
+
     #######################################################
     # parse the args and call the selected function
     #######################################################
