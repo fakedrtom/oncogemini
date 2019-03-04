@@ -286,8 +286,9 @@ def bottleneck(parser, args):
         if min(endAFs) - max(startAFs) < endDiff:
             continue
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
-        spear, spear_p = stats.spearmanr(x,y)
-        pear, pear_p = stats.pearsonr(x,y)
+        # spearman is causing some sort of double scalar, division problem when --samples reduces the number of samples
+#        spear, spear_p = stats.spearmanr(x,y, nan_policy="omit")
+#        pear, pear_p = stats.pearsonr(x,y)
         addEnd.append(str(slope))
         addEnd.append(str(intercept))
         #addEnd.append(str(spear))
