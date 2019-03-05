@@ -1,10 +1,17 @@
-GEMINI - integrative exploration of genetic variation and genome annotations.
+Cancer-GEMINI
 =============================================================================
-
-![overview](https://github.com/arq5x/gemini/blob/master/docs/images/overview.png)
 
 Overview
 ========
+Cancer-GEMINI is an adaptation of GEMINI intended for the improved identification of
+biologically and clincally relevant tumor variants from multi-sample and longitudinal
+tumor sequencing data. Using a GEMINI-compatible database (generated from an annotated 
+VCF file), Cancer-GEMINI is able to filter tumor variants based on included genomic
+annotations and various allele frequency signatures. 
+
+Cancer-GEMINI filters variants within a GEMINI-compatible database which 
+integrates genetic variation alongside genomic annotations 
+
 The intent of ``GEMINI`` (GEnome MINIing) is to provide a simple, flexible, and 
 powerful framework for exploring genetic variation for personal and medical genetics.
 GEMINI is unique in that it integrates genetic variation (from VCF files) with
@@ -17,39 +24,26 @@ datasets. In addition, by defining sample relationships with a PED file, GEMINI 
 one to explore and test for variants that meet specific inheritance models (e.g., 
 recessive, dominant, etc.).
 
+
 Documentation
 ================
-The official documentation is here: http://gemini.readthedocs.org/en/latest/
+The official documentation is here:
 
-The following is a video of a high-level talk from SciPy 2013 describing GEMINI.
-
-http://www.youtube.com/watch?v=p-UWmDG6yj4
+Since Cancer-GEMINI retains much of the functionality of GEMINI, it may also be 
+helpful to refer to GEMINI's official documentation which can be found [here](http://gemini.readthedocs.org/en/latest/)
 
 
 Citation
 ================
-If you use GEMINI in your research, please cite the following manuscript:
-
-Paila U, Chapman BA, Kirchner R, Quinlan AR (2013) 
-GEMINI: Integrative Exploration of Genetic Variation and Genome Annotations. 
-PLoS Comput Biol 9(7): e1003153. doi:10.1371/journal.pcbi.1003153
-
-[Manuscript](http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003153)
-
-
-Mailing List
-================
-Questions and discussion should be directed to the following discussion list:
-
-https://groups.google.com/forum/?fromgroups#!forum/gemini-variation
+If you use Cancer-GEMINI in your research, please cite the following manuscript:
 
 
 Acknowledgements
 ================
-GEMINI is being developed in the Quinlan lab (quinlanlab.org) at the University
-of Utah and is led by Brent Pedersen, Uma Paila and Aaron Quinlan.  Substantial contributions 
-to the code base have also been made by Brad Chapman (@chapmanb) and
-Rory Kirchner (@roryk) at the Harvard School of Public Health.
+Cancer-GEMINI is being developed in the Quinlan lab (quinlanlab.org) at the University
+of Utah and is led by Tom Nicholas and Aaron Quinlan.  Substantial contributions and discussions 
+have been made by Brent Pedersen, Yi Qiao, Xiaomeng Huang, and Gabor Marth.
+
 
 
 Installation
@@ -60,20 +54,3 @@ files used for variant annotation. The installation documentation contains addit
 details on installed files and tools.
 
 http://gemini.readthedocs.org/en/latest/content/installation.html
-
-License
-================
-`GEMINI` is freely available under the MIT [license](https://github.com/arq5x/gemini/blob/master/LICENSE).
-
-
-Others
-=========
-`GEMINI` includes `CADD` scores (PMID: 24487276) for annotating variants.
-
-CADD scores (http://cadd.gs.washington.edu/) are Copyright 2013 University of Washington and 
-Hudson-Alpha Institute for Biotechnology (all rights reserved) but are freely available for 
-all academic, non-commercial applications. For commercial licensing information contact 
-Jennifer McCullar (mccullaj@uw.edu).
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/arq5x/gemini/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
