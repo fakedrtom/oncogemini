@@ -238,6 +238,19 @@ def truncal(parser, args):
                     if args.purity:
                         addEnd.append(str(rawAF))
 
+        # remove samples with missing values (-1) from anaysis
+        # if there are now no values in normal or tumor list, skip variant
+        if len(normAFs) > 0:
+            for i in normAFs:
+                if i < 0:
+                    normAFs.remove(i)
+        if len(tumsAFs) > 0:
+            for i in tumsAFs:
+                if i < 0:
+                    tumsAFs.remove(i)
+        if len(normAFs) == 0 or len(tumsAFs) == 0:
+            continue
+
         #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
             continue
