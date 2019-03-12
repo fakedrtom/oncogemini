@@ -47,6 +47,10 @@ def bottleneck(parser, args):
         minSlope = float(0.05)
     else:
         minSlope = float(args.minSlope)
+    if args.minR is None:
+        minR = float(0.5)
+    else:
+        minR = float(args.minR)
     if args.samples is None or args.samples.lower() == 'all':
         samples = 'All'
     else:
@@ -225,6 +229,7 @@ def bottleneck(parser, args):
                     addHeader.append(raw)
     addHeader.append('slope')
     addHeader.append('intercept')
+    addHeader.append('r_value')
     print '\t'.join(addHeader)
 
     # iterate through each row of the query results
@@ -238,12 +243,13 @@ def bottleneck(parser, args):
             output.extend(out)
         normAFs = []
         tumsAFs = []
-        endAFs = []
-        startAFs = []
+#        endAFs = []
+#        startAFs = []
+        timeAFs = {}
         depths = []
         quals = []
-        count = 0
-        x = []
+#        count = 0
+#        x = []
         y = []
         addEnd = []
         for key in timepoints:
@@ -257,44 +263,59 @@ def bottleneck(parser, args):
                         sampleAF = row['gt_alt_freqs'][smpidx]
                     if sampleAF > 1:
                         sampleAF = 1
-                    if s in normal_samples:
+                    if s in normal_samples and sampleAF >= 0:
                         normAFs.append(sampleAF)
-                    if s in tumor_samples:
+                    if s in tumor_samples and sampleAF >= 0:
                         tumsAFs.append(sampleAF)
-                    if key == endpoint:
-                        endAFs.append(sampleAF)
-                    if key == startpoint:
-                        startAFs.append(sampleAF)
-                    x.append(count)
-                    y.append(sampleAF)
+                    if key not in timeAFs:
+                        timeAFs[key] = []
+                    if sampleAF >= 0 :
+                        timeAFs[key].append(sampleAF)
+#                    if key == endpoint and sampleAF > 0:
+#                        endAFs.append(sampleAF)
+#                    if key == startpoint and sampleAF > 0:
+#                        startAFs.append(sampleAF)
+#                    x.append(count)
+                    if sampleAF >= 0:
+                        y.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
                     sampleGQ = row['gt_quals'][smpidx]
                     quals.append(sampleGQ)
                     addEnd.append(str(sampleAF))
-                    count += 1
+#                    count += 1
                     if args.purity:
                         addEnd.append(str(rawAF))
+        endAFs = []
+        for i in sorted(timeAFs.keys(), reverse=True):
+            if len(timeAFs[i]) > 0:
+                endAFs = timeAFs[i]
+                break
+        startAFs = []
+        for i in sorted(timeAFs.keys()):
+            if len(timeAFs[i]) > 0:
+                startAFs = timeAFs[i]
+                break
 
         #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
             continue
         if len(normAFs) > 0 and max(normAFs) > maxNorm:
             continue
-        if min(endAFs) < minEnd:
+        if len(y) <= 1:
             continue
-        if min(endAFs) - max(startAFs) < endDiff:
-            continue
+        x = range(0,len(y))
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
         # spearman is causing some sort of double scalar, division problem when --samples reduces the number of samples
 #        spear, spear_p = stats.spearmanr(x,y, nan_policy="omit")
-#        pear, pear_p = stats.pearsonr(x,y)
         addEnd.append(str(slope))
         addEnd.append(str(intercept))
-        #addEnd.append(str(spear))
-        #addEnd.append(str(pear))
-        #addEnd.append(str(r_value))
-        if slope < minSlope:
+        addEnd.append(str(r_value))
+        if slope < minSlope or r_value < minR:
+            continue
+        if min(endAFs) < minEnd:
+            continue
+        if min(endAFs) - max(startAFs) < endDiff:
             continue
 
         # check that the slope of the non-normal sample allele frequencies

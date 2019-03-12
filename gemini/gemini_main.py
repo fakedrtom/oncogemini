@@ -726,23 +726,27 @@ def main():
     parser_bottleneck.add_argument('--maxNorm',
             dest='maxNorm',
             metavar='FLOAT',
-            help='Optional: specify a maximum normal sample AF to allow (default is 0)')
+            help='Specify a maximum normal sample AF to allow (default is 0)')
     parser_bottleneck.add_argument('--minSlope',
             dest='minSlope',
             metavar='FLOAT',
-            help='Optional: the minimum slope required for the AFs across samples (default is 0.05)')
+            help='Minimum slope required for the AFs across samples (default is 0.05)')
+    parser_bottleneck.add_argument('--minR',
+            dest='minR',
+            metavar='FLOAT',
+            help='Minimum r correlation coefficient required for AFs (default is 0.5)')
     parser_bottleneck.add_argument('--samples',
             dest='samples',
             metavar='STRING',
-            help='Optional: rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
+            help='Rather than including all samples, a string of comma-separated specified samples to use (default is "All")')
     parser_bottleneck.add_argument('--minEnd',
             dest='minEnd',
             metavar='FLOAT',
-            help='Optional: minimum AF required of the sample representing the final timepoint (default is 0)')                        
+            help='Minimum AF required of the sample representing the final timepoint (default is 0)')                        
     parser_bottleneck.add_argument('--endDiff',
             dest='endDiff',
             metavar='FLOAT',
-            help='Optional: minimum required AF difference between the samples representing the first and final timepoints (default is 0)')
+            help='Minimum required AF difference between the samples representing the first and final timepoints (default is 0)')
     parser_bottleneck.add_argument('--patient',
             dest='patient',
             metavar='STRING',
