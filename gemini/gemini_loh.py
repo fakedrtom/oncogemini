@@ -243,9 +243,9 @@ def loh(parser, args):
                             sampleAF = row['gt_alt_freqs'][smpidx]
                         if sampleAF > 1:
                             sampleAF = 1
-                        if s in normal_samples:
+                        if s in normal_samples and sampleAF >= 0:
                             normAFs.append(sampleAF)
-                        if s in tumor_samples:
+                        if s in tumor_samples and sampleAF >= 0:
                             tumsAFs.append(sampleAF)
                         sampleDP = row['gt_depths'][smpidx]
                         depths.append(sampleDP)
@@ -265,7 +265,8 @@ def loh(parser, args):
                     sampleAF = row['gt_alt_freqs'][smpidx]
                 if sampleAF > 1:
                     sampleAF = 1
-                normAFs.append(sampleAF)
+                if sampleAF >= 0:
+                    normAFs.append(sampleAF)
                 sampleDP = row['gt_depths'][smpidx]
                 depths.append(sampleDP)
                 sampleGQ = row['gt_quals'][smpidx]
@@ -281,7 +282,8 @@ def loh(parser, args):
                 sampleAF = row['gt_alt_freqs'][smpidx]
             if sampleAF > 1:
                 sampleAF = 1
-            tumsAFs.append(sampleAF)
+            if sampleAF >= 0:
+                tumsAFs.append(sampleAF)
             sampleDP = row['gt_depths'][smpidx]
             depths.append(sampleDP)
             sampleGQ = row['gt_quals'][smpidx]
@@ -289,9 +291,11 @@ def loh(parser, args):
             addEnd.append(str(sampleAF))
             if args.purity:
                 addEnd.append(str(rawAF))
-                                
+
         #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
+            continue
+        if len(normAFs) == 0 or len(tumsAFs) == 0:
             continue
         if any(af < minNorm or af > maxNorm for af in normAFs):
             continue
