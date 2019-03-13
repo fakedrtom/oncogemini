@@ -202,11 +202,12 @@ def unique(parser, args):
                     if sampleAF > 1:
                         sampleAF = 1
                     if s in specific:
-                        uniqAFs.append(sampleAF)
+                        if sampleAF >= 0:
+                            uniqAFs.append(sampleAF)
                         addEnd.append(str(sampleAF))
                         if args.purity:
                             addEnd.append(str(rawAF))
-                    if s not in specific:
+                    if s not in specific and sampleAF >= 0:
                         otherAFs.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
@@ -215,6 +216,8 @@ def unique(parser, args):
 
         #check that requirements have been met
         if min(depths) < minDP or min(quals) < minGQ:
+            continue
+        if len(otherAFs) == 0 or len(uniqAFs) == 0:
             continue
         if len(otherAFs) > 0 and max(otherAFs) > maxOthers:
             continue
