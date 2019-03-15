@@ -11,7 +11,7 @@ from gemini.gemini_constants import *
 from gemini.gemini_region import add_region_to_query
 from gemini.gemini_subjects import (get_subjects, get_subjects_in_family,
                              get_family_dict)
-from gemini.dgidb import query_dgidb
+#from gemini.dgidb import query_dgidb
 
 def all_samples_predicate(args):
     """ returns a predicate that returns True if, for a variant,
@@ -105,10 +105,6 @@ def needs_genotypes(args):
             args.gt_filter)
 
 
-def needs_gene(args):
-    return (args.dgidb)
-
-
 def add_required_columns_to_query(args):
     if args.region:
         add_region_to_query(args)
@@ -119,46 +115,22 @@ def run_query(args):
     add_required_columns_to_query(args)
     formatter = select_formatter(args)
     genotypes_needed = needs_genotypes(args)
-    gene_needed = needs_gene(args)
     try:
         subjects = get_subjects(args)
     except KeyError:
         subjects = []
     kwargs = {}
-    if args.bcolz:
-        from . import gemini_bcolz
-        kwargs['variant_id_getter'] = gemini_bcolz.filter
 
     gq = GeminiQuery.GeminiQuery(args.db, out_format=formatter, **kwargs)
     gq.run(args.query, args.gt_filter, args.show_variant_samples,
            args.sample_delim, predicates, genotypes_needed,
-           gene_needed, args.show_families, subjects=subjects)
+           args.show_families, subjects=subjects)
 
     if args.use_header and gq.header:
         print(gq.header)
 
-    if not args.dgidb:
-        for row in gq:
-            print(row)
-    else:
-        # collect a list of all the genes that need to be queried
-        # from DGIdb
-        genes = defaultdict()
-        for row in gq:
-            genes[row['gene']] = True
-
-        # collect info from DGIdb
-        dgidb_info = query_dgidb(genes)
-
-        # rerun the query (the cursor is now consumed)
-        gq = GeminiQuery.GeminiQuery(args.db, out_format=formatter)
-        gq.run(args.query, args.gt_filter, args.show_variant_samples,
-               args.sample_delim, predicates, genotypes_needed,
-               gene_needed, args.show_families, subjects=subjects, **kwargs)
-
-        # report the query results with DGIdb info added at the end.
-        for row in gq:
-            print(str(row) + "\t" + str(dgidb_info[row['gene']]))
+    for row in gq:
+        print(row)
 
 
 def query(parser, args):

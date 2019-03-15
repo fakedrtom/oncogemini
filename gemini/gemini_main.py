@@ -158,7 +158,6 @@ def main():
                                     'non-carriers stratified by the given '
                                     'sample phenotype column'))
 
-
     def query_fn(parser, args):
         from gemini import gemini_query
         gemini_query.query(parser, args)
