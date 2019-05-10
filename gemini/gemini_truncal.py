@@ -226,9 +226,9 @@ def truncal(parser, args):
                         sampleAF = row['gt_alt_freqs'][smpidx]
                     if sampleAF > 1:
                         sampleAF = 1
-                    if s in normal_samples:
+                    if s in normal_samples and sampleAF >= 0:
                         normAFs.append(sampleAF)
-                    if s in tumor_samples:
+                    if s in tumor_samples and sampleAF >= 0:
                         tumsAFs.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
                     depths.append(sampleDP)
@@ -238,16 +238,7 @@ def truncal(parser, args):
                     if args.purity:
                         addEnd.append(str(rawAF))
 
-        # remove samples with missing values (-1) from anaysis
         # if there are now no values in normal or tumor list, skip variant
-        if len(normAFs) > 0:
-            for i in normAFs:
-                if i < 0:
-                    normAFs.remove(i)
-        if len(tumsAFs) > 0:
-            for i in tumsAFs:
-                if i < 0:
-                    tumsAFs.remove(i)
         if len(normAFs) == 0 or len(tumsAFs) == 0:
             continue
 
