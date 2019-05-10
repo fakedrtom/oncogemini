@@ -76,11 +76,15 @@ For general searches, the *query* tool allows for customization. This is carried
 from GEMINI and further details can be found [here](https://gemini.readthedocs.io/en/latest/content/querying.html#basic-queries).
 For example, to search for a specific variant found on chromosome 13 at position 32,900,000, the following *query*
 command would return the chromosome, start and end positions, reference and alternate alleles and gene for 
-the specified variant:
+the specified variant (if it exists):
 
 ```
 cancer_gemini query -q "select chrom, start, end, ref, alt, gene from variants where chrom == 13 and start == 32899999 and end == 32900000" database.db
 ```
+### bottleneck
+### loh
+### truncal
+### unique
 
 Citation
 ================
