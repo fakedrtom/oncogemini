@@ -28,9 +28,34 @@ A more thorough explanation and guide for doing this can be found at the [GEMINI
 
 Cancer-GEMINI relies upon VCF annotations for the creation of searchable fields within 
 a database. Therefore it is important that a VCF be annotated with all information that
-a user desires filtering. Cancer-GEMINI was designed to be used alongside [vcfanno](https://github.com/brentp/vcfanno) to 
-accomplish all VCF annotation needs. 
- 
+a user desires for filtering. With that in mind, Cancer-GEMINI was designed to be used 
+alongside [vcfanno](https://github.com/brentp/vcfanno) to accomplish all VCF annotation needs. 
+
+Database Creation
+----------------
+Properly prepared and annotated VCFs can be used to create Caner_GEMINI databases with [vcf2db](https://github.com/quinlan-lab/vcf2db).
+The creation of a database with vcf2db also requires a pedigree-like file, referred to as a 
+sample manifest, to be included. The structure of this file is similar to a more traditional
+pedigree file, but inlcudes additional columns corresponding to a patient
+identifier, the sequential point in which that sample was obtained (to reflect longitudinal
+data across multiple timepoints), and any sample purity values, if known.
+
+```
+#family_id      name    paternal_id     maternal_id     sex     phenotype       patient_id      time    purity
+1               A0      0               0               2       1               A               0       1
+1               A1      0               0               2       2               A               1       0.1
+1               A2      0               0               2       2               A               2       0.1
+1               B0      0               0               2       1               B               0       1
+1               B1      0               0               2       2               B               1       0.5
+```
+
+Together, the annotated VCF and sample manifest file are used by the vcf2db script to generate
+the Cancer-GEMINI database.
+
+```
+python vcf2db.py annotated.vcf.gz sample_manifest.ped database.db
+```
+
 Citation
 ================
 If you use Cancer-GEMINI in your research, please cite the following manuscript:
