@@ -16,7 +16,7 @@ Installation
 
 Documentation
 ================
-The official documentation is here.
+The official documentation is here. Please refer there for more detailed usage instructions.
 
 Since Cancer-GEMINI retains much of the functionality of GEMINI, it may also be 
 helpful to refer to GEMINI's official documentation which can be found [here](http://gemini.readthedocs.org/en/latest/).
@@ -30,6 +30,16 @@ Cancer-GEMINI relies upon VCF annotations for the creation of searchable fields 
 a database. Therefore it is important that a VCF be annotated with all information that
 a user desires for filtering. With that in mind, Cancer-GEMINI was designed to be used 
 alongside [vcfanno](https://github.com/brentp/vcfanno) to accomplish all VCF annotation needs. 
+Please consult the vcfanno link for details regarding its proper usage, but in short, with
+a completed vcfanno configuration file, VCFs can be annotated quite simply:
+
+```
+./vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf.gz
+```
+
+Cancer-GEMINI was also developed alongside [CRAB](https://github.com/fakedrtom/cancer_annotations) and many useful, cancer-relevant
+annotations can be found and downloaded there, including a vcfanno configuration for many
+of the included annotations.
 
 Database Creation
 ----------------
@@ -50,11 +60,29 @@ data across multiple timepoints), and any sample purity values, if known.
 ```
 
 Together, the annotated VCF and sample manifest file are used by the vcf2db script to generate
-the Cancer-GEMINI database.
+the Cancer-GEMINI database:
 
 ```
 python vcf2db.py annotated.vcf.gz sample_manifest.ped database.db
 ```
+
+Usage
+----------------
+Cancer-GEMINI utilizes SQL queries in combination with tool commands to search the 
+database for variants that match requested filters. 
+
+###Query
+For general searches, the *query* tool allows for customization. This is carried over
+from GEMINI and further details can be found [here](https://gemini.readthedocs.io/en/latest/content/querying.html#basic-queries).
+For example, to search for a specific variant found on chromosome 13 at position 32,900,000, the following *query*
+command would return the chromosome, start and end positions, reference and alternate alleles and gene for 
+the specified variant:
+
+```
+cancer_gemini query -q "select chrom, start, end, ref, alt, gene from variants where chrom == 13 and start == 32899999 and end == 32900000" database.db
+```
+
+
 
 Citation
 ================
