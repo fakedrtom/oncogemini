@@ -71,7 +71,7 @@ Usage
 Cancer-GEMINI utilizes SQL queries in combination with tool commands to search the 
 database for variants that match requested filters. 
 
-###Query
+### Query
 For general searches, the *query* tool allows for customization. This is carried over
 from GEMINI and further details can be found [here](https://gemini.readthedocs.io/en/latest/content/querying.html#basic-queries).
 For example, to search for a specific variant found on chromosome 13 at position 32,900,000, the following *query*
