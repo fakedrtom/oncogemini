@@ -29,7 +29,7 @@ bash test-vep-extra.sh || exit
 
 bash test-vcf-output.sh || exit
 
-bash test-mendel-error.sh || exit
+#bash test-mendel-error.sh || exit
 
 bash test-genotype-likelihoods.sh || exit
 
@@ -48,16 +48,16 @@ bash test-query.sh
 bash test-dump.sh
 
 # Test burden tests
-bash test-burden.sh
+#bash test-burden.sh
 
 # Test basic functionality
 bash test-columns.sh
 
 # Test cadd scores
-bash test-cadd.sh
+#bash test-cadd.sh
 
 # Test cosmic
-bash test-cosmic.sh
+#bash test-cosmic.sh
 
 # Test loading functionality
 bash test-load.sh
@@ -66,41 +66,41 @@ bash test-load.sh
 bash test-genotypes.sh
 
 # Test ClinVar attributes
-bash test-clinvar.sh
+#bash test-clinvar.sh
 
 # Test Exac
-bash test-exac.sh
-bash test-gnomad.sh
+#bash test-exac.sh
+#bash test-gnomad.sh
 
 # Test population_gen metrics
-bash test-pop.sh
+#bash test-pop.sh
 
 # Test mappability
-bash test-map.sh
+#bash test-map.sh
 
 # Test genome annotations
-bash test-genome.sh
+#bash test-genome.sh
 
 # Test encode annotations
-bash test-encode.sh
+#bash test-encode.sh
 
 # Test EFF string derived elements in INFO column
-bash test-effstring.sh
+#bash test-effstring.sh
 
 # Test loading functionality
 bash test-annotate-tool.sh
 
 # Test comp_hets tool
-bash test-comphet.sh
+#bash test-comphet.sh
 
 # Test pathway tool
-bash test-pathtool.sh
+#bash test-pathtool.sh
 
 # Test interaction tool
-bash test-interactions.sh
+#bash test-interactions.sh
 
 # Test lof sieve tool
-bash test-lofsieve.sh
+#bash test-lofsieve.sh
 
 # Test stats tool
 bash test-stats.sh
@@ -109,20 +109,20 @@ bash test-stats.sh
 bash test-windower.sh
 
 #
-bash test-fitcons.sh
+#bash test-fitcons.sh
 
 # Test pfam domains
-bash test-pfam.sh
+#bash test-pfam.sh
 
 # Test GERP scores
-bash test-gerp.sh
+#bash test-gerp.sh
 
 # Test disease models
-bash test-auto-dom.sh
-bash test-auto-rec.sh
+#bash test-auto-dom.sh
+#bash test-auto-rec.sh
 
 # Test denovo tool
-bash test-de-novo.sh
+#bash test-de-novo.sh
 
 # Test wildcards
 bash test-wildcards.sh
@@ -138,24 +138,24 @@ bash test-fusions.sh
 
 bash test-multiple-alts.sh
 
-bash test-bcolz.sh
+#bash test-bcolz.sh
 
-bash test-esp.sh
+#bash test-esp.sh
 
-bash test-dashes.sh
+#bash test-dashes.sh
 
 # backwards compat with no PL/GL columns
-bash test-no-gls.sh
+#bash test-no-gls.sh
 
 bash test-multi-col.sh
 
 bash test-eff.sh
 
-bash test-geno2mp.sh
+#bash test-geno2mp.sh
 
-bash test-genewise.sh
+#bash test-genewise.sh
 
-bash test-x-linked.sh
+#bash test-x-linked.sh
 # cleanup
 #rm ./*.db
 rm -Rf *.gts
