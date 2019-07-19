@@ -171,8 +171,8 @@ def bottleneck(parser, args):
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
-    if len(normal_samples) == 0 and len(tumor_samples) == 0:
-        raise NameError('There are no samples; check the ped file for proper format and loading')
+#    if len(normal_samples) == 0 and len(tumor_samples) == 0:
+#        raise NameError('There are no samples; check the ped file for proper format and loading')
 #    if len(normal_samples) == 0:
 #        raise NameError('There are no normal samples; check the ped file for proper format and loading')
 #    if len(tumor_samples) == 0:
