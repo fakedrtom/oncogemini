@@ -189,3 +189,12 @@ def partition_by_fn(seq, key_fn=lambda x: x, val_fn=lambda x: x):
     for x in seq:
         d[key_fn(x)].append(val_fn(x))
     return d
+
+def get_purity(query, purity):
+    """
+    query is object from a run(query) where query should include
+    name, purity from samples
+    purity is an empty dictionary
+    """
+    for row in query:
+        purity[row['name']] = float(row['purity'])

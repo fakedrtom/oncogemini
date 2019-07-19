@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from . import GeminiQuery
+from . import gemini_utils as utils
 #from . import sql_utils
 from scipy import stats
 import numpy as np
@@ -81,9 +82,12 @@ def bottleneck(parser, args):
 
     # define sample search query
     if args.purity:
-        query = "select patient_id, name, time, purity from samples"
-    else:
-        query = "select patient_id, name, time from samples"
+        query = "select name, purity from samples"
+        purity = {}
+        gq.run(query)
+        utils.get_purity(gq, purity)
+#    else:
+    query = "select patient_id, name, time from samples"
 
     # execute the sample search query
     gq.run(query)
@@ -96,14 +100,14 @@ def bottleneck(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
-    purity = {}
+#    purity = {}
     for row in gq:
         patients.append(row['patient_id'])
         if row['patient_id'] not in names:
             names[row['patient_id']] = []
         names[row['patient_id']].append(row['name'])
-        if args.purity:
-            purity[row['name']] = float(row['purity'])
+#        if args.purity:
+#            purity[row['name']] = float(row['purity'])
     if args.patient is None and len(set(patients)) == 1:
         patient = patients[0]
     elif args.patient is None and len(set(patients)) > 1:
