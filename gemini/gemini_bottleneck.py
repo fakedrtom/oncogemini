@@ -32,6 +32,8 @@ def bottleneck(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
+    else:
+        patient = 'none'
     if args.minDP is None:
         minDP = int(-1)
     else:
@@ -102,28 +104,30 @@ def bottleneck(parser, args):
     patients = []
     names = {}
 #    purity = {}
-    for row in gq:
-        patients.append(row['patient_id'])
-        if row['patient_id'] not in names:
-            names[row['patient_id']] = []
-        names[row['patient_id']].append(row['name'])
+    patient = utils.get_names(gq,patients,names,patient)
+    samples = utils.get_samples(patient,names,samples)
+#    for row in gq:
+#        patients.append(row['patient_id'])
+#        if row['patient_id'] not in names:
+#            names[row['patient_id']] = []
+#        names[row['patient_id']].append(row['name'])
 #        if args.purity:
 #            purity[row['name']] = float(row['purity'])
-    if args.patient is None and len(set(patients)) == 1:
-        patient = patients[0]
-    elif args.patient is None and len(set(patients)) > 1:
-        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
-    if patient not in patients:
-        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
+#    if args.patient is None and len(set(patients)) == 1:
+#        patient = patients[0]
+#    elif args.patient is None and len(set(patients)) > 1:
+#        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
+#    if patient not in patients:
+#        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
 
     # check that specified samples with --samples are present
     # otherwise all names for given patient from ped will asigned to samples list
-    if samples != 'All':
-        for sample in samples:
-            if sample not in names[patient]:
-                raise NameError('Specified samples, ' + sample + ', is not found')
-    elif samples == 'All':
-        samples = names[patient]
+#    if samples != 'All':
+#        for sample in samples:
+#            if sample not in names[patient]:
+#                raise NameError('Specified samples, ' + sample + ', is not found')
+#    elif samples == 'All':
+#        samples = names[patient]
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list

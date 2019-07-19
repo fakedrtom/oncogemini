@@ -217,3 +217,43 @@ def check_cancer_annotations(query):
             cancer_abbrevs += 1
     if cancer_abbrevs == 0:
         raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+
+def get_names(query, patients, names, patient):
+    """
+    query is object from a run(query) where query should include
+    patient_id, name, time from samples
+    patients is an empty list
+    names is an empty dictionary
+    patient is from args.patient in bottleneck, loh, truncal, etc.
+    identifies patients in samples table and makes sure
+    designated patient from args.patient is acceptable
+    populates the names dictionary with sample names 
+    that correspon to patient_ids
+    """
+    for row in query:
+        patients.append(row['patient_id'])
+        if row['patient_id'] not in names:
+            names[row['patient_id']] = []
+        names[row['patient_id']].append(row['name'])
+    if patient == 'none' and len(set(patients)) == 1:
+        patient = patients[0]
+    elif patient == 'none' and len(set(patients)) > 1:
+        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
+    if patient not in patients:
+        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
+    return patient
+
+def get_samples(patient, names, samples):
+    """
+    checks samples from arg.samples to insure 
+    indicated sample names are present in query request
+    if all samples are requested, samples is returned with all
+    sample names in a list
+    """
+    if samples != 'All':
+        for sample in samples:
+            if sample not in names[patient]:
+                raise NameError('Specified samples, ' + sample + ', is not found')
+    elif samples == 'All':
+        samples = names[patient]
+    return samples
