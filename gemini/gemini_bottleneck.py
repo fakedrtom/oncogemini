@@ -138,15 +138,17 @@ def bottleneck(parser, args):
     normal_samples = []
     tumor_samples = []
     timepoints = {}
-    for row in gq:
-        if row['patient_id'] == patient and row['name'] in samples:
-            if int(row['time']) == 0:
-                normal_samples.append(row['name'])
-            elif int(row['time']) > 0:
-                tumor_samples.append(row['name'])
-            if int(row['time']) not in timepoints:
-                timepoints[int(row['time'])] = []
-            timepoints[int(row['time'])].append(row['name'])
+    samples_tps = {}
+    utils.sort_samples(gq,normal_samples,tumor_samples,timepoints,samples_tps,patient,samples)
+#    for row in gq:
+#        if row['patient_id'] == patient and row['name'] in samples:
+#            if int(row['time']) == 0:
+#                normal_samples.append(row['name'])
+#            elif int(row['time']) > 0:
+#                tumor_samples.append(row['name'])
+#            if int(row['time']) not in timepoints:
+#                timepoints[int(row['time'])] = []
+#            timepoints[int(row['time'])].append(row['name'])
 #        if int(row['time']) == 0 and row['patient_id'] == patient and row['name'] in samples:
 #            normal_samples.append(row['name'])
 #        elif int(row['time']) > 0 and row['patient_id'] == patient and row['name'] in samples:
@@ -162,8 +164,8 @@ def bottleneck(parser, args):
 #                        timepoints[int(row['time'])] = []
 #                    timepoints[int(row['time'])].append(row['name'])
 #    all_samples = normal_samples + tumor_samples
-    endpoint = max(timepoints.keys())
-    startpoint = min(timepoints.keys())
+#    endpoint = max(timepoints.keys())
+#    startpoint = min(timepoints.keys())
 #    times = sorted(timepoints.keys(), reverse=True)
     
     # check arrays to see if samples have been added

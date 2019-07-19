@@ -257,3 +257,28 @@ def get_samples(patient, names, samples):
     elif samples == 'All':
         samples = names[patient]
     return samples
+
+def sort_samples(query,norms,tums,tps,samples_tps,patient,samples):
+    """
+    query is object from a run(query) where query should include
+    patient_id, names, time from samples
+    norms and tums are empty lists
+    tps and sample_tps are empty dictionaries
+    patient is string from arg.patient and get_names
+    samples is list from arg.samples and get_samples
+    sorts samples as either normal or tumor
+    fills tps and sample_tps
+    limited to only those that match patient and are in samples
+    """
+    for row in query:
+        if row['patient_id'] == patient and row['name'] in samples:
+            if int(row['time']) == 0:
+                norms.append(row['name'])
+            elif int(row['time']) > 0:
+                tums.append(row['name'])
+            if int(row['time']) not in tps:
+                tps[int(row['time'])] = []
+            tps[int(row['time'])].append(row['name'])
+            samples_tps[row['name']] = int(row['time'])
+    if len(norms) == 0 and len(tums) == 0:
+        raise NameError('There are no samples; check the ped file for proper format and loading')
