@@ -282,3 +282,26 @@ def sort_samples(query,norms,tums,tps,samples_tps,patient,samples):
             samples_tps[row['name']] = int(row['time'])
     if len(norms) == 0 and len(tums) == 0:
         raise NameError('There are no samples; check the ped file for proper format and loading')
+
+def make_query(columns, filter, cancers):
+    """
+    columns is a string from args.columns
+    filter is a string from args.filter
+    cancers is a list 
+    this will build the main query using input from columns and filter
+    """
+    if columns is not None:
+        # the user only wants to report a subset of the columns
+        # if cancers is used (not none) then you need to add some extra columns
+        # or other things won't work
+        if cancers == 'none':
+            query = "SELECT " + columns + " FROM variants"
+        elif cancers != 'none':
+            query = "SELECT " + columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+    else:
+        # report the kitchen sink
+        query = "SELECT * FROM variants"
+    if filter is not None:
+        # add any non-genotype column limits to the where clause
+        query += " WHERE " + filter
+    return query

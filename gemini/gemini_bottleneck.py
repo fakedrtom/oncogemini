@@ -183,18 +183,19 @@ def bottleneck(parser, args):
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
     # define the loh query
-    if args.columns is not None:
+    query = utils.make_query(args.columns,args.filter,cancers)
+#    if args.columns is not None:
         # the user only wants to report a subset of the columns
-        if cancers == 'none':
-            query = "SELECT " + args.columns + " FROM variants"
-        elif cancers != 'none':
-            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
-    else:
+#        if cancers == 'none':
+#            query = "SELECT " + args.columns + " FROM variants"
+#        elif cancers != 'none':
+#            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+#    else:
         # report the kitchen sink
-        query = "SELECT * FROM variants"
-    if args.filter is not None:
+#        query = "SELECT * FROM variants"
+#    if args.filter is not None:
         # add any non-genotype column limits to the where clause
-        query += " WHERE " + args.filter
+#        query += " WHERE " + args.filter
     # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
