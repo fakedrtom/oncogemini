@@ -195,6 +195,25 @@ def get_purity(query, purity):
     query is object from a run(query) where query should include
     name, purity from samples
     purity is an empty dictionary
+    fills purity with sample specific purity scores from samples table
     """
     for row in query:
         purity[row['name']] = float(row['purity'])
+
+def check_cancer_annotations(query):
+    """
+    query is object from a run(query) where query should include
+    pragma table_info(variants)
+    checks the table to see if civic_gene_abbreviations or 
+    cgi_gene_abbreviations exists in the database
+    returns an error if neither exist
+    """
+    cancer_abbrevs = 0
+    for row in query:
+        fields = str(row).rstrip('\n').split('\t')
+        if fields[1] == 'civic_gene_abbreviations':
+            cancer_abbrevs += 1
+        if fields[1] == 'cgi_gene_abbreviations':
+            cancer_abbrevs += 1
+    if cancer_abbrevs == 0:
+        raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')

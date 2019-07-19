@@ -69,24 +69,25 @@ def bottleneck(parser, args):
     else:
         query = "pragma table_info(variants)"
         gq.run(query)
-        cancer_abbrevs = 0
-        for row in gq:
-            fields = str(row).rstrip('\n').split('\t')
-            if fields[1] == 'civic_gene_abbreviations':
-                cancer_abbrevs += 1
-            if fields[1] == 'cgi_gene_abbreviations':
-                cancer_abbrevs += 1
-        if cancer_abbrevs == 0:
-            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        utils.check_cancer_annotations(gq)
+#        cancer_abbrevs = 0
+#        for row in gq:
+#            fields = str(row).rstrip('\n').split('\t')
+#            if fields[1] == 'civic_gene_abbreviations':
+#                cancer_abbrevs += 1
+#            if fields[1] == 'cgi_gene_abbreviations':
+#                cancer_abbrevs += 1
+#        if cancer_abbrevs == 0:
+#            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
 
-    # define sample search query
     if args.purity:
         query = "select name, purity from samples"
         purity = {}
         gq.run(query)
         utils.get_purity(gq, purity)
 #    else:
+    # define sample search query
     query = "select patient_id, name, time from samples"
 
     # execute the sample search query
