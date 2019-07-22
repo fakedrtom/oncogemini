@@ -104,7 +104,8 @@ def bottleneck(parser, args):
     patients = []
     names = {}
 #    purity = {}
-    patient = utils.get_names(gq,patients,names,patient)
+    utils.get_names(gq,patients,names)
+    patient = utils.get_patient(patient,patients)
     samples = utils.get_samples(patient,names,samples)
 #    for row in gq:
 #        patients.append(row['patient_id'])

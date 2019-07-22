@@ -218,7 +218,7 @@ def check_cancer_annotations(query):
     if cancer_abbrevs == 0:
         raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
 
-def get_names(query, patients, names, patient):
+def get_names(query, patients, names):
     """
     query is object from a run(query) where query should include
     patient_id, name, time from samples
@@ -235,6 +235,14 @@ def get_names(query, patients, names, patient):
         if row['patient_id'] not in names:
             names[row['patient_id']] = []
         names[row['patient_id']].append(row['name'])
+
+def get_patient(patient, patients):
+    """
+    patient is from args.patient in bottleneck, loh, truncal, etc.
+    patients is the filled list from get_names
+    checks to make sure patient conditions are met
+    creates patient is patient is 'none'
+    """
     if patient == 'none' and len(set(patients)) == 1:
         patient = patients[0]
     elif patient == 'none' and len(set(patients)) > 1:
@@ -266,7 +274,7 @@ def sort_samples(query,norms,tums,tps,samples_tps,patient,samples):
     tps and sample_tps are empty dictionaries
     patient is string from arg.patient and get_names
     samples is list from arg.samples and get_samples
-    sorts samples as either normal or tumor
+    sorts samples as either normal or tumor based on timepoint criteria
     fills tps and sample_tps
     limited to only those that match patient and are in samples
     """
