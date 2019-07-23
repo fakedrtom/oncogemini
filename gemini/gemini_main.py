@@ -416,66 +416,66 @@ def main():
     parser_set_somatic.add_argument('db', metavar='db',
             help='The name of the database to be updated.')
 
-    parser_set_somatic.add_argument('--min-depth',
-            dest='min_depth',
+    parser_set_somatic.add_argument('--minDP',
+            dest='minDP',
+            type=int,
+            default=0,
+            help='Minimum depth required in all samples (default is 0)')
+
+    parser_set_somatic.add_argument('--minGQ',
+            dest='minGQ',
             type=float,
             default=0,
-            help='The min combined depth for tumor + normal (def: %(default)s).')
+            help='Minimum genotype quality required in all samples (default is 0)')
 
-    parser_set_somatic.add_argument('--min-qual',
-            dest='min_qual',
-            type=float,
-            default=0,
-            help='The min variant quality (VCF QUAL) (def: %(default)s).')
+#    parser_set_somatic.add_argument('--min-somatic-score',
+#            dest='min_somatic_score',
+#            type=float,
+#            default=0,
+#            help='The min somatic score (SSC) (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--min-somatic-score',
-            dest='min_somatic_score',
-            type=float,
-            default=0,
-            help='The min somatic score (SSC) (def: %(default)s).')
-
-    parser_set_somatic.add_argument('--max-norm-alt-freq',
-            dest='max_norm_alt_freq',
+    parser_set_somatic.add_argument('--normAF',
+            dest='normAF',
             type=float,
             default=0,
             help='The max freq. of the alt. allele in the normal sample (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--max-norm-alt-count',
-            dest='max_norm_alt_count',
+    parser_set_somatic.add_argument('--normCount',
+            dest='normCount',
             type=int,
             default=0,
             help='The max count. of the alt. allele in the normal sample (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--min-norm-depth',
-            dest='min_norm_depth',
+    parser_set_somatic.add_argument('--normDP',
+            dest='normDP',
             type=int,
             default=0,
             help='The minimum depth allowed in the normal sample to believe somatic (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--min-tumor-alt-freq',
-            dest='min_tumor_alt_freq',
+    parser_set_somatic.add_argument('--tumAF',
+            dest='tumAF',
             type=float,
             default=0,
             help='The min freq. of the alt. allele in the tumor sample (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--min-tumor-alt-count',
-            dest='min_tumor_alt_count',
+    parser_set_somatic.add_argument('--tumCount',
+            dest='tumCount',
             type=int,
             default=0,
             help='The min count. of the alt. allele in the tumor sample (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--min-tumor-depth',
-            dest='min_tumor_depth',
+    parser_set_somatic.add_argument('--tumDP',
+            dest='tumDP',
             type=int,
             default=0,
             help='The minimum depth allowed in the tumor sample to believe somatic (def: %(default)s).')
 
-    parser_set_somatic.add_argument('--chrom',
-            dest='chrom',
-            metavar='STRING',
-            help='A specific chromosome on which to tag somatic mutations. (def: %(default)s).',
-            default=None,
-            )
+#    parser_set_somatic.add_argument('--chrom',
+#            dest='chrom',
+#            metavar='STRING',
+#            help='A specific chromosome on which to tag somatic mutations. (def: %(default)s).',
+#            default=None,
+#            )
 
     parser_set_somatic.add_argument('--dry-run',
             dest='dry_run',

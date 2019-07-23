@@ -1,140 +1,162 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, print_function
 from .gemini_constants import *
-from . import gemini_subjects
 from . import GeminiQuery
+from . import gemini_utils as utils
 
 def tag_somatic_mutations(args):
 
-    t_n_pairs = gemini_subjects.get_families(args.db)
-
     gq = GeminiQuery.GeminiQuery(args.db)
 
-    depth_string, qual_string, ssc_string, chrom_string = ("", "", "", "")
-    if args.min_depth:
-        depth_string = " AND depth >= %s" % args.min_depth
-    if args.min_qual:
-        qual_string = " AND qual >= %s" % args.min_qual
-    if args.min_somatic_score:
-        ssc_string = " AND (type='sv' \
-                         OR somatic_score >= %s)" % args.min_somatic_score
-    if args.chrom:
-        chrom_string = " AND chrom = '%s'" % args.chrom
-
-    if args.chrom is None:
-        query = "SELECT variant_id, chrom, start, end, \
-                        ref, alt, gene, impact, gts, gt_types, \
-                        gt_ref_depths, gt_alt_depths \
-                 FROM variants \
-                 WHERE 1 \
-                 %s \
-                 %s \
-                 %s \
-                 %s" % (depth_string, qual_string, ssc_string, chrom_string)
-
+    # first query is to establish the patients in db and assign sample names 
+    # to patient_ids
+    query = "select patient_id, name, time from samples"
     gq.run(query)
-    smp2idx = gq.sample_to_idx
+    
+    patients = []
+    names = {}
+    utils.get_names(gq,patients,names)
+    patients = list(set(patients))
+    
+    # iterate through each patient in the db
+    for patient in patients:
+        print("Processing patient " + patient)
+        samples = 'All'
+        samples = utils.get_samples(patient,names,samples)
+        
+        # second query is to sort samples as either normal or tumor
+        # based on time column in samples table
+        # query uses same arguments as first query
+        query = "select patient_id, name, time from samples"
+        gq.run(query)
+        normal_samples = []
+        tumor_samples = []
+        timepoints = {}
+        samples_tps = {}
+        utils.sort_samples(gq,normal_samples,tumor_samples,timepoints,samples_tps,patient,samples)
 
-    somatic_counter = 0
-    somatic_v_ids = []
-
-    if args.dry_run:
-        print('\t'.join(['tum_name', 'tum_gt', 'tum_alt_freq', 'tum_alt_depth', 'tum_depth', \
-                        'nrm_name', 'nrm_gt', 'nrm_alt_freq', 'nrm_alt_depth', 'nrm_depth',
-                        'chrom', 'start', 'end', 'ref', 'alt', 'gene']))
-
-    for row in gq:
-        # we can skip variants where all genotypes are identical
-        if len(set(row['gt_types'])) == 1:
+        #check and make sure patient has normal samples
+        if len(normal_samples) == 0:
+            print('No normal samples for patient ' + patient)
+            print('Unable to identify somatics')
+            print('Skipping patient ' + patient)
             continue
 
-        for pair in t_n_pairs:
+        # final query will actually go through each of the variants
+        # and see if the variant matches supplied somatic criteria
+        query = "SELECT variant_id, chrom, start, end, ref, alt, gene, \
+                        gts, gt_types, gt_ref_depths, gt_alt_depths, \
+                        gt_alt_freqs, gt_depths, gt_quals \
+                 FROM variants"
+        gq.run(query)
+        smp2idx = gq.sample_to_idx
 
-            samples = pair.subjects
-            if len(samples) != 2:
+        somatic_counter = 0
+        somatic_v_ids = []
+
+        if args.dry_run:
+            print('Somatics for patient ' + patient)
+            print('\t'.join(['variant_id', 'chrom', 'start','end', 'ref', \
+                        'alt', 'gene', 'normal_GTs', 'tumor_GTs', 'normal_DPs', \
+                        'tumor_DPs', 'norm_counts', 'tum_counts', 'normal_AFs', \
+                        'tumor_AFs']))
+
+        for row in gq:
+            normDPs = []
+            tumDPs = []
+            norm_counts = []
+            tum_counts = []
+            normAFs = []
+            tumAFs = []
+            normGTs = []
+            tumGTs = []
+            depths = []
+            quals = []
+        
+            # build lists of metrics for filtering
+            for s in samples:
+                smpidx = smp2idx[s]
+                sampleDP = row['gt_depths'][smpidx]
+                depths.append(sampleDP)
+                sampleGQ = row['gt_quals'][smpidx]
+                quals.append(sampleGQ)
+                sample_count = row['gt_alt_depths'][smpidx]
+                sampleAF = row['gt_alt_freqs'][smpidx]
+                sampleGT = row['gt_types'][smpidx]
+                if s in normal_samples:
+                    normDPs.append(sampleDP)
+                    norm_counts.append(sample_count)
+                    normAFs.append(sampleAF)
+                    normGTs.append(sampleGT)
+                if s in tumor_samples:
+                    tumDPs.append(sampleDP)
+                    tum_counts.append(sample_count)
+                    tumAFs.append(sampleAF)
+                    tumGTs.append(sampleGT)
+            
+            # start filtering
+            if min(depths) < args.minDP or min(quals) < args.minGQ:
                 continue
-
-            tumor = pair.subjects[0]
-            normal = pair.subjects[1]
-            # swap if we guessed the tumor incorrectly
-            if tumor.affected is False:
-                tumor, normal = normal, tumor
-
-            tum_idx = smp2idx[tumor.name]
-            nrm_idx = smp2idx[normal.name]
-
-            tum_gt = row['gts'][tum_idx]
-            nrm_gt = row['gts'][nrm_idx]
-
-            tum_gt_type = row['gt_types'][tum_idx]
-            nrm_gt_type = row['gt_types'][nrm_idx]
-
-            if nrm_gt_type == tum_gt_type:
+            if any(gt != HOM_REF for gt in normGTs):
                 continue
-
-            if nrm_gt_type == UNKNOWN or tum_gt_type == UNKNOWN:
+            if all(gt == HOM_REF for gt in tumGTs):
                 continue
+            if min(normDPs) < args.normDP or max(norm_counts) > args.normCount or max(normAFs) > args.normAF:
+                continue
+            if any(dp >= args.tumDP for dp in tumDPs):
+                if any(count >= args.tumCount for count in tum_counts):
+                    if any(af >= args.tumAF for af in tumAFs):
+                        somatic_counter += 1
+                        somatic_v_ids.append((1, row['variant_id']))
+                        
+                        print('\t'.join(str(s) for s in [row['variant_id'], row['chrom'], row['start'], row['end'], row['ref'], \
+                                                        row['alt'], row['gene'], normGTs, tumGTs, normDPs, tumDPs, norm_counts, \
+                                                        tum_counts, normAFs, tumAFs]))
 
-            # the genotypes pass the smell test for somatic
-            # mutations if in this block.
-            if (nrm_gt_type == HOM_REF and tum_gt_type != HOM_REF):
+        if not args.dry_run:
+            # establish a connection to the database
+            from . import database
+            import sqlalchemy as sql
+            import sys
 
-               tum_ref_depth = row['gt_ref_depths'][tum_idx]
-               nrm_ref_depth = row['gt_ref_depths'][nrm_idx]
+            conn, metadata = database.get_session_metadata(args.db)
+            
+            is_somatic = 'is_somatic_' + patient
 
-               tum_alt_depth = row['gt_alt_depths'][tum_idx]
-               nrm_alt_depth = row['gt_alt_depths'][nrm_idx]
+            # alter the database by adding a new is_somatic
+            alter_qry = "ALTER TABLE variants ADD " + is_somatic + " INTEGER DEFAULT 0"
+            try:
+                conn.execute(sql.text(alter_qry))
+            except sql.exc.OperationalError:
+                sys.stderr.write("WARNING: Column \"("
+                             + is_somatic
+                             + ")\" already exists in variants table. Overwriting values.\n")
 
-               # total observed depth
-               nrm_depth = nrm_alt_depth + nrm_ref_depth
-               tum_depth = tum_alt_depth + tum_ref_depth
+            # reset values so that records don't retain old annotations.
+            cursor = conn.bind.connect()
+            cursor.execute("UPDATE variants SET " + is_somatic + " = 0")
 
-               if (nrm_depth < args.min_norm_depth \
-                  or \
-                  tum_depth < args.min_tumor_depth):
-                  continue
+            # now set the identified mutations to True.
+            update_qry = "UPDATE variants SET " + is_somatic + " = 1 "
+            update_qry += " WHERE variant_id IN (%s)"
+            update_qry %= ",".join(str(x[1]) for x in somatic_v_ids)
+            res = conn.execute(update_qry)
+            assert res.rowcount == somatic_counter
+            print("Identified and set", somatic_counter, "somatic mutations")
 
-               try:
-                   tum_alt_freq = float(tum_alt_depth) / \
-                                  (float(tum_alt_depth) + float(tum_ref_depth))
-               except ZeroDivisionError:
-                   tum_alt_freq = 'NA'
+            # create an index on is_somatic
+            cmd = 'create index var_som_idx on variants(' + is_somatic +')'
+            try:
+                conn.execute(cmd)
+            except sql.exc.OperationalError:
+                sys.stderr.write("WARNING: Index \"("
+                                 + is_somatic
+                                 + ")\" already exists for variants table. Overwriting index.\n")
 
-               try:
-                   nrm_alt_freq = float(nrm_alt_depth) / \
-                                  (float(nrm_alt_depth) + float(nrm_ref_depth))
-               except ZeroDivisionError:
-                   nrm_alt_freq = 'NA'
-
-               # apply evidence thresholds.
-               if (args.max_norm_alt_freq and nrm_alt_freq > args.max_norm_alt_freq) \
-                  or \
-                  (args.max_norm_alt_count and nrm_alt_depth > args.max_norm_alt_count):
-                  continue
-
-               somatic_counter += 1
-               somatic_v_ids.append((1, row['variant_id']))
-
-               print('\t'.join(str(s) for s in [tumor.name,  tum_gt, tum_alt_freq, tum_alt_depth, tum_depth, \
-                                   normal.name, nrm_gt, nrm_alt_freq, nrm_alt_depth, nrm_depth, \
-                                   row['chrom'], row['start'], row['end'],
-                                                row['ref'], row['alt'],
-                                                row['gene']]))
-
-    if not args.dry_run:
-        from . import database
-        conn, metadata = database.get_session_metadata(args.db)
-
-        # now set the identified mutations to True.
-        update_qry = "UPDATE variants SET is_somatic = 1 "
-        update_qry += " WHERE variant_id IN (%s)"
-        update_qry %= ",".join(str(x[1]) for x in somatic_v_ids)
-        res = conn.execute(update_qry)
-        assert res.rowcount == somatic_counter
-        print("Identified and set", somatic_counter, "somatic mutations")
-        conn.commit()
-    else:
-        print("Would have identified and set", somatic_counter, "somatic mutations")
+            # save the results
+            conn.commit()
+        else:
+            print("Would have identified and set", somatic_counter, "somatic mutations")
 
 def set_somatic(parser, args):
 
