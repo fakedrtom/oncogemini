@@ -184,7 +184,17 @@ def bottleneck(parser, args):
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
     # define the loh query
-    query = utils.make_query(args.columns,args.filter,cancers)
+    if args.columns is not None:
+        columns = args.columns
+        if cancers != 'none':
+            columns = args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations"
+    else:
+        columns = args.columns
+    if args.filter is not None:
+        filter = args.filter
+    else:
+        filter = str(1)
+    query = utils.make_query(columns,filter)
 #    if args.columns is not None:
         # the user only wants to report a subset of the columns
 #        if cancers == 'none':
