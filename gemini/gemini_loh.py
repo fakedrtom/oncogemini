@@ -259,12 +259,12 @@ def loh(parser, args):
                     if s in samples:
                         smpidx = smp2idx[s]
                         if args.purity:
-                            sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                            sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
                             rawAF = row['gt_alt_freqs'][smpidx]
                         else:
                             sampleAF = row['gt_alt_freqs'][smpidx]
-                        if sampleAF > 1:
-                            sampleAF = 1
+#                        if sampleAF > 1:
+#                            sampleAF = 1
                         if s in normal_samples and sampleAF >= 0:
                             normAFs.append(sampleAF)
                         if s in tumor_samples and sampleAF >= 0:
@@ -281,12 +281,12 @@ def loh(parser, args):
             for s in timepoints[preceding]:
                 smpidx = smp2idx[s]
                 if args.purity:
-                    sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                    sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
                     rawAF = row['gt_alt_freqs'][smpidx]
                 else:
                     sampleAF = row['gt_alt_freqs'][smpidx]
-                if sampleAF > 1:
-                    sampleAF = 1
+#                if sampleAF > 1:
+#                    sampleAF = 1
                 if sampleAF >= 0:
                     normAFs.append(sampleAF)
                 sampleDP = row['gt_depths'][smpidx]
@@ -298,12 +298,12 @@ def loh(parser, args):
                     addEnd.append(str(rawAF))
             smpidx = smp2idx[somatic]
             if args.purity:
-                sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[somatic])
+                sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
                 rawAF = row['gt_alt_freqs'][smpidx]
             else:
                 sampleAF = row['gt_alt_freqs'][smpidx]
-            if sampleAF > 1:
-                sampleAF = 1
+#            if sampleAF > 1:
+#                sampleAF = 1
             if sampleAF >= 0:
                 tumsAFs.append(sampleAF)
             sampleDP = row['gt_depths'][smpidx]

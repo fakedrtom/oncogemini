@@ -217,12 +217,12 @@ def unique(parser, args):
                 if s in samples:
                     smpidx = smp2idx[s]
                     if args.purity:
-                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                        sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
                         rawAF = row['gt_alt_freqs'][smpidx]
                     else:
                         sampleAF = row['gt_alt_freqs'][smpidx]
-                    if sampleAF > 1:
-                        sampleAF = 1
+#                    if sampleAF > 1:
+#                        sampleAF = 1
                     if s in specific:
                         if sampleAF >= 0:
                             uniqAFs.append(sampleAF)

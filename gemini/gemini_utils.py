@@ -310,3 +310,17 @@ def make_query(columns, filter):
         # add any non-genotype column limits to the where clause
         query += " WHERE " + filter
     return query
+
+def purityAF(af,purity):
+    """
+    returns an AF that has been corrected for purity
+    takes the given AF and divides it by the purity value
+    only if purity value > 0
+    """
+    if purity > 0:
+        AF = float(af/purity)
+    elif purity == 0:
+        AF = af
+    if AF > 1:
+        AF = 1
+    return AF

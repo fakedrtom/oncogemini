@@ -242,12 +242,12 @@ def truncal(parser, args):
                 if s in samples:
                     smpidx = smp2idx[s]
                     if args.purity:
-                        sampleAF = float(row['gt_alt_freqs'][smpidx]/purity[s])
+                        sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
                         rawAF = row['gt_alt_freqs'][smpidx]
                     else:
                         sampleAF = row['gt_alt_freqs'][smpidx]
-                    if sampleAF > 1:
-                        sampleAF = 1
+#                    if sampleAF > 1:
+#                        sampleAF = 1
                     if s in normal_samples and sampleAF >= 0:
                         normAFs.append(sampleAF)
                     if s in tumor_samples and sampleAF >= 0:
