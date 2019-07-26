@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from . import GeminiQuery
+from . import gemini_utils as utils
 #from . import sql_utils
 
 # Truncal mutations are categorized as being absent 
@@ -24,6 +25,8 @@ def truncal(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
+    else:
+        patient = 'none'
     if args.minDP is None:
         minDP = int(-1)
     else:
@@ -49,22 +52,25 @@ def truncal(parser, args):
     else:
         query = "pragma table_info(variants)"
         gq.run(query)
-        cancer_abbrevs = 0
-        for row in gq:
-            fields = str(row).rstrip('\n').split('\t')
-            if fields[1] == 'civic_gene_abbreviations':
-                cancer_abbrevs += 1
-            if fields[1] == 'cgi_gene_abbreviations':
-                cancer_abbrevs += 1
-        if cancer_abbrevs == 0:
-            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        utils.check_cancer_annotations(gq)
+#        cancer_abbrevs = 0
+#        for row in gq:
+#            fields = str(row).rstrip('\n').split('\t')
+#            if fields[1] == 'civic_gene_abbreviations':
+#                cancer_abbrevs += 1
+#            if fields[1] == 'cgi_gene_abbreviations':
+#                cancer_abbrevs += 1
+ #       if cancer_abbrevs == 0:
+ #           raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
-
-    # define sample search query                                                                                                                                                                  
     if args.purity:
-        query = "select patient_id, name, time, purity from samples"
-    else:
-        query = "select patient_id, name, time from samples"
+        query = "select name, purity from samples"
+        purity = {}
+        gq.run(query)
+        utils.get_purity(gq, purity)
+#    else:
+    # define sample search query                                                                                                                                                             
+    query = "select patient_id, name, time from samples"
 
     # execute the sample search query                                                                                                                                                             
     gq.run(query)
@@ -77,29 +83,32 @@ def truncal(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
-    purity = {}
-    for row in gq:
-        patients.append(row['patient_id'])
-        if row['patient_id'] not in names:
-            names[row['patient_id']] = []
-        names[row['patient_id']].append(row['name'])
-        if args.purity:
-            purity[row['name']] = float(row['purity'])
-    if args.patient is None and len(set(patients)) == 1:
-        patient = patients[0]
-    elif args.patient is None and len(set(patients)) > 1:
-        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
-    if patient not in patients:
-        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
+#    purity = {}
+    utils.get_names(gq,patients,names)
+    patient = utils.get_patient(patient,patients)
+    samples = utils.get_samples(patient,names,samples)
+#    for row in gq:
+#        patients.append(row['patient_id'])
+#        if row['patient_id'] not in names:
+#            names[row['patient_id']] = []
+#        names[row['patient_id']].append(row['name'])
+#        if args.purity:
+#            purity[row['name']] = float(row['purity'])
+#    if args.patient is None and len(set(patients)) == 1:
+#        patient = patients[0]
+#    elif args.patient is None and len(set(patients)) > 1:
+#        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
+#    if patient not in patients:
+#        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
 
     # check that specified samples with --samples are present
     # otherwise all names for given patient from ped will asigned to samples list
-    if samples != 'All':
-        for sample in samples:
-            if sample not in names[patient]:
-                raise NameError('Specified samples, ' + sample + ', is not found')
-    elif samples == 'All':
-        samples = names[patient]
+#    if samples != 'All':
+#        for sample in samples:
+#            if sample not in names[patient]:
+#                raise NameError('Specified samples, ' + sample + ', is not found')
+#    elif samples == 'All':
+#        samples = names[patient]
     
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -110,15 +119,17 @@ def truncal(parser, args):
     normal_samples = []
     tumor_samples = []
     timepoints = {}
-    for row in gq:
-        if row['patient_id'] == patient and row['name'] in samples:
-            if int(row['time']) == 0:
-                normal_samples.append(row['name'])
-            elif int(row['time']) > 0:
-                tumor_samples.append(row['name'])
-            if int(row['time']) not in timepoints:
-                timepoints[int(row['time'])] = []
-            timepoints[int(row['time'])].append(row['name'])
+    samples_tps = {}
+    utils.sort_samples(gq,normal_samples,tumor_samples,timepoints,samples_tps,patient,samples)
+#    for row in gq:
+#        if row['patient_id'] == patient and row['name'] in samples:
+#            if int(row['time']) == 0:
+#                normal_samples.append(row['name'])
+#            elif int(row['time']) > 0:
+#                tumor_samples.append(row['name'])
+#            if int(row['time']) not in timepoints:
+#                timepoints[int(row['time'])] = []
+#            timepoints[int(row['time'])].append(row['name'])
 #    endpoint = max(timepoints.keys())
 #    startpoint = min(timepoints.keys())
 #    times = sorted(timepoints.keys(), reverse=True)
@@ -126,8 +137,8 @@ def truncal(parser, args):
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
-    if len(normal_samples) == 0 and len(tumor_samples) == 0:
-        raise NameError('There are no samples; check the ped file for proper format and loading')
+#    if len(normal_samples) == 0 and len(tumor_samples) == 0:
+#        raise NameError('There are no samples; check the ped file for proper format and loading')
     if len(normal_samples) == 0:
         raise NameError('There are no normal samples; check the ped file for proper format and loading')
     if len(tumor_samples) == 0:
@@ -145,17 +156,28 @@ def truncal(parser, args):
 
     # define the truncal query
     if args.columns is not None:
-        # the user only wants to report a subset of the columns
-        if cancers == 'none':
-            query = "SELECT " + args.columns + " FROM variants"
-        elif cancers != 'none':
-            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+        columns = args.columns
+        if cancers != 'none':
+            columns = args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations"
     else:
-        # report the kitchen sink
-        query = "SELECT * FROM variants"
+        columns = args.columns
     if args.filter is not None:
+        filter = args.filter
+    else:
+        filter = str(1)
+    query = utils.make_query(columns,filter)
+#    if args.columns is not None:
+        # the user only wants to report a subset of the columns
+#        if cancers == 'none':
+#            query = "SELECT " + args.columns + " FROM variants"
+#        elif cancers != 'none':
+#            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+#    else:
+        # report the kitchen sink
+#        query = "SELECT * FROM variants"
+#    if args.filter is not None:
         # add any non-genotype column limits to the where clause
-        query += " WHERE " + args.filter
+#        query += " WHERE " + args.filter
     # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
     # create gt_filter command using saved sample info
