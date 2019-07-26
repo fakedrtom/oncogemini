@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from . import GeminiQuery
+from . import gemini_utils as utils
 #from . import sql_utils
 
 #Unique mutations are unique to the individual sample(s)
@@ -19,6 +20,8 @@ def unique(parser, args):
     # get paramters from the args for filtering
     if args.patient is not None:
         patient = args.patient
+    else:
+        patient = 'none'
     if args.minDP is None:
         minDP = int(-1)
     else:
@@ -44,28 +47,31 @@ def unique(parser, args):
     else:
         query = "pragma table_info(variants)"
         gq.run(query)
-        cancer_abbrevs = 0
-        for row in gq:
-            fields = str(row).rstrip('\n').split('\t')
-            if fields[1] == 'civic_gene_abbreviations':
-                cancer_abbrevs += 1
-            if fields[1] == 'cgi_gene_abbreviations':
-                cancer_abbrevs += 1
-        if cancer_abbrevs == 0:
-            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        utils.check_cancer_annotations(gq)
+#        cancer_abbrevs = 0
+#        for row in gq:
+#            fields = str(row).rstrip('\n').split('\t')
+#            if fields[1] == 'civic_gene_abbreviations':
+#                cancer_abbrevs += 1
+#            if fields[1] == 'cgi_gene_abbreviations':
+#                cancer_abbrevs += 1
+#        if cancer_abbrevs == 0:
+#            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
     if args.specific is None:
         raise NameError('No sample(s) specified with --specific, please provide sample(s)')
     else:
         specific = args.specific.split(',')
-
-    # define sample search query                                                                                                                                                                  
     if args.purity:
-        query = "select patient_id, name, time, purity from samples"
-    else:
-        query = "select patient_id, name, time from samples"
+        query = "select name, purity from samples"
+        purity = {}
+        gq.run(query)
+        utils.get_purity(gq, purity)
+#    else:
+    # define sample search query
+    query = "select patient_id, name, time from samples"
 
-    # execute the sample search query                                                                                                                                                             
+    # execute the sample search query
     gq.run(query)
 
     # designating which patient to perform the query on
@@ -76,29 +82,32 @@ def unique(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
-    purity = {}
-    for row in gq:
-        patients.append(row['patient_id'])
-        if row['patient_id'] not in names:
-            names[row['patient_id']] = []
-        names[row['patient_id']].append(row['name'])
-        if args.purity:
-            purity[row['name']] = float(row['purity'])
-    if args.patient is None and len(set(patients)) == 1:
-        patient = patients[0]
-    elif args.patient is None and len(set(patients)) > 1:
-        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
-    if patient not in patients:
-        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
+#    purity = {}
+    utils.get_names(gq,patients,names)
+    patient = utils.get_patient(patient,patients)
+    samples = utils.get_samples(patient,names,samples)
+#    for row in gq:
+#        patients.append(row['patient_id'])
+#        if row['patient_id'] not in names:
+#            names[row['patient_id']] = []
+#        names[row['patient_id']].append(row['name'])
+#        if args.purity:
+#            purity[row['name']] = float(row['purity'])
+#    if args.patient is None and len(set(patients)) == 1:
+#        patient = patients[0]
+#    elif args.patient is None and len(set(patients)) > 1:
+#        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
+#    if patient not in patients:
+#        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
 
     # check that specified samples with --samples are present
     # otherwise all names for given patient from ped will asigned to samples list
-    if samples != 'All':
-        for sample in samples:
-            if sample not in names[patient]:
-                raise NameError('Specified samples, ' + sample + ', is not found')
-    elif samples == 'All':
-        samples = names[patient]
+#    if samples != 'All':
+#        for sample in samples:
+#            if sample not in names[patient]:
+#                raise NameError('Specified samples, ' + sample + ', is not found')
+#    elif samples == 'All':
+#        samples = names[patient]
     #Also make sure the samples requested with --specific are present
     for s in specific:
         if s not in samples:
@@ -113,6 +122,8 @@ def unique(parser, args):
     other_samples = []
     unique_samples = []
     timepoints = {}
+#    samples_tps = {}
+#    utils.sort_samples(gq,other_samples,tumor_samples,timepoints,samples_tps,patient,samples)
     for row in gq:
         if row['patient_id'] == patient and row['name'] in samples:
             if row['name'] in specific:
@@ -142,17 +153,28 @@ def unique(parser, args):
     
     # define the unique query
     if args.columns is not None:
-        # the user only wants to report a subset of the columns
-        if cancers == 'none':
-            query = "SELECT " + args.columns + " FROM variants"
-        elif cancers != 'none':
-            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+        columns = args.columns
+        if cancers != 'none':
+            columns = args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations"
     else:
-        # report the kitchen sink
-        query = "SELECT * FROM variants"
+        columns = args.columns
     if args.filter is not None:
+        filter = args.filter
+    else:
+        filter = str(1)
+    query = utils.make_query(columns,filter)
+#    if args.columns is not None:
+        # the user only wants to report a subset of the columns
+#        if cancers == 'none':
+#            query = "SELECT " + args.columns + " FROM variants"
+#        elif cancers != 'none':
+#            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
+#    else:
+        # report the kitchen sink
+#        query = "SELECT * FROM variants"
+#    if args.filter is not None:
         # add any non-genotype column limits to the where clause
-        query += " WHERE " + args.filter
+#        query += " WHERE " + args.filter
 
     # execute the unique query (but don't do anything with the results)"
     gq.run(query)
