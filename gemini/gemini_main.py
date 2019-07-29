@@ -635,6 +635,9 @@ def main():
     parser_truncal.add_argument('--purity',
             action="store_true",
             help='Using purity estimates in ped file, make corrections to AF to be used')
+    parser_truncal.add_argument('--somatic_only',
+            action="store_true",                       
+            help='Only include variants that have been marked as somatic via the set_somatic command')
     parser_truncal.add_argument('--cancers',
             dest='cancers',
             metavar='STRING',
@@ -821,6 +824,9 @@ def main():
     parser_unique.add_argument('--purity',
             action="store_true",
             help='Using purity estimates in ped file, make corrections to AF to be used')
+    parser_unique.add_argument('--somatic_only',
+            action="store_true",                       
+            help='Only include variants that have been marked as somatic via the set_somatic command')
     parser_unique.add_argument('--cancers',
             dest='cancers',
             metavar='STRING',
