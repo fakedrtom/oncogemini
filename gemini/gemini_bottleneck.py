@@ -106,6 +106,8 @@ def bottleneck(parser, args):
 #    purity = {}
     utils.get_names(gq,patients,names)
     patient = utils.get_patient(patient,patients)
+    if args.somatic_only:
+        is_somatic = 'is_somatic_' + patient
     samples = utils.get_samples(patient,names,samples)
 #    for row in gq:
 #        patients.append(row['patient_id'])
@@ -192,8 +194,12 @@ def bottleneck(parser, args):
         columns = args.columns
     if args.filter is not None:
         filter = args.filter
+        if args.somatic_only:
+            filter = args.filter + 'and ' + is_somatic + '==1'
     else:
         filter = str(1)
+        if args.somatic_only:
+            filter = is_somatic + '==1'
     query = utils.make_query(columns,filter)
 #    if args.columns is not None:
         # the user only wants to report a subset of the columns
