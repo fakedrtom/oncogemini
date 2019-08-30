@@ -37,10 +37,10 @@ def loh(parser, args):
         samples = 'All'
     else:
         samples = args.samples.split(',')
-    if args.somatic is None:
+    if args.specific is None:
         somatic = 'none'
     else:
-        somatic = args.somatic
+        somatic = args.specific
     if args.cancers is None:
         cancers = 'none'
     else:

@@ -695,8 +695,8 @@ def main():
     parser_loh.add_argument('--purity',
             action="store_true",
             help='Using purity estimates in cancer manidest, make corrections to AF to be used')
-    parser_loh.add_argument('--somatic',
-            dest='somatic',
+    parser_loh.add_argument('--specific',
+            dest='specific',
             metavar='STRING',
             help='Search for LOH variants in a single sample compared to the sample(s) that precede it (must specify single sample included among --samples, also --minNorm, --maxNorm will now apply to the preceding sample)')
     parser_loh.add_argument('--cancers',
