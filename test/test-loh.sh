@@ -96,3 +96,41 @@ cancer_gemini loh \
     functional_tests_tools.db > obs
 check obs exp
 rm obs exp
+
+###################################################################
+# 5. Test --specific
+###################################################################
+printf "testing --specific parameter...\n"
+printf "    loh.patientA...\n"
+echo "chrom	start	end	ref	alt	gene	alt_AF.A2	alt_AF.A3
+5	112176755	112176756	T	A	APC	0.5	0.983333333333
+6	152419921	152419922	T	A	ESR1	0.407407407407	1.0" > exp
+cancer_gemini loh \
+    --patient A \
+    --specific A3 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    functional_tests_tools.db > obs
+check obs exp
+rm obs exp
+
+printf "    loh.patientB...\n"
+echo "chrom	start	end	ref	alt	gene	alt_AF.B3	alt_AF.B4
+5	56183305	56183306	C	T	MAP3K1	0.542857142857	1.0" > exp
+cancer_gemini loh \
+    --patient B \
+    --specific B4 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    functional_tests_tools.db > obs
+check obs exp
+rm obs exp
+
+printf "    loh.patientC...\n"
+echo "chrom	start	end	ref	alt	gene	alt_AF.C0	alt_AF.C1
+6	152419919	152419920	T	C	ESR1	0.391304347826	1.0" > exp
+cancer_gemini loh \
+    --patient C \
+    --specific C1 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    functional_tests_tools.db > obs
+check obs exp
+rm obs exp
