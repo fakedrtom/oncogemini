@@ -108,7 +108,7 @@ def loh(parser, args):
 #    if patient not in patients:
 #        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
 
-    # check that specified samples with --samples and/or --somatic are present
+    # check that specified samples with --samples and/or --specific are present
     # otherwise all names for given patient from ped will asigned to samples list
 #    if samples != 'All':
 #        for sample in samples:
@@ -117,7 +117,7 @@ def loh(parser, args):
 #    elif samples == 'All':
 #        samples = names[patient]
     if somatic != 'none' and somatic not in samples:
-        raise NameError('Specified --somatic sample name is not found, make sure single sample only is provided and check the ped file for available sample names')
+        raise NameError('Specified --specific sample name is not found, make sure single sample only is provided and check the ped file for available sample names')
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -143,10 +143,10 @@ def loh(parser, args):
 #    endpoint = max(timepoints.keys())
     startpoint = min(timepoints.keys())
 
-    # if only sample included with --somatic is the first timepoint, --somatic won't work
+    # if only sample included with --specific is the first timepoint, --specific won't work
     if somatic != 'none':
         if samples_tps[somatic] == startpoint:
-            raise NameError('Specified sample with --somatic is the first timepoint, specify sample that has a preceding sample')
+            raise NameError('Specified sample with --specific is the first timepoint, specify sample that has a preceding sample')
 
 #    times = sorted(timepoints.keys(), reverse=True)
     
