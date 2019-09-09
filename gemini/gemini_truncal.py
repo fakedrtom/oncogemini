@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from . import GeminiQuery
 from . import gemini_utils as utils
 #from . import sql_utils
+import sys
 
 # Truncal mutations are categorized as being absent 
 # in a normal tissue sample, but present in all 
@@ -142,9 +143,9 @@ def truncal(parser, args):
 #    if len(normal_samples) == 0 and len(tumor_samples) == 0:
 #        raise NameError('There are no samples; check the ped file for proper format and loading')
     if len(normal_samples) == 0:
-        raise NameError('There are no normal samples; check the ped file for proper format and loading')
+        sys.exit("There are no normal samples; check the sample manifest file for proper format and loading")
     if len(tumor_samples) == 0:
-        raise NameError('There are no tumor samples; check the ped file for proper format and loading')
+        sys.exit("There are no tumor samples; check the sample manifest file for proper format and loading")
 
     # create a new connection to the database that includes the genotype columns
     # using the database passed in as an argument via the command line

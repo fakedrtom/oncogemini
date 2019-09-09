@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
 
+import sys
 import numpy as np
 import collections
 from collections import defaultdict
@@ -216,7 +217,7 @@ def check_cancer_annotations(query):
         if fields[1] == 'cgi_gene_abbreviations':
             cancer_abbrevs += 1
     if cancer_abbrevs == 0:
-        raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
+        sys.exit("No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers")
 
 def get_names(query, patients, names):
     """
@@ -247,9 +248,9 @@ def get_patient(patient, patients):
     if patient == 'none' and len(set(patients)) == 1:
         patient = patients[0]
     elif patient == 'none' and len(set(patients)) > 1:
-        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
+        sys.exit("More than 1 patient is present, specify a patient_id with --patient")
     if patient not in patients:
-        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
+        sys.exit("Specified patient is not found, check the sample manifest file for available patient_ids")
     return patient
 
 def get_samples(patient, names, samples):
@@ -262,7 +263,7 @@ def get_samples(patient, names, samples):
     if samples != 'All':
         for sample in samples:
             if sample not in names[patient]:
-                raise NameError('Specified samples, ' + sample + ', is not found')
+                sys.exit("Specified samples, " + sample + ", is not found")
     elif samples == 'All':
         samples = names[patient]
     return samples
@@ -290,7 +291,7 @@ def sort_samples(query,norms,tums,tps,samples_tps,patient,samples):
             tps[int(row['time'])].append(row['name'])
             samples_tps[row['name']] = int(row['time'])
     if len(norms) == 0 and len(tums) == 0:
-        raise NameError('There are no samples; check the ped file for proper format and loading')
+        sys.exit("There are no samples; check the sample manifest file for proper format and loading")
 
 def make_query(columns, filter):
     """

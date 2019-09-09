@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from . import GeminiQuery
 from . import gemini_utils as utils
 #from . import sql_utils
+import sys
 
 #Unique mutations are unique to the individual sample(s)
 #Not shared with other samples in the database
@@ -59,7 +60,7 @@ def unique(parser, args):
 #            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
     if args.specific is None:
-        raise NameError('No sample(s) specified with --specific, please provide sample(s)')
+        sys.exit("No sample(s) specified with --specific, please provide sample(s)")
     else:
         specific = args.specific.split(',')
     if args.purity:
@@ -113,7 +114,7 @@ def unique(parser, args):
     #Also make sure the samples requested with --specific are present
     for s in specific:
         if s not in samples:
-            raise NameError('Sample listed with --specific, ' + s + ', is not found, check the ped file for available samples')
+            sys.exit("Sample listed with --specific, ' + s + ', is not found, check the sample manifest file for available samples")
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -143,11 +144,11 @@ def unique(parser, args):
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
     if len(other_samples) == 0 and len(unique_samples) == 0:
-        raise NameError('There are no samples; check the ped file for proper format and loading')
+        sys.exit("There are no samples; check the sample manifest file for proper format and loading")
     if len(other_samples) == 0 and len(unique_samples) > 0:
-        raise NameError('There are no other samples to compare --specific samples to; check the ped file for proper format and loading')
+        sys.exit("There are no other samples to compare --specific samples to; check the sample manifest file for proper format and loading")
     if len(unique_samples) == 0:
-        raise NameError('There are no --specific samples; check the ped file for proper format and loading')
+        sys.exit("There are no --specific samples; check the sample manifest file for proper format and loading")
 
     # create a new connection to the database that includes the genotype columns
     # using the database passed in as an argument via the command line

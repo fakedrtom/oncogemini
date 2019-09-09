@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 from . import GeminiQuery
 from . import gemini_utils as utils
+import sys
 #from . import sql_utils
 
 # LOH mutations are categorized as being heterozygous 
@@ -117,7 +118,7 @@ def loh(parser, args):
 #    elif samples == 'All':
 #        samples = names[patient]
     if somatic != 'none' and somatic not in samples:
-        raise NameError('Specified --specific sample name is not found, make sure single sample only is provided and check the ped file for available sample names')
+        sys.exit("Error: Specified sample name with --specific is not found, make sure a single sample only is provided and check the sample manifest file for available sample names")
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -146,7 +147,7 @@ def loh(parser, args):
     # if only sample included with --specific is the first timepoint, --specific won't work
     if somatic != 'none':
         if samples_tps[somatic] == startpoint:
-            raise NameError('Specified sample with --specific is the first timepoint, specify sample that has a preceding sample')
+            sys.exit("Error: Specified sample with --specific is the first timepoint, specify a sample that has a preceding sample")
 
 #    times = sorted(timepoints.keys(), reverse=True)
     
@@ -156,9 +157,9 @@ def loh(parser, args):
 #    if len(normal_samples) == 0 and len(tumor_samples) == 0:
 #        raise NameError('There are no samples; check the ped file for proper format and loading')
     if len(normal_samples) == 0 and somatic == 'none':
-        raise NameError('There are no normal samples; check the ped file for proper format and loading')
+        sys.exit("Error: There are no normal samples; check the sample manifest file for proper format and loading")
     if len(tumor_samples) == 0 and somatic == 'none':
-        raise NameError('There are no tumor samples; check the ped file for proper format and loading')
+        sys.exit("Error: There are no tumor samples; check the sample manifest file for proper format and loading")
 
     # create a new connection to the database that includes the genotype columns
     # using the database passed in as an argument via the command line
