@@ -37,7 +37,7 @@ setup(
             ]},
         zip_safe=False,
         include_package_data=True,
-        scripts=['gemini/scripts/cancer_gemini'],
+        scripts=['gemini/scripts/oncogemini'],
         author_email="arq5x@virginia.edu",
         classifiers=[
             'Development Status :: 4 - Beta',
