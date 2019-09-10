@@ -484,7 +484,7 @@ def main():
             default=False)
 
     def set_somatic_fn(parser, args):
-        from gemini import gemini_set_somatic
+        from oncogemini import gemini_set_somatic
         gemini_set_somatic.set_somatic(parser, args)
     parser_set_somatic.set_defaults(func=set_somatic_fn)
 
@@ -644,7 +644,7 @@ def main():
             help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) REQUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def truncal_fn(parser, args):
-        from gemini.gemini_truncal import truncal
+        from oncogemini.gemini_truncal import truncal
         truncal(parser, args)
     parser_truncal.set_defaults(func=truncal_fn)
 
@@ -705,7 +705,7 @@ def main():
             help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) REQUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def loh_fn(parser, args):
-        from gemini.gemini_loh import loh
+        from oncogemini.gemini_loh import loh
         loh(parser, args)
     parser_loh.set_defaults(func=loh_fn)
 
@@ -773,7 +773,7 @@ def main():
             help='Restrict results to variants/genes associated with specific cancer types by entering a comma-separated string of cancer type abbreviations (see documents for abbreviations) REQUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def bottleneck_fn(parser, args):
-        from gemini.gemini_bottleneck import bottleneck
+        from oncogemini.gemini_bottleneck import bottleneck
         bottleneck(parser, args)
     parser_bottleneck.set_defaults(func=bottleneck_fn)
 
@@ -834,7 +834,7 @@ def main():
 QUIRES that db include civic_gene_abbrevations and/or cgi_gene_abbreviations')
 
     def unique_fn(parser, args):
-        from gemini.gemini_unique import unique
+        from oncogemini.gemini_unique import unique
         unique(parser, args)
     parser_unique.set_defaults(func=unique_fn)
 
