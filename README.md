@@ -43,7 +43,7 @@ of the included annotations.
 
 Database Creation
 ----------------
-Properly prepared and annotated VCFs can be used to create Caner_GEMINI databases with [vcf2db](https://github.com/quinlan-lab/vcf2db).
+Properly prepared and annotated VCFs can be used to create OncoGEMINI databases with [vcf2db](https://github.com/quinlan-lab/vcf2db).
 The creation of a database with vcf2db also requires a pedigree-like file, referred to as a 
 sample manifest, to be included. The structure of this file is similar to a more traditional
 pedigree file, but inlcudes additional columns corresponding to a patient
