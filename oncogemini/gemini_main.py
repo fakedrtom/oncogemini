@@ -76,7 +76,7 @@ def main():
                               help='Set all values in this column to NULL before loading.')
 
     def amend_fn(parser, args):
-        from gemini import gemini_amend
+        from oncogemini import gemini_amend
         gemini_amend.amend(parser, args)
     parser_amend.set_defaults(func=amend_fn)
 
@@ -159,7 +159,7 @@ def main():
                                     'sample phenotype column'))
 
     def query_fn(parser, args):
-        from gemini import gemini_query
+        from oncogemini import gemini_query
         gemini_query.query(parser, args)
 
     parser_query.set_defaults(func=query_fn)
@@ -203,7 +203,7 @@ def main():
                              default=False,
                              help='Output sample information to TFAM format.')
     def dump_fn(parser, args):
-        from gemini import gemini_dump
+        from oncogemini import gemini_dump
         gemini_dump.dump(parser, args)
     parser_dump.set_defaults(func=dump_fn)
 
@@ -248,7 +248,7 @@ def main():
                               default='default',
                               help='Format of output (JSON, TPED or default)')
     def region_fn(parser, args):
-        from gemini import gemini_region
+        from oncogemini import gemini_region
         gemini_region.region(parser, args)
     parser_region.set_defaults(func=region_fn)
 
@@ -310,7 +310,7 @@ def main():
             metavar='STRING',
             help='Restrictions to apply to genotype values')
     def stats_fn(parser, args):
-        from gemini import gemini_stats
+        from oncogemini import gemini_stats
         gemini_stats.stats(parser, args)
     parser_stats.set_defaults(func=stats_fn)
 
@@ -358,7 +358,7 @@ def main():
                  'The default is to annotate using region coordinates as well as REF and ALT variant values'
                  'This option is only valid if annotation is a VCF file')
     def annotate_fn(parser, args):
-        from gemini import gemini_annotate
+        from oncogemini import gemini_annotate
         gemini_annotate.annotate(parser, args)
     parser_get.set_defaults(func=annotate_fn)
 
@@ -391,7 +391,7 @@ def main():
             choices=['mean', 'median', 'min', 'max', 'collapse'],
             default='mean')
     def windower_fn(parser, args):
-        from gemini import gemini_windower
+        from oncogemini import gemini_windower
         gemini_windower.windower(parser, args)
     parser_get.set_defaults(func=windower_fn)
 
@@ -404,7 +404,7 @@ def main():
             metavar='db',
             help='The name of the database to be updated.')
     def dbinfo_fn(parser, args):
-        from gemini import gemini_dbinfo
+        from oncogemini import gemini_dbinfo
         gemini_dbinfo.db_info(parser, args)
     parser_get.set_defaults(func=dbinfo_fn)
 
@@ -502,7 +502,7 @@ def main():
                                action="append", default=[], choices=["gerp_bp","cadd_score"])
     parser_update.add_argument("--tooldir", help="Directory for third party tools (ie /usr/local) update")
     def update_fn(parser, args):
-        from gemini import gemini_update
+        from oncogemini import gemini_update
         gemini_update.release(parser, args)
     parser_update.set_defaults(func=update_fn)
 
