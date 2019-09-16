@@ -7,4 +7,6 @@ scipy>=0.12.0
 pysam>=0.6
 Unidecode>=0.04.14
 cyordereddict==0.2.2
-#cancer_gemini==0.19.3
+vcf2db
+vcfanno
+
