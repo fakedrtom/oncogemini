@@ -1,5 +1,6 @@
 import os
 from setuptools import setup
+import subprocess as sp
 
 version_py = os.path.join(os.path.dirname(__file__), 'oncogemini', 'version.py')
 version = open(version_py).read().strip().split('=')[-1].replace('"', '').strip()
@@ -9,7 +10,10 @@ long_description = """
 
 with open("requirements.txt", "r") as f:
     install_requires = [x.strip() for x in f.readlines() if not
-                        x.startswith(("oncogemini", "http", "git"))]
+                        x.startswith(("oncogemini", "http", "git", "vcfanno", "vcf2db"))]
+with open("requirements.txt", "r") as f:
+    conda_install_requires = [x.strip() for x in f.readlines() if 
+                        x.startswith(("vcfanno", "vcf2db"))]
 
 setup(
         name="oncogemini",
@@ -45,3 +49,5 @@ setup(
             'License :: OSI Approved :: GNU General Public License (GPL)',
             'Topic :: Scientific/Engineering :: Bio-Informatics']
     )
+
+sp.check_call(["conda","install","-y","-c","bioconda", "vcf2db", "vcfanno"])
