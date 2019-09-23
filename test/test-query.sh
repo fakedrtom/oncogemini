@@ -599,23 +599,23 @@ rm obs exp
 #########################################################################
 # 34. Test the gene_detailed table and the join on variants table
 #########################################################################
-echo "    query.t34...\c"
-echo "variant_id	chrom	gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
-46	chr1	SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
-578	chr1	TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
-733	chr1	SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained" > exp
+#echo "    query.t34...\c"
+#echo "variant_id	chrom	gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
+#46	chr1	SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
+#578	chr1	TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
+#733	chr1	SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained" > exp
 
-oncogemini query --header -q "select v.variant_id, v.chrom, v.gene, \
-	           g.transcript_status, g.transcript, g.transcript_start, \
-			    g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
-				v.impact from variants v, gene_detailed g \
+#oncogemini query --header -q "select v.variant_id, v.chrom, v.gene, \
+#	           g.transcript_status, g.transcript, g.transcript_start, \
+#			    g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
+#				v.impact from variants v, gene_detailed g \
 					
-					WHERE v.chrom = g.chrom AND \
-						  v.gene = g.gene AND v.impact_severity='HIGH' AND \
-						  v.biotype='protein_coding' AND \
-						  v.transcript = g.transcript" test.query.db > obs
-check obs exp
-rm obs exp
+#					WHERE v.chrom = g.chrom AND \
+#						  v.gene = g.gene AND v.impact_severity='HIGH' AND \
+#						  v.biotype='protein_coding' AND \
+#						  v.transcript = g.transcript" test.query.db > obs
+#check obs exp
+#rm obs exp
 
 #########################################################################
 # 35. Test the gene_detailed table and the join on variant_impacts table
