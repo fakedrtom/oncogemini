@@ -1,3 +1,13 @@
+check() 
+{
+    if diff <( sort "$1" ) <( sort "$2" ); then
+        echo ok
+    else
+        echo fail
+        exit 1
+    fi
+}
+
 ####################################################################
 # 1. Make sure we are representing the correct REF and ALT alleles.
 ####################################################################
@@ -12,7 +22,7 @@ chr1	69427	69428	T	G
 chr1	69510	69511	A	G
 chr1	69760	69761	A	T
 chr1	69870	69871	G	A" > exp
-gemini query -q "select chrom, start, end, ref, alt from variants" \
+oncogemini query -q "select chrom, start, end, ref, alt from variants" \
 	   test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -33,7 +43,7 @@ snp	tv
 snp	ts
 snp	tv
 snp	ts" > exp
-gemini query -q "select type, sub_type from variants" \
+oncogemini query -q "select type, sub_type from variants" \
 	   test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -54,7 +64,7 @@ echo "7
 3853
 574
 154" > exp
-gemini query -q "select depth from variants" \
+oncogemini query -q "select dp from variants" \
 	   test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -75,7 +85,7 @@ echo "50.0900001526
 101944.4375
 1026.70996094
 82.9700012207" > exp
-gemini query -q "select qual from variants" \
+oncogemini query -q "select qual from variants" \
 	   test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -95,7 +105,7 @@ None
 ABFilter;LowQual;QDFilter;QUALFilter;SBFilter
 ABFilter;LowQual;QUALFilter
 None" > exp
-gemini query -q "select filter from variants" \
+oncogemini query -q "select filter from variants" \
 	   test2.snpeff.db \
        > obs
 check obs exp
@@ -116,7 +126,7 @@ echo "0	0	0	4
 0	2	0	2
 3	1	0	0
 3	0	0	1" > exp
-gemini query -q "select num_hom_ref, num_het, num_hom_alt, num_unknown \
+oncogemini query -q "select num_hom_ref, num_het, num_hom_alt, num_unknown \
 	             from variants" test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -137,7 +147,7 @@ echo "0.0
 0.5
 1.0
 0.75" > exp
-gemini query -q "select call_rate \
+oncogemini query -q "select call_rate \
 	             from variants" test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -158,7 +168,7 @@ echo "0.0
 0.5
 0.125
 0.0" > exp
-gemini query -q "select aaf \
+oncogemini query -q "select aaf \
 	             from variants" test.snpeff.vcf.db \
        > obs
 check obs exp
@@ -178,7 +188,7 @@ echo "6
 79
 8
 2" > exp
-gemini query -q "select allele_count from variants" test.snpeff.vcf.db \
+oncogemini query -q "select ac from variants" test.snpeff.vcf.db \
     > obs
     
 check obs exp
@@ -198,7 +208,7 @@ echo "14
 90
 88
 80" > exp
-gemini query -q "select num_alleles from variants" test.snpeff.vcf.db \
+oncogemini query -q "select an from variants" test.snpeff.vcf.db \
     > obs
 check obs exp
 rm obs exp
@@ -217,7 +227,7 @@ echo "16.7000007629
 26.5100002289
 21.3899993896
 20.7399997711" > exp
-gemini query -q "select qual_depth from variants" test.snpeff.vcf.db \
+oncogemini query -q "select qd from variants" test.snpeff.vcf.db \
     > obs
 check obs exp
 rm obs exp
@@ -236,7 +246,7 @@ echo "29.0
 33.2400016785
 32.1800003052
 31.1000003815" > exp
-gemini query -q "select rms_map_qual from variants" test.snpeff.vcf.db \
+oncogemini query -q "select mq from variants" test.snpeff.vcf.db \
     > obs
 check obs exp
 rm obs exp
@@ -255,7 +265,7 @@ echo "0
 0
 0
 0" > exp
-gemini query -q "select num_mapq_zero from variants" test.snpeff.vcf.db \
+oncogemini query -q "select mq0 from variants" test.snpeff.vcf.db \
  > obs
 check obs exp
 rm obs exp
@@ -272,7 +282,7 @@ rs567,rs89
 None
 foo
 777" > exp
-gemini query -q "select vcf_id from variants" test.vcf_id.snpeff.vcf.db \
+oncogemini query -q "select vcf_id from variants" test.vcf_id.snpeff.vcf.db \
  > obs
 check obs exp
 rm obs exp
