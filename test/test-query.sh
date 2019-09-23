@@ -520,16 +520,16 @@ rm obs exp
 #########################################################################
 # 30. Test a basic query of the variants table with show-families
 #########################################################################
-echo "    query.t30...\c"
-echo "chrom	start	end	ref	alt	families
-chr10	1142207	1142208	T	C	1
-chr10	48003991	48003992	C	T	1
-chr10	52004314	52004315	T	C	1
-chr10	52497528	52497529	G	C	1
-chr10	126678091	126678092	G	A	1" > exp
-oncogemini query --header --show-families -q "select chrom, start, end, ref, alt from variants limit 5" extended_ped.db > obs
-check obs exp
-rm obs exp
+#echo "    query.t30...\c"
+#echo "chrom	start	end	ref	alt	families
+#chr10	1142207	1142208	T	C	1
+#chr10	48003991	48003992	C	T	1
+#chr10	52004314	52004315	T	C	1
+#chr10	52497528	52497529	G	C	1
+#chr10	126678091	126678092	G	A	1" > exp
+#oncogemini query --header --show-families -q "select chrom, start, end, ref, alt from variants limit 5" extended_ped.db > obs
+#check obs exp
+#rm obs exp
 
 ####################################################################
 # 31. Test that rows are filtered based on a --gt-filter if
