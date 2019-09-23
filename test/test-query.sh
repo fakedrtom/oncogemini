@@ -12,17 +12,17 @@ export -f check
 # 1. Test the samples table
 ####################################################################
 echo "    query.t01...\c"
-echo "1	0	1094PC0005	0	0	-9	-9
-2	0	1094PC0009	0	0	-9	-9
-3	0	1094PC0012	0	0	-9	-9
-4	0	1094PC0013	0	0	-9	-9
-5	0	1094PC0016	0	0	-9	-9
-6	0	1094PC0017	0	0	-9	-9
-7	0	1094PC0018	0	0	-9	-9
-8	0	1094PC0019	0	0	-9	-9
-9	0	1094PC0020	0	0	-9	-9
-10	0	1094PC0021	0	0	-9	-9" > exp
-gemini query -q "select * from samples limit 10" test.query.db \
+echo "1	1	1094PC0005	-9	-9	1	1
+2	1	1094PC0009	-9	-9	1	1
+3	1	1094PC0012	-9	-9	1	1
+4	1	1094PC0013	-9	-9	1	1
+5	1	1094PC0016	-9	-9	1	1
+6	1	1094PC0017	-9	-9	1	1
+7	1	1094PC0018	-9	-9	1	1
+8	1	1094PC0019	-9	-9	1	1
+9	1	1094PC0020	-9	-9	1	1
+10	1	1094PC0021	-9	-9	1	1" > exp
+oncogemini query -q "select * from samples limit 10" test.query.db \
        > obs
 check obs exp
 rm obs exp
@@ -41,7 +41,7 @@ chr1	69427	69428	T	G
 chr1	69510	69511	A	G
 chr1	69760	69761	A	T
 chr1	69870	69871	G	A" > exp
-gemini query -q "select chrom, start, end, ref, alt from variants limit 10" test.query.db \
+oncogemini query -q "select chrom, start, end, ref, alt from variants limit 10" test.query.db \
        > obs
 check obs exp
 rm obs exp
@@ -61,7 +61,7 @@ chr1	1219507	1219511	GTGA	G	SCNN1D
 chr1	1219521	1219524	GTC	G	SCNN1D
 chr1	1219533	1219536	GTT	G	SCNN1D
 chr1	1219555	1219558	GTT	G	SCNN1D" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene \
+oncogemini query -q "select chrom, start, end, ref, alt, gene \
                  from variants \
                  where gene == 'SCNN1D' limit 10" test.query.db \
        > obs
@@ -83,7 +83,7 @@ chr1	1219507	1219511	GTGA	G	SCNN1D	./.
 chr1	1219521	1219524	GTC	G	SCNN1D	./.
 chr1	1219533	1219536	GTT	G	SCNN1D	./.
 chr1	1219555	1219558	GTT	G	SCNN1D	./." > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018 \
                  from variants \
                  where gene == 'SCNN1D' limit 10" test.query.db \
        > obs
@@ -101,7 +101,7 @@ chr1	1219476	1219477	T	G	SCNN1D	T/T	0
 chr1	1219486	1219487	T	G	SCNN1D	T/T	0
 chr1	1219488	1219489	A	G	SCNN1D	A/A	0
 chr1	1219494	1219496	GT	G	SCNN1D	GT/GT	0" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gt_types.1094PC0018 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gt_types.1094PC0018 \
                  from variants \
                  where gene == 'SCNN1D' limit 5" test.query.db \
        > obs
@@ -119,7 +119,7 @@ chr1	30859	30860	G	C	FAM138A	G/G,G/G,G/G,G/G,./.,./.,G/G,./.,G/G,G/G,G/G,./.,./.
 chr1	30866	30869	CCT	C	FAM138A	CCT/CCT,CCT/CCT,CCT/C,CCT/CCT,./.,./.,CCT/CCT,./.,CCT/CCT,CCT/C,CCT/CCT,./.,./.,CCT/CCT,CCT/CCT,./.,./.,./.,./.,./.,CCT/CCT,./.,./.,CCT/C,./.,CCT/CCT,C/C,CCT/CCT,CCT/CCT,CCT/CCT,CCT/CCT,./.,CCT/CCT,./.,./.,./.,./.,CCT/CCT,./.,./.,./.,./.,CCT/C,./.,CCT/CCT,./.,CCT/CCT,CCT/CCT,./.,CCT/CCT,CCT/CCT,CCT/CCT,CCT/CCT,./.,./.,./.,./.,./.,./.,./.
 chr1	30894	30895	T	C	FAM138A	T/C,T/C,T/T,T/T,./.,./.,T/T,./.,T/T,T/T,T/T,./.,T/T,T/T,T/T,./.,./.,./.,T/T,./.,T/T,./.,./.,T/T,./.,./.,T/T,T/T,T/T,C/C,T/T,./.,T/T,./.,./.,./.,./.,T/T,./.,./.,./.,./.,T/T,./.,T/T,./.,T/T,T/T,./.,./.,T/T,T/T,T/T,T/T,./.,./.,./.,./.,./.,./.
 chr1	30922	30923	G	T	FAM138A	./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,T/T,T/T,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,T/T,./.,T/T,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,./." > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts \
                  from variants \
                  limit 5" test.query.db \
        > obs
@@ -136,7 +136,7 @@ chr1	30859	30860	G	C	FAM138A	0,0,0,0,2,2,0,2,0,0,0,2,2,0,0,2,2,2,2,2,0,2,2,0,2,0
 chr1	30866	30869	CCT	C	FAM138A	0,0,1,0,2,2,0,2,0,1,0,2,2,0,0,2,2,2,2,2,0,2,2,1,2,0,3,0,0,0,0,2,0,2,2,2,2,0,2,2,2,2,1,2,0,2,0,0,2,0,0,0,0,2,2,2,2,2,2,2
 chr1	30894	30895	T	C	FAM138A	1,1,0,0,2,2,0,2,0,0,0,2,0,0,0,2,2,2,0,2,0,2,2,0,2,2,0,0,0,3,0,2,0,2,2,2,2,0,2,2,2,2,0,2,0,2,0,0,2,2,0,0,0,0,2,2,2,2,2,2
 chr1	30922	30923	G	T	FAM138A	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,3,2,2,2,2,3,3,3,3,2,3,2,3,2,2,2,2,3,3,2,2,2,2,2,3,2,3,3,2,2,2,2,3,3,2,2,2,2,2,2" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gt_types \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gt_types \
                  from variants \
                  limit 5" test.query.db \
        > obs
@@ -153,7 +153,7 @@ chr1	30859	30860	G	C	FAM138A	False,False,False,False,False,False,False,False,Fal
 chr1	30866	30869	CCT	C	FAM138A	False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False
 chr1	30894	30895	T	C	FAM138A	False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False
 chr1	30922	30923	G	T	FAM138A	False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gt_phases \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gt_phases \
                  from variants \
                  limit 5" test.query.db \
        > obs
@@ -170,7 +170,7 @@ chr1	30859	30860	G	C	FAM138A	7,2,6,4,-1,-1,1,-1,3,2,1,-1,-1,1,2,-1,-1,-1,-1,-1,1
 chr1	30866	30869	CCT	C	FAM138A	8,3,6,5,-1,-1,1,-1,3,2,1,-1,-1,1,2,-1,-1,-1,-1,-1,1,-1,-1,2,-1,1,1,3,2,2,3,-1,2,-1,-1,-1,-1,1,-1,-1,-1,-1,2,-1,1,-1,2,1,-1,1,1,1,2,-1,-1,-1,-1,-1,-1,-1
 chr1	30894	30895	T	C	FAM138A	8,3,6,5,-1,-1,1,-1,3,2,1,-1,1,1,1,-1,-1,-1,1,-1,1,-1,-1,2,-1,-1,1,3,2,2,2,-1,2,-1,-1,-1,-1,1,-1,-1,-1,-1,2,-1,1,-1,2,1,-1,-1,1,1,2,1,-1,-1,-1,-1,-1,-1
 chr1	30922	30923	G	T	FAM138A	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,1,-1,-1,-1,-1,1,1,1,1,-1,1,-1,2,-1,-1,-1,-1,1,1,-1,-1,-1,-1,-1,1,-1,2,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,-1,-1" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gt_depths \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gt_depths \
                  from variants \
                  limit 5" test.query.db \
        > obs
@@ -186,7 +186,7 @@ chr1	30859	30860	None	2	1	G	C	None	snp	tv	0.433333333333
 chr1	30866	30869	None	3	1	CCT	C	None	indel	del	0.466666666667
 chr1	30894	30895	None	4	1	T	C	None	snp	ts	0.483333333333
 chr1	30922	30923	None	5	1	G	T	None	snp	tv	0.25" > exp
-gemini query -q "select * \
+oncogemini query -q "select * \
                  from variants \
                  limit 5" test.query.db | cut -f1-8,10-13 \
        > obs
@@ -203,7 +203,7 @@ chr1	30859	30860	G	C	G/G
 chr1	30866	30869	CCT	C	CCT/CCT
 chr1	30894	30895	T	C	T/T
 chr1	30922	30923	G	T	./." > exp
-gemini query -q "select *, gts.1094PC0018 \
+oncogemini query -q "select *, gts.1094PC0018 \
                   from variants \
                   limit 5" test.query.db | awk '{OFS="\t"}{print $1,$2,$3,$7,$8,$NF}' > obs
 check obs exp
@@ -219,7 +219,7 @@ chr1	30859	30860	G	C	G/G,G/G,G/G,G/G,./.,./.,G/G,./.,G/G,G/G,G/G,./.,./.,G/G,G/G
 chr1	30866	30869	CCT	C	CCT/CCT,CCT/CCT,CCT/C,CCT/CCT,./.,./.,CCT/CCT,./.,CCT/CCT,CCT/C,CCT/CCT,./.,./.,CCT/CCT,CCT/CCT,./.,./.,./.,./.,./.,CCT/CCT,./.,./.,CCT/C,./.,CCT/CCT,C/C,CCT/CCT,CCT/CCT,CCT/CCT,CCT/CCT,./.,CCT/CCT,./.,./.,./.,./.,CCT/CCT,./.,./.,./.,./.,CCT/C,./.,CCT/CCT,./.,CCT/CCT,CCT/CCT,./.,CCT/CCT,CCT/CCT,CCT/CCT,CCT/CCT,./.,./.,./.,./.,./.,./.,./.
 chr1	30894	30895	T	C	T/C,T/C,T/T,T/T,./.,./.,T/T,./.,T/T,T/T,T/T,./.,T/T,T/T,T/T,./.,./.,./.,T/T,./.,T/T,./.,./.,T/T,./.,./.,T/T,T/T,T/T,C/C,T/T,./.,T/T,./.,./.,./.,./.,T/T,./.,./.,./.,./.,T/T,./.,T/T,./.,T/T,T/T,./.,./.,T/T,T/T,T/T,T/T,./.,./.,./.,./.,./.,./.
 chr1	30922	30923	G	T	./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,T/T,T/T,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,T/T,./.,T/T,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,./." > exp
-gemini query -q "select *, gts \
+oncogemini query -q "select *, gts \
                   from variants \
                   limit 5" test.query.db | awk '{OFS="\t"}{print $1,$2,$3,$7,$8,$NF}' > obs
 check obs exp
@@ -235,7 +235,7 @@ chr1	1219476	1219477	T	G	SCNN1D	T/T	0
 chr1	1219486	1219487	T	G	SCNN1D	T/T	0
 chr1	1219488	1219489	A	G	SCNN1D	A/A	0
 chr1	1219494	1219496	GT	G	SCNN1D	GT/GT	0" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gt_types.1094PC0018 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gt_types.1094PC0018 \
                  from variants \
                  where gene == 'SCNN1D' limit 5" \
              --gt-filter "gt_types.1094PC0018 != HET" test.query.db \
@@ -253,7 +253,7 @@ echo "chr1	1219381	1219382	C	G	SCNN1D	C/C	C/C
 chr1	1219476	1219477	T	G	SCNN1D	T/T	T/T
 chr1	1219486	1219487	T	G	SCNN1D	T/T	T/T
 chr1	1219488	1219489	A	G	SCNN1D	A/A	A/A" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
                  from variants \
                  where gene == 'SCNN1D' limit 5" \
              --gt-filter "gt_types.1094PC0018 == HET or gt_types.1094PC0019 == HOM_REF" test.query.db \
@@ -305,7 +305,7 @@ chr1	1163803	1163804	C	T	SDF4	C/T	C/C
 chr1	1179415	1179416	A	C	FAM132A	A/C	A/A
 chr1	1181371	1181372	C	T	FAM132A	C/T	C/C
 chr1	1192771	1192773	CA	C	UBE2J2	CA/C	CA/CA" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
                  from variants" \
              --gt-filter "gt_types.1094PC0018 == HET and gt_types.1094PC0019 == HOM_REF" test.query.db \
        > obs
@@ -322,7 +322,7 @@ chr1	30859	30860	G	C	1719PC0005,1478PC0017B	1719PC0005	1478PC0017B
 chr1	30866	30869	CCT	C	1094PC0012,1094PC0021,1478PC0011,1719PC0005,1478PC0014B	1094PC0012,1094PC0021,1478PC0011,1719PC0005	1478PC0014B
 chr1	30894	30895	T	C	1094PC0005,1094PC0009,1478PC0017B	1094PC0005,1094PC0009	1478PC0017B
 chr1	30922	30923	G	T	1478PC0006B,1478PC0008B,1478PC0013B,1478PC0014B,1478PC0015B,1478PC0016,1478PC0018,1478PC0020,1478PC0025,1719PC0001,1719PC0007,1719PC0009,1719PC0010,1719PC0015,1719PC0016		1478PC0006B,1478PC0008B,1478PC0013B,1478PC0014B,1478PC0015B,1478PC0016,1478PC0018,1478PC0020,1478PC0025,1719PC0001,1719PC0007,1719PC0009,1719PC0010,1719PC0015,1719PC0016" > exp
-gemini query --header --show-samples -q "select chrom, start, end, ref, alt \
+oncogemini query --header --show-samples -q "select chrom, start, end, ref, alt \
                                         from variants limit 5" test.query.db > obs
 check obs exp
 rm obs exp
@@ -338,7 +338,7 @@ chr1	30859	30860	G	C	0,0,0,0,2,2,0,2,0,0,0,2,2,0,0,2,2,2,2,2,0,2,2,0,2,0,0,0,0,3
 chr1	30866	30869	CCT	C	0,0,1,0,2,2,0,2,0,1,0,2,2,0,0,2,2,2,2,2,0,2,2,1,2,0,3,0,0,0,0,2,0,2,2,2,2,0,2,2,2,2,1,2,0,2,0,0,2,0,0,0,0,2,2,2,2,2,2,2	1094PC0012,1094PC0021,1478PC0011,1719PC0005,1478PC0014B	1094PC0012,1094PC0021,1478PC0011,1719PC0005	1478PC0014B
 chr1	30894	30895	T	C	1,1,0,0,2,2,0,2,0,0,0,2,0,0,0,2,2,2,0,2,0,2,2,0,2,2,0,0,0,3,0,2,0,2,2,2,2,0,2,2,2,2,0,2,0,2,0,0,2,2,0,0,0,0,2,2,2,2,2,2	1094PC0005,1094PC0009,1478PC0017B	1094PC0005,1094PC0009	1478PC0017B
 chr1	30922	30923	G	T	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,3,2,2,2,2,3,3,3,3,2,3,2,3,2,2,2,2,3,3,2,2,2,2,2,3,2,3,3,2,2,2,2,3,3,2,2,2,2,2,2	1478PC0006B,1478PC0008B,1478PC0013B,1478PC0014B,1478PC0015B,1478PC0016,1478PC0018,1478PC0020,1478PC0025,1719PC0001,1719PC0007,1719PC0009,1719PC0010,1719PC0015,1719PC0016		1478PC0006B,1478PC0008B,1478PC0013B,1478PC0014B,1478PC0015B,1478PC0016,1478PC0018,1478PC0020,1478PC0025,1719PC0001,1719PC0007,1719PC0009,1719PC0010,1719PC0015,1719PC0016" > exp
-gemini query --header --show-samples -q "select chrom, start, end, ref, alt, gt_types \
+oncogemini query --header --show-samples -q "select chrom, start, end, ref, alt, gt_types \
                                         from variants limit 5" test.query.db > obs
 check obs exp
 rm obs exp
@@ -357,7 +357,7 @@ chr1	69427	69428	T	G
 chr1	69510	69511	A	G
 chr1	69760	69761	A	T
 chr1	69870	69871	G	A" > exp
-gemini query -q "select chrom, start, end, ref, alt from variants limit 10" test.query.db \
+oncogemini query -q "select chrom, start, end, ref, alt from variants limit 10" test.query.db \
        > obs
 check obs exp
 rm obs exp
@@ -376,7 +376,7 @@ chr1	69427	69428	T	G
 chr1	69510	69511	A	G
 chr1	69760	69761	A	T
 chr1	69870	69871	G	A" > exp
-gemini query -q "select chrom,start,end,ref,alt from variants limit 10" test.query.db \
+oncogemini query -q "select chrom,start,end,ref,alt from variants limit 10" test.query.db \
        > obs
 check obs exp
 
@@ -394,7 +394,7 @@ chr1	69427	69428	T	G
 chr1	69510	69511	A	G
 chr1	69760	69761	A	T
 chr1	69870	69871	G	A" > exp
-gemini query -q "select chrom, start,end, ref,alt from variants limit 10" test.query.db \
+oncogemini query -q "select chrom, start,end, ref,alt from variants limit 10" test.query.db \
        > obs
 check obs exp
 rm obs exp
@@ -413,7 +413,7 @@ chr1	69427	69428	T	G	T/T
 chr1	69510	69511	A	G	A/G
 chr1	69760	69761	A	T	A/A
 chr1	69870	69871	G	A	G/G" > exp
-gemini query -q "select chrom, start,end, ref,alt,gts.1094PC0018 from variants limit 10" test.query.db \
+oncogemini query -q "select chrom, start,end, ref,alt,gts.1094PC0018 from variants limit 10" test.query.db \
        > obs
 check obs exp
 rm obs exp
@@ -431,7 +431,7 @@ echo "10 1 0 1142207 C C C C C C C C
 10 7 0 135336655 0 0 A A 0 0 A A
 10 8 0 135369531 T T T C T C T T
 16 9 0 72057434 C T C C C C C C" > exp
-gemini query --format tped -q "select * from variants" test4.snpeff.ped.db > obs
+oncogemini query --format tped -q "select * from variants" test4.snpeff.ped.db > obs
 check obs exp
 rm obs exp
 
@@ -441,8 +441,8 @@ rm obs exp
 echo "    query.t23...\c"
 echo "G/G,G/G,G/G,G/A	0,0,0,1
 C/T,C/C,C/C,C/C	1,0,0,0" > exp
-gemini query --sample-filter "phenotype!=2" --in only -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
-#gemini query --exclude-phenotype affected -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
+oncogemini query --sample-filter "phenotype!=2" --in only -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
+#oncogemini query --exclude-phenotype affected -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
 check obs exp
 rm obs exp
 
@@ -453,7 +453,7 @@ echo "    query.t24...\c"
 echo "./.,C/C,C/C,./.	2,3,3,2
 T/T,C/C,C/C,T/T	0,3,3,0
 T/T,T/C,T/C,T/T	0,1,1,0" > exp
-gemini query --sample-filter "phenotype=2" --in only all -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
+oncogemini query --sample-filter "phenotype=2" --in only all -q "select gts, gt_types from variants" test4.snpeff.ped.db > obs
 check obs exp
 rm obs exp
 
@@ -462,7 +462,7 @@ rm obs exp
 ########################################################################
 echo "    query.t25...\c"
 echo "chr1	30859	G	30860	C" > exp
-gemini query --region chr1:30859-30900 -q "select chrom, start, ref, end, alt from variants"  test1.snpeff.db > obs
+oncogemini query --region chr1:30859-30900 -q "select chrom, start, ref, end, alt from variants"  test1.snpeff.db > obs
 check obs exp
 rm obs exp
 
@@ -475,7 +475,7 @@ C/T,C/T,T/T,C/C,C/C,C/T,C/T,C/T,C/T	1,1,3,0,0,1,1,1,1
 C/T,C/T,C/T,C/T,C/T,T/T,C/C,C/C,C/T	1,1,1,1,1,3,0,0,1
 G/G,G/G,G/A,G/G,G/G,G/A,G/A,G/A,G/A	0,0,1,0,0,1,1,1,1
 T/T,T/T,T/C,T/T,T/T,T/C,T/T,T/T,T/C	0,0,1,0,0,1,0,0,1" > exp
-gemini query  --min-kindreds 2 --family-wise --sample-filter "phenotype=2" --in all -q "select gts, gt_types from variants" test.family.db > obs
+oncogemini query  --min-kindreds 2 --family-wise --sample-filter "phenotype=2" --in all -q "select gts, gt_types from variants" test.family.db > obs
 check obs exp
 rm obs exp
 
@@ -486,7 +486,7 @@ echo "    query.t27...\c"
 echo "T/T,T/T,T/C,T/T,T/T,T/T,T/T,T/T,C/C	0,0,1,0,0,0,0,0,3
 T/T,T/T,T/C,T/T,T/T,T/C,T/T,T/T,T/C	0,0,1,0,0,1,0,0,1
 T/T,T/T,T/T,T/T,T/T,T/T,T/T,T/T,T/C	0,0,0,0,0,0,0,0,1" > exp
-gemini query  --in none --sample-filter "phenotype=1" -q "select gts, gt_types from variants" test.family.db > obs
+oncogemini query  --in none --sample-filter "phenotype=1" -q "select gts, gt_types from variants" test.family.db > obs
 check obs exp
 rm obs exp
 
@@ -495,7 +495,7 @@ rm obs exp
 ########################################################################
 echo "    query.t28...\c"
 echo "G/G,G/G,G/G,G/A	0,0,0,1" > exp
-gemini query  --in only all --sample-filter "phenotype=1 and hair_color='blue'" -q "select gts, gt_types from variants" extended_ped.db > obs
+oncogemini query  --in only all --sample-filter "phenotype=1 and hair_color='blue'" -q "select gts, gt_types from variants" extended_ped.db > obs
 check obs exp
 rm obs exp
 
@@ -513,7 +513,7 @@ chr10	135210790	T	C	0,3,3,0	M10478,M10500		M10478,M10500	0	2	2	0	0
 chr10	135336655	G	A	2,3,2,3	M10478,M128215		M10478,M128215	1	1	0	0	2
 chr10	135369531	T	C	0,1,1,0	M10478,M10500	M10478,M10500		0	2	2	0	0
 chr16	72057434	C	T	1,0,0,0	M10475	M10475		1	0	1	2	0" > exp
-gemini query --show-samples --carrier-summary-by-phenotype affected --header -q "select chrom, start, ref, alt, gt_types from variants" extended_ped.db > obs
+oncogemini query --show-samples --carrier-summary-by-phenotype affected --header -q "select chrom, start, ref, alt, gt_types from variants" extended_ped.db > obs
 check obs exp
 rm obs exp
 
@@ -527,7 +527,7 @@ chr10	48003991	48003992	C	T	1
 chr10	52004314	52004315	T	C	1
 chr10	52497528	52497529	G	C	1
 chr10	126678091	126678092	G	A	1" > exp
-gemini query --header --show-families -q "select chrom, start, end, ref, alt from variants limit 5" extended_ped.db > obs
+oncogemini query --header --show-families -q "select chrom, start, end, ref, alt from variants limit 5" extended_ped.db > obs
 check obs exp
 rm obs exp
 
@@ -546,7 +546,7 @@ chr1	866510	866511	C	CCCCT	SAMD11	3
 chr1	866892	866893	T	C	SAMD11	3
 chr1	866919	866920	A	G	SAMD11	3
 chr1	870902	870903	T	C	SAMD11	3" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gt_types.1094PC0019 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gt_types.1094PC0019 \
                  from variants" \
              --gt-filter "gt_types.1094PC0019 == HOM_ALT" test.query.db | head \
        > obs
@@ -568,7 +568,7 @@ chr1	866510	866511	C	CCCCT	SAMD11
 chr1	866892	866893	T	C	SAMD11
 chr1	866919	866920	A	G	SAMD11
 chr1	870902	870903	T	C	SAMD11" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene \
+oncogemini query -q "select chrom, start, end, ref, alt, gene \
                  from variants" \
              --gt-filter "gt_types.1094PC0019 == HOM_ALT" test.query.db | head \
        > obs
@@ -590,7 +590,7 @@ chr1	69269	69270	A	G	305	OR4F5
 chr1	69427	69428	T	G	305	OR4F5
 chr1	69510	69511	A	G	305	OR4F5
 chr1	69760	69761	A	T	305	OR4F5" > exp
-gemini query --header -q "select chrom, start, end, ref, alt, aa_length, gene \
+oncogemini query --header -q "select chrom, start, end, ref, alt, aa_length, gene \
                  from variants limit 9" test.query.db \
        > obs
 check obs exp
@@ -605,7 +605,7 @@ echo "variant_id	chrom	gene	transcript_status	transcript	transcript_start	transc
 578	chr1	TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
 733	chr1	SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained" > exp
 
-gemini query --header -q "select v.variant_id, v.chrom, v.gene, \
+oncogemini query --header -q "select v.variant_id, v.chrom, v.gene, \
 	           g.transcript_status, g.transcript, g.transcript_start, \
 			    g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
 				v.impact from variants v, gene_detailed g \
@@ -634,7 +634,7 @@ SCNN1D	KNOWN	ENST00000379116	1215816	1227399	ENaCdelta,dNaCh	96.77990092	802	fra
 SCNN1D	KNOWN	ENST00000338555	1215968	1227404	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant
 SCNN1D	KNOWN	ENST00000400928	1217576	1227409	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant" > exp
 
-gemini query --header -q "select v.gene, g.transcript_status,g.transcript, g.transcript_start, \
+oncogemini query --header -q "select v.gene, g.transcript_status,g.transcript, g.transcript_start, \
 	g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
     v.impact from variant_impacts v, gene_detailed g \
 		WHERE v.transcript = g.transcript AND \
@@ -655,7 +655,7 @@ chr1	TNFRSF18	-1	1138888	1142071	AITR,CD357,GITR	None	frameshift_variant
 chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	stop_gained
 chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	frameshift_variant" > exp
 
-gemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
+oncogemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
 g.synonym, g.rvis_pct, v.impact from variants v, gene_summary g \
 WHERE v.chrom = g.chrom AND \
 v.gene = g.gene AND \
@@ -671,7 +671,7 @@ echo "    query.t37...\c"
 echo "gene	impact	transcript	transcript_min_start	transcript_max_end	rvis_pct	synonym
 SCNN1D	stop_gained	ENST00000470022	1215816	1227409	96.77990092	ENaCdelta,dNaCh" > exp
 
-gemini query --header -q "select g.gene, v.impact, v.transcript, \
+oncogemini query --header -q "select g.gene, v.impact, v.transcript, \
 	   g.transcript_min_start, g.transcript_max_end, g.rvis_pct, g.synonym \
 		  from gene_summary g, variant_impacts v \
 			  where g.gene=v.gene AND \
@@ -684,42 +684,42 @@ rm obs exp
 ############################################################################
 # 38. Test the loading of gene_summary table with multiple cores
 ############################################################################
-echo "    query.t38...\c"
-echo "chrom	gene	strand	transcript_min_start	transcript_max_end	synonym	rvis_pct	impact
-chr1	SAMD11	1	860260	879955	MGC45873	None	frameshift_variant
-chr1	TNFRSF18	-1	1138888	1142071	AITR,CD357,GITR	None	frameshift_variant
-chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	stop_gained
-chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	frameshift_variant" > exp
+#echo "    query.t38...\c"
+#echo "chrom	gene	strand	transcript_min_start	transcript_max_end	synonym	rvis_pct	impact
+#chr1	SAMD11	1	860260	879955	MGC45873	None	frameshift_variant
+#chr1	TNFRSF18	-1	1138888	1142071	AITR,CD357,GITR	None	frameshift_variant
+#chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	stop_gained
+#chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	frameshift_variant" > exp
 
-gemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
-g.synonym, g.rvis_pct, v.impact from variants v, gene_summary g \
-WHERE v.chrom = g.chrom AND \
-v.gene = g.gene AND \
-v.impact_severity='HIGH'" test.query.core.db > obs
+#oncogemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
+#g.synonym, g.rvis_pct, v.impact from variants v, gene_summary g \
+#WHERE v.chrom = g.chrom AND \
+#v.gene = g.gene AND \
+#v.impact_severity='HIGH'" test.query.core.db > obs
 
-check obs exp
-rm obs exp 
+#check obs exp
+#rm obs exp 
 
 ###########################################################################
 # 39. Test the loading of gene_detailed table with multiple cores
 ###########################################################################
-echo "    query.t39...\c"
-echo "variant_id	chrom	gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
-46	chr1	SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
-578	chr1	TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
-733	chr1	SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained" > exp
+#echo "    query.t39...\c"
+#echo "variant_id	chrom	gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
+#46	chr1	SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
+#578	chr1	TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
+#733	chr1	SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained" > exp
 
-gemini query --header -q "select v.variant_id, v.chrom, v.gene, \
-	           g.transcript_status, g.transcript, g.transcript_start, \
-			    g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
-				v.impact from variants v, gene_detailed g \
+#oncogemini query --header -q "select v.variant_id, v.chrom, v.gene, \
+#	           g.transcript_status, g.transcript, g.transcript_start, \
+#			    g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
+#				v.impact from variants v, gene_detailed g \
 					
-					WHERE v.chrom = g.chrom AND \
-						  v.gene = g.gene AND v.impact_severity='HIGH' AND \
-						  v.biotype='protein_coding' AND \
-						  v.transcript = g.transcript" test.query.core.db > obs
-check obs exp
-rm obs exp
+#					WHERE v.chrom = g.chrom AND \
+#						  v.gene = g.gene AND v.impact_severity='HIGH' AND \
+#						  v.biotype='protein_coding' AND \
+#						  v.transcript = g.transcript" test.query.core.db > obs
+#check obs exp
+#rm obs exp
 
 ############################################################################
 # 40. Test phenotype column of the gene_table
@@ -749,7 +749,7 @@ chr1	1140813	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
 chr1	1147337	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381
 chr1	1149480	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381" > exp
 
-gemini query --header -q "select v.chrom, v.end, v.gene, g.mam_phenotype_id from variants v, \
+oncogemini query --header -q "select v.chrom, v.end, v.gene, g.mam_phenotype_id from variants v, \
 	                      gene_summary g where v.chrom=g.chrom and v.gene=g.gene and \
 						  v.impact_severity !='LOW' and mam_phenotype_id !='None'" test.query.db > obs
 
@@ -764,7 +764,7 @@ echo "chrom	start	ref	family_id	name	paternal_id	maternal_id	sex	phenotype
 chr1	30547	T	0	1478PC0016	0	0	-9	-9
 chr1	30547	T	0	1719PC0007	0	0	-9	-9
 chr1	30547	T	0	1719PC0009	0	0	-9	-9" > exp
-gemini query --header --format sampledetail --show-samples -q "select chrom, start, ref \
+oncogemini query --header --format sampledetail --show-samples -q "select chrom, start, ref \
                                                                 from variants limit 1" test.query.db > obs
 check obs exp
 rm obs exp
@@ -781,7 +781,7 @@ echo "0.0	-1.0	-1.0	-1.0	-1.0	-1.0	-1.0	-1.0	0.0	0.0	0.0	0.0	0.0
 0.280445372303	0.136133389616	0.0213645761544	0.0418	0.001	0.045	0.0045	0.1034	0.0217391304348	0.118834080717	0.0	0.280445372303	0.154037886341
 0.0	-1.0	-1.0	-1.0	-1.0	-1.0	-1.0	-1.0	0.0	0.0	0.0	0.0	0.0" > exp
 
-gemini query -q "select max_aaf_all,aaf_esp_ea, aaf_esp_aa, aaf_1kg_amr, aaf_1kg_eas, \
+oncogemini query -q "select max_aaf_all,aaf_esp_ea, aaf_esp_aa, aaf_1kg_amr, aaf_1kg_eas, \
                  aaf_1kg_sas,aaf_1kg_afr,aaf_1kg_eur,aaf_adj_exac_afr,aaf_adj_exac_amr,aaf_adj_exac_eas, \
                  aaf_adj_exac_nfe,aaf_adj_exac_sas from variants limit 10" test.query.db > obs
 
@@ -790,7 +790,7 @@ rm obs exp
 
 echo "    query.t43..."
 echo "chr1	1219381	1219382	C	G	SCNN1D	C/C	C/C" > exp
-gemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
+oncogemini query -q "select chrom, start, end, ref, alt, gene, gts.1094PC0018, gts.1094PC0019 \
                  from variants \
                  where gene == 'SCNN1D' limit 5" \
                  --gt-filter "(gt_quals).(=HET).(>20).(all)" test.query.db > obs
