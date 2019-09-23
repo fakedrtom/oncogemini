@@ -205,7 +205,7 @@ chr1	30894	30895	T	C	T/T
 chr1	30922	30923	G	T	./." > exp
 oncogemini query -q "select *, gts.1094PC0018 \
                   from variants \
-                  limit 5" test.query.db | awk '{OFS="\t"}{print $1,$2,$3,$7,$8,$NF}' > obs
+                  limit 5" test.query.db | awk '{OFS="\t"}{print $2,$3,$4,$6,$7,$NF}' > obs
 check obs exp
 rm obs exp
 
