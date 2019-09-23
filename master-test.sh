@@ -31,9 +31,9 @@ bash test-vcf-output.sh || exit
 
 #bash test-mendel-error.sh || exit
 
-bash test-genotype-likelihoods.sh || exit
+#bash test-genotype-likelihoods.sh || exit
 
-bash test-t-all.sh || exit
+#bash test-t-all.sh || exit
 
 # Test gemini region
 bash test-region.sh
@@ -60,7 +60,7 @@ bash test-columns.sh
 #bash test-cosmic.sh
 
 # Test loading functionality
-bash test-load.sh
+#bash test-load.sh
 
 # Test genotype BLOB functionality
 bash test-genotypes.sh
@@ -85,7 +85,7 @@ bash test-genotypes.sh
 #bash test-encode.sh
 
 # Test EFF string derived elements in INFO column
-#bash test-effstring.sh
+bash test-effstring.sh
 
 # Test loading functionality
 bash test-annotate-tool.sh
@@ -131,7 +131,7 @@ bash test-wildcards.sh
 bash test-roh.sh
 
 # Test somatic variants
-bash test-somatic.sh
+#bash test-somatic.sh
 
 # Test fusions
 bash test-fusions.sh
