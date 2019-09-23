@@ -221,7 +221,7 @@ chr1	30894	30895	T	C	T/C,T/C,T/T,T/T,./.,./.,T/T,./.,T/T,T/T,T/T,./.,T/T,T/T,T/T
 chr1	30922	30923	G	T	./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,T/T,T/T,./.,T/T,./.,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,T/T,./.,T/T,T/T,./.,./.,./.,./.,T/T,T/T,./.,./.,./.,./.,./.,./." > exp
 oncogemini query -q "select *, gts \
                   from variants \
-                  limit 5" test.query.db | awk '{OFS="\t"}{print $1,$2,$3,$7,$8,$NF}' > obs
+                  limit 5" test.query.db | awk '{OFS="\t"}{print $2,$3,$4,$6,$7,$NF}' > obs
 check obs exp
 rm obs exp
 
