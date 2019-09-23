@@ -620,65 +620,65 @@ rm obs exp
 #########################################################################
 # 35. Test the gene_detailed table and the join on variant_impacts table
 #########################################################################
-echo "    query.t35...\c"
-echo "gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
-SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
-TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
-TNFRSF18	KNOWN	ENST00000379265	1139224	1141951	AITR,CD357,GITR	None	234	frameshift_variant
-TNFRSF18	KNOWN	ENST00000379268	1138891	1142071	AITR,CD357,GITR	None	241	frameshift_variant
-TNFRSF18	KNOWN	ENST00000328596	1138888	1141951	AITR,CD357,GITR	None	255	frameshift_variant
-SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained
-SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	frameshift_variant
-SCNN1D	KNOWN	ENST00000325425	1217489	1227404	ENaCdelta,dNaCh	96.77990092	704	frameshift_variant
-SCNN1D	KNOWN	ENST00000379116	1215816	1227399	ENaCdelta,dNaCh	96.77990092	802	frameshift_variant
-SCNN1D	KNOWN	ENST00000338555	1215968	1227404	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant
-SCNN1D	KNOWN	ENST00000400928	1217576	1227409	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant" > exp
+#echo "    query.t35...\c"
+#echo "gene	transcript_status	transcript	transcript_start	transcript_end	synonym	rvis_pct	protein_length	impact
+#SAMD11	KNOWN	ENST00000342066	861118	879955	MGC45873	None	681	frameshift_variant
+#TNFRSF18	PUTATIVE	ENST00000486728	1139224	1141060	AITR,CD357,GITR	None	169	frameshift_variant
+#TNFRSF18	KNOWN	ENST00000379265	1139224	1141951	AITR,CD357,GITR	None	234	frameshift_variant
+#TNFRSF18	KNOWN	ENST00000379268	1138891	1142071	AITR,CD357,GITR	None	241	frameshift_variant
+#TNFRSF18	KNOWN	ENST00000328596	1138888	1141951	AITR,CD357,GITR	None	255	frameshift_variant
+#SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	stop_gained
+#SCNN1D	NOVEL	ENST00000470022	1217305	1221548	ENaCdelta,dNaCh	96.77990092	138	frameshift_variant
+#SCNN1D	KNOWN	ENST00000325425	1217489	1227404	ENaCdelta,dNaCh	96.77990092	704	frameshift_variant
+#SCNN1D	KNOWN	ENST00000379116	1215816	1227399	ENaCdelta,dNaCh	96.77990092	802	frameshift_variant
+#SCNN1D	KNOWN	ENST00000338555	1215968	1227404	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant
+#SCNN1D	KNOWN	ENST00000400928	1217576	1227409	ENaCdelta,dNaCh	96.77990092	638	frameshift_variant" > exp
 
-oncogemini query --header -q "select v.gene, g.transcript_status,g.transcript, g.transcript_start, \
-	g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
-    v.impact from variant_impacts v, gene_detailed g \
-		WHERE v.transcript = g.transcript AND \
-              v.gene = g.gene AND \
-	          v.impact_severity='HIGH' AND \
-              v.biotype='protein_coding'" test.query.db > obs
+#oncogemini query --header -q "select v.gene, g.transcript_status,g.transcript, g.transcript_start, \
+#	g.transcript_end, g.synonym, g.rvis_pct, g.protein_length, \
+#    v.impact from variant_impacts v, gene_detailed g \
+#		WHERE v.transcript = g.transcript AND \
+#              v.gene = g.gene AND \
+#	          v.impact_severity='HIGH' AND \
+#              v.biotype='protein_coding'" test.query.db > obs
 
-check obs exp
-rm obs exp
+#check obs exp
+#rm obs exp
 
 ###########################################################################
 # 36. Test the gene_summary table and the join on variants table
 ###########################################################################
-echo "    query.t36...\c"
-echo "chrom	gene	strand	transcript_min_start	transcript_max_end	synonym	rvis_pct	impact
-chr1	SAMD11	1	860260	879955	MGC45873	None	frameshift_variant
-chr1	TNFRSF18	-1	1138888	1142071	AITR,CD357,GITR	None	frameshift_variant
-chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	stop_gained
-chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	frameshift_variant" > exp
+#echo "    query.t36...\c"
+#echo "chrom	gene	strand	transcript_min_start	transcript_max_end	synonym	rvis_pct	impact
+#chr1	SAMD11	1	860260	879955	MGC45873	None	frameshift_variant
+#chr1	TNFRSF18	-1	1138888	1142071	AITR,CD357,GITR	None	frameshift_variant
+#chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	stop_gained
+#chr1	SCNN1D	1	1215816	1227409	ENaCdelta,dNaCh	96.77990092	frameshift_variant" > exp
 
-oncogemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
-g.synonym, g.rvis_pct, v.impact from variants v, gene_summary g \
-WHERE v.chrom = g.chrom AND \
-v.gene = g.gene AND \
-v.impact_severity='HIGH'" test.query.db > obs
+#oncogemini query --header -q "select v.chrom, v.gene, g.strand, g.transcript_min_start, g.transcript_max_end, \
+#g.synonym, g.rvis_pct, v.impact from variants v, gene_summary g \
+#WHERE v.chrom = g.chrom AND \
+#v.gene = g.gene AND \
+#v.impact_severity='HIGH'" test.query.db > obs
 
-check obs exp
-rm obs exp 
+#check obs exp
+#rm obs exp 
 
 ############################################################################
 # 37. Test the gene_summary table and the join on variant_impacts table
 ############################################################################
-echo "    query.t37...\c"
-echo "gene	impact	transcript	transcript_min_start	transcript_max_end	rvis_pct	synonym
-SCNN1D	stop_gained	ENST00000470022	1215816	1227409	96.77990092	ENaCdelta,dNaCh" > exp
+#echo "    query.t37...\c"
+#echo "gene	impact	transcript	transcript_min_start	transcript_max_end	rvis_pct	synonym
+#SCNN1D	stop_gained	ENST00000470022	1215816	1227409	96.77990092	ENaCdelta,dNaCh" > exp
 
-oncogemini query --header -q "select g.gene, v.impact, v.transcript, \
-	   g.transcript_min_start, g.transcript_max_end, g.rvis_pct, g.synonym \
-		  from gene_summary g, variant_impacts v \
-			  where g.gene=v.gene AND \
-				g.gene ='SCNN1D' AND \
-				v.impact ='stop_gained'" test.query.db > obs
-check obs exp
-rm obs exp
+#oncogemini query --header -q "select g.gene, v.impact, v.transcript, \
+#	   g.transcript_min_start, g.transcript_max_end, g.rvis_pct, g.synonym \
+#		  from gene_summary g, variant_impacts v \
+#			  where g.gene=v.gene AND \
+#				g.gene ='SCNN1D' AND \
+#				v.impact ='stop_gained'" test.query.db > obs
+#check obs exp
+#rm obs exp
 
 
 ############################################################################
@@ -724,37 +724,37 @@ rm obs exp
 ############################################################################
 # 40. Test phenotype column of the gene_table
 ############################################################################
-echo "    query.t40...\c"
-echo "chrom	end	gene	mam_phenotype_id
-chr1	949422	ISG15	MP:0005390
-chr1	949608	ISG15	MP:0005390
-chr1	949655	ISG15	MP:0005390
-chr1	949832	ISG15	MP:0005390
-chr1	977356	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	978762	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	979594	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	979748	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	981131	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	982205	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	983005	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	984711	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	984957	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	985378	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	985826	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	986885	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	990213	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
-chr1	1139216	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
-chr1	1139498	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
-chr1	1140813	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
-chr1	1147337	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381
-chr1	1149480	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381" > exp
+#echo "    query.t40...\c"
+#echo "chrom	end	gene	mam_phenotype_id
+#chr1	949422	ISG15	MP:0005390
+#chr1	949608	ISG15	MP:0005390
+#chr1	949655	ISG15	MP:0005390
+#chr1	949832	ISG15	MP:0005390
+#chr1	977356	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	978762	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	979594	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	979748	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	981131	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	982205	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	983005	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	984711	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	984957	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	985378	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	985826	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	986885	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	990213	AGRN	MP:0005378,MP:0005386,MP:0005388,MP:0005367,MP:0005369,MP:0005371,MP:0003631,MP:0002873,MP:0010768
+#chr1	1139216	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
+#chr1	1139498	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
+#chr1	1140813	TNFRSF18	MP:0005397,MP:0005384,MP:0005387
+#chr1	1147337	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381
+#chr1	1149480	TNFRSF4	MP:0005384,MP:0005397,MP:0005378,MP:0002873,MP:0005388,MP:0005370,MP:0005387,MP:0005381" > exp
 
-oncogemini query --header -q "select v.chrom, v.end, v.gene, g.mam_phenotype_id from variants v, \
-	                      gene_summary g where v.chrom=g.chrom and v.gene=g.gene and \
-						  v.impact_severity !='LOW' and mam_phenotype_id !='None'" test.query.db > obs
+#oncogemini query --header -q "select v.chrom, v.end, v.gene, g.mam_phenotype_id from variants v, \
+#	                      gene_summary g where v.chrom=g.chrom and v.gene=g.gene and \
+#						  v.impact_severity !='LOW' and mam_phenotype_id !='None'" test.query.db > obs
 
-check obs exp
-rm obs exp
+#check obs exp
+#rm obs exp
 
 #########################################################################
 # 41. Show an expanded version of sample information with --format sampledetail
