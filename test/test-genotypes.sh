@@ -21,7 +21,7 @@ T/T	T/T	T/T	T/T
 ./.	./.	A/G	A/G
 A/A	A/T	A/A	A/A
 ./.	G/G	G/G	G/G" > exp
-gemini query -q "select gts.1094PC0005, gts.1094PC0009, \
+oncogemini query -q "select gts.1094PC0005, gts.1094PC0009, \
 				gts.1094PC0012, gts.1094PC0013 \
 				from variants" test.snpeff.vcf.db \
        > obs
@@ -43,7 +43,7 @@ echo "2	2	2	2
 2	2	1	1
 0	1	0	0
 2	0	0	0" > exp
-gemini query -q "select gt_types.1094PC0005, gt_types.1094PC0009, \
+oncogemini query -q "select gt_types.1094PC0005, gt_types.1094PC0009, \
 	                    gt_types.1094PC0012, gt_types.1094PC0013 \
 	             from variants" test.snpeff.vcf.db \
        > obs
@@ -57,7 +57,7 @@ rm obs exp
 echo "    genotypes.t03...\c"
 echo "0	0	1	0
 2	2	1	1" > exp
-gemini query -q "select gt_types.1094PC0005, gt_types.1094PC0009, \
+oncogemini query -q "select gt_types.1094PC0005, gt_types.1094PC0009, \
 	                    gt_types.1094PC0012, gt_types.1094PC0013 \
 	             from variants" \
 			 --gt-filter "gt_types.1094PC0012 == HET" \
@@ -75,7 +75,7 @@ echo "chrom	end	ref	alt	gt_types.1094PC0005	gt_types.1094PC0009	gt_types.1094PC0
 chr1	30869	CCT	C	0	0	1	0
 chr1	30895	T	C	1	1	0	0
 chr1	69511	A	G	2	2	1	1" > exp
-gemini query -q "select chrom, end, ref, alt, \
+oncogemini query -q "select chrom, end, ref, alt, \
 	                    gt_types.1094PC0005, gt_types.1094PC0009, \
 	                    gt_types.1094PC0012, gt_types.1094PC0013 \
 	             from variants" \
@@ -102,7 +102,7 @@ chr1	69428	T	G	2	79	87	107
 chr1	69511	A	G	-1	-1	6	4
 chr1	69761	A	T	1	7	12	9
 chr1	69871	G	A	-1	4	2	2" > exp
-gemini query -q "select chrom, end, ref, alt, \
+oncogemini query -q "select chrom, end, ref, alt, \
 	                    gt_depths.1094PC0005, gt_depths.1094PC0009, \
 	                    gt_depths.1094PC0012, gt_depths.1094PC0013 \
 	             from variants" \
@@ -137,7 +137,7 @@ chr1	69428	T	G	2	79	87	107
 chr1	69511	A	G	-1	-1	2	2
 chr1	69761	A	T	1	6	12	9
 chr1	69871	G	A	-1	4	2	2" > exp
-gemini query -q "select chrom, end, ref, alt, \
+oncogemini query -q "select chrom, end, ref, alt, \
 	                    gt_ref_depths.1094PC0005, gt_ref_depths.1094PC0009, \
 	                    gt_ref_depths.1094PC0012, gt_ref_depths.1094PC0013 \
 	             from variants" \
@@ -172,7 +172,7 @@ chr1	69428	T	G	0	0	0	0
 chr1	69511	A	G	-1	-1	4	2
 chr1	69761	A	T	0	1	0	0
 chr1	69871	G	A	-1	0	0	0" > exp
-gemini query -q "select chrom, end, ref, alt, \
+oncogemini query -q "select chrom, end, ref, alt, \
 	                    gt_alt_depths.1094PC0005, gt_alt_depths.1094PC0009, \
 	                    gt_alt_depths.1094PC0012, gt_alt_depths.1094PC0013 \
 	             from variants" \
@@ -208,7 +208,7 @@ chr1	69428	T	G	6.01000022888	99.0	99.0	99.0
 chr1	69511	A	G	-1.0	-1.0	15.6999998093	21.5900001526
 chr1	69761	A	T	3.00999999046	12.3900003433	36.1100006104	27.0799999237
 chr1	69871	G	A	-1.0	12.0200004578	6.01999998093	6.01999998093" > exp
-gemini query -q "select chrom, end, ref, alt, \
+oncogemini query -q "select chrom, end, ref, alt, \
 	                    gt_quals.1094PC0005, gt_quals.1094PC0009, \
 	                    gt_quals.1094PC0012, gt_quals.1094PC0013 \
 	             from variants" \
@@ -219,7 +219,7 @@ check obs exp
 rm obs exp
 
 echo "    genotypes.t09...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gts).(*) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype == 1).(==HOM_REF).(all) and ((gt_types).(phenotype==2).(==HET).(any) or (gt_types).(phenotype==2).(==HOM_ALT).(any))" > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gts).(*) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype == 1).(==HOM_REF).(all) and ((gt_types).(phenotype==2).(==HET).(any) or (gt_types).(phenotype==2).(==HOM_ALT).(any))" > obs
 
 echo "chrom	start	end	ref	alt	gts.M10475	gts.M10478	gts.M10500	gts.M128215
 chr10	135210790	135210791	T	C	T/T	C/C	C/C	T/T
@@ -228,7 +228,7 @@ check obs exp
 rm obs exp
 
 echo "    genotypes.t10...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gts).(*) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype == 1).(==HOM_ALT).(all) and ((gt_types).(phenotype==2).(==HET).(any) or (gt_types).(phenotype==2).(==HOM_ALT).(any))" > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gts).(*) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype == 1).(==HOM_ALT).(all) and ((gt_types).(phenotype==2).(==HET).(any) or (gt_types).(phenotype==2).(==HOM_ALT).(any))" > obs
 
 echo "chrom	start	end	ref	alt	gts.M10475	gts.M10478	gts.M10500	gts.M128215
 chr10	1142207	1142208	T	C	C/C	C/C	C/C	C/C" > exp
@@ -236,14 +236,14 @@ check obs exp
 
 
 echo "    genotypes.t11...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2) from variants limit 1" extended_ped.db > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2) from variants limit 1" extended_ped.db > obs
 echo "chrom	start	end	ref	alt	gts.M10478	gts.M10500
 chr10	1142207	1142208	T	C	C/C	C/C" > exp
 check obs exp
 
 
 echo "    genotypes.t12...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2), (gt_ref_depths).(phenotype==2) from variants"     --gt-filter "(gt_ref_depths).(phenotype==2).(>=20).(all)" extended_ped.db > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2), (gt_ref_depths).(phenotype==2) from variants"     --gt-filter "(gt_ref_depths).(phenotype==2).(>=20).(all)" extended_ped.db > obs
 
 echo "chrom	start	end	ref	alt	gts.M10478	gts.M10500	gt_ref_depths.M10478	gt_ref_depths.M10500
 chr10	48003991	48003992	C	T	C/T	C/T	20	24
@@ -253,7 +253,7 @@ check obs exp
 
 
 echo "    genotypes.t13...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2), (gt_ref_depths).(phenotype==2) from variants" --gt-filter "(gt_ref_depths).(phenotype==2).(>=20).(any)" extended_ped.db > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gts).(phenotype==2), (gt_ref_depths).(phenotype==2) from variants" --gt-filter "(gt_ref_depths).(phenotype==2).(>=20).(any)" extended_ped.db > obs
 
 
 echo "chrom	start	end	ref	alt	gts.M10478	gts.M10500	gt_ref_depths.M10478	gt_ref_depths.M10500
@@ -265,7 +265,7 @@ check obs exp
 
 
 echo "    genotypes.t14...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gt_types).(phenotype==2) from variants" extended_ped.db > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gt_types).(phenotype==2) from variants" extended_ped.db > obs
 echo "chrom	start	end	ref	alt	gt_types.M10478	gt_types.M10500
 chr10	1142207	1142208	T	C	3	3
 chr10	48003991	48003992	C	T	1	1
@@ -280,7 +280,7 @@ check obs exp
 
 
 echo "    genotypes.t15...\c"
-gemini query --header -q "select chrom, start, end, ref, alt, (gt_types).(phenotype==2) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype==2).(==HOM_REF).(all)" > obs
+oncogemini query --header -q "select chrom, start, end, ref, alt, (gt_types).(phenotype==2) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype==2).(==HOM_REF).(all)" > obs
 
 echo "chrom	start	end	ref	alt	gt_types.M10478	gt_types.M10500
 chr10	126678091	126678092	G	A	0	0
@@ -294,7 +294,7 @@ for a in gt_ref_depths gt_alt_depths gt_depths gt_types; do
 		  n=$(($n + 1))
 	      echo "    genotypes.t$n...\c"
 		  rm -f obs
-          gemini query --header -q "select chrom, start, end, ref, alt, ($a).(phenotype==2) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype==2).(==$b).(all)" > obs
+          oncogemini query --header -q "select chrom, start, end, ref, alt, ($a).(phenotype==2) from variants" extended_ped.db --gt-filter "(gt_types).(phenotype==2).(==$b).(all)" > obs
 		  v=$(cat obs | wc -l)
 		  if [ $v -gt 1 ]; then
 			  echo "ok"
@@ -319,7 +319,7 @@ echo "-1.0	-1	-1
 -1.0	-1	-1
 0.142857142857	1	6
 0.0	0	4" > exp
-gemini query -q "select gt_alt_freqs.1094PC0009, gt_alt_depths.1094PC0009, gt_ref_depths.1094PC0009 from variants" test.snpeff.vcf.db \
+oncogemini query -q "select gt_alt_freqs.1094PC0009, gt_alt_depths.1094PC0009, gt_ref_depths.1094PC0009 from variants" test.snpeff.vcf.db \
        > obs
 
 check obs exp
