@@ -181,11 +181,11 @@ rm obs exp
 # 10. Test a query of the variants table with a select *
 ####################################################################
 echo "    query.t10...\c"
-echo "chr1	30547	30548	None	1	1	T	G	None	snp	tv	0.116666666667
-chr1	30859	30860	None	2	1	G	C	None	snp	tv	0.433333333333
-chr1	30866	30869	None	3	1	CCT	C	None	indel	del	0.466666666667
-chr1	30894	30895	None	4	1	T	C	None	snp	ts	0.483333333333
-chr1	30922	30923	None	5	1	G	T	None	snp	tv	0.25" > exp
+echo "1	chr1	30547	30548	None	T	G	50.0900001526	snp	tv	0.116666666667	4
+2	chr1	30859	30860	None	G	C	54.2999992371	snp	tv	0.433333333333	24
+3	chr1	30866	30869	None	CCT	C	49.4799995422	indel	del	0.466666666667	23
+4	chr1	30894	30895	None	T	C	51.7900009155	snp	ts	0.483333333333	26
+5	chr1	30922	30923	None	G	T	601.489990234	snp	tv	0.25	0" > exp
 oncogemini query -q "select * \
                  from variants \
                  limit 5" test.query.db | cut -f1-8,10-13 \
