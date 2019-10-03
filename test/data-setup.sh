@@ -1,74 +1,40 @@
 set -eo pipefail
-#gemini load -v test.auto_rec.vcf tt.db --no-genotypes && rm tt.db
-gemini load -t BCFT --skip-gene-tables -v unicode.vcf.gz -p unicode.ped unicode.test.db &
-#gemini load --cores 2 --skip-gene-tables --test-mode --skip-pls -v test.x-linked.vcf --skip-gerp-bp --skip-cadd -t VEP -p test.x-linked.ped test.x_linked.db
-#gemini load --skip-gene-tables --test-mode -v test.x-linked.vcf --skip-gerp-bp --skip-cadd -t VEP -p test.x-linked.ped test.x_linked.db
-gemini load --skip-gene-tables --test-mode -t VEP -v test-vep-extra.vcf test.vep.extra.db &
-gemini load --skip-gene-tables --test-mode --skip-gerp --skip-cadd -v test.PLs.vcf  test.PLs.db &
-#gemini load --skip-gene-tables --test-mode --skip-gerp --skip-cadd -v test.mendel.vcf -p test.mendel.ped  test.mendel.db &
-gemini load --skip-gene-tables --test-mode -v test.eff.vcf test.eff.db -t snpEff
 
-gemini load --skip-gene-tables --test-mode --skip-gerp --skip-cadd -v test.multiple-alts.decomp.snpeff.vcf -t snpEff test.mad.db &
-#gemini load --skip-gene-tables --test-mode -v test.cosmic.vcf --skip-gerp-bp --skip-cadd test.cosmic.db
-gemini load --skip-gene-tables --test-mode -v test.roh.vcf --skip-gerp-bp --skip-cadd -t snpEff test.roh.vcf.db &
-#gemini load --skip-gene-tables --test-mode -v test.cadd.vcf --skip-gerp-bp --skip-cadd test.no.cadd.db
-gemini load --skip-gene-tables --test-mode -v test.snpeff.vcf --skip-gerp-bp --skip-cadd -t snpEff test.snpeff.vcf.db &
-#gemini load --skip-gene-tables --test-mode -v test.geno2mp.vcf --skip-gerp-bp --skip-cadd -t snpEff test.geno2mp.db &
-gemini load --skip-gene-tables --test-mode -v test1.snpeff.vcf --skip-gerp-bp --skip-cadd -t snpEff test1.snpeff.db
-gemini load --skip-gene-tables --test-mode -v test1.snpeff.vcf --skip-gerp-bp --skip-cadd -t VEP test1.vep.db &
-#gemini load --skip-gene-tables --test-mode -v test2.snpeff.vcf --skip-gerp-bp --skip-cadd test2.snpeff.db &
-gemini load --skip-gene-tables --test-mode -v test3.snpeff.vcf --skip-gerp-bp --skip-cadd test3.snpeff.db &
-#gemini load --skip-gene-tables --test-mode -v test.clinvar.vcf --skip-gerp-bp --skip-cadd test.clinvar.db
-#gemini load -t all -v test.clinvar_gene_pheno.vcf --test-mode --skip-gene-tables test.clinvar_gene_pheno.db &
-#gemini load --skip-gene-tables --test-mode -v test4.vep.snpeff.vcf --skip-gerp-bp --skip-cadd -t snpEff test4.snpeff.db &
-#gemini load --skip-gene-tables --test-mode -v test4.vep.snpeff.vcf --skip-gerp-bp --skip-cadd -t VEP test4.vep.db
-gemini load --skip-gene-tables --test-mode -v test5.vep.snpeff.vcf --skip-gerp-bp --skip-cadd -t snpEff test5.snpeff.db &
-#gemini load --skip-gene-tables --test-mode -v test5.vep.snpeff.vcf --skip-gerp-bp --skip-cadd -t VEP test5.vep.db &
-gemini load --test-mode -v test.query.vcf --save-info-string --skip-gerp-bp --skip-cadd -t snpEff test.query.db &
-gemini load --test-mode -v test.query.vcf --skip-gerp-bp --skip-cadd --cores 2 -t snpEff test.query.core.db &
-#gemini load --skip-gene-tables --test-mode -v test.query.vcf --skip-gerp-bp --skip-cadd -t VEP test.query.vep.db
-wait
-gemini load --skip-gene-tables --test-mode -v test.region.vep.vcf --skip-gerp-bp --skip-cadd -t VEP test.region.db &
-#gemini load --skip-gene-tables --test-mode -v test.burden.vcf --skip-gerp-bp --skip-cadd -t VEP -p test.burden.ped test.burden.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.ped test.comp_het.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.singleton.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.ped test.comp_het.singleton.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.2.vcf --skip-gerp-bp --skip-cadd -t snpEff test.comp_het_default.db
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.3.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.ped test.comp_het_default.2.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.4.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.2.ped test.comp_het_default.4.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.5.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.2.ped test.comp_het_default.5.db &
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.6.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.2.ped test.comp_het_default.6.db
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.7.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.2.ped test.comp_het_default.7.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.ped test.auto_dom.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.no_parents.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.no_parents.ped test.auto_dom.no_parents.db
-wait
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.no_parents.2.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.no_parents.2.ped test.auto_dom.no_parents.2.db
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.no_parents.3.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.no_parents.3.ped test.auto_dom.no_parents.3.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.no_parents.4.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.no_parents.4.ped test.auto_dom.no_parents.4.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_dom.no_parents.5.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_dom.no_parents.5.ped test.auto_dom.no_parents.5.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.ped test.auto_rec.db
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.no_parents.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.no_parents.ped test.auto_rec.no_parents.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.no_parents.2.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.no_parents.2.ped test.auto_rec.no_parents.2.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.no_parents.3.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.no_parents.3.ped test.auto_rec.no_parents.3.db
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.no_parents.4.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.no_parents.4.ped test.auto_rec.no_parents.4.db &
-#gemini load --skip-gene-tables --test-mode -v test.auto_rec.no_parents.5.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.auto_rec.no_parents.5.ped test.auto_rec.no_parents.5.db &
-#gemini load --skip-gene-tables --test-mode -v test.de_novo.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.de_novo.ped test.de_novo.db &
-#gemini load --skip-gene-tables --test-mode -v test.de_novo.affected.and.unaffected.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.de_novo.affected.and.unaffected.ped test.de_novo.affected.and.unaffected.db
-wait
-gemini load --skip-gene-tables --test-mode -p test4.snpeff.ped -v test4.vep.snpeff.vcf --skip-gerp-bp --skip-cadd -t snpEff test4.snpeff.ped.db &
-gemini load --skip-gene-tables --test-mode -v test.vcf_id.snpeff.vcf  --skip-gerp-bp --skip-cadd -t snpEff test.vcf_id.snpeff.vcf.db &
-gemini load --skip-gene-tables --test-mode -p test.de_novo.ped -v test.family.vcf  --skip-gerp-bp --skip-cadd -t snpEff test.family.db &
-gemini load --skip-gene-tables --test-mode -p test_extended_ped.ped -v test4.vep.snpeff.vcf  --skip-gerp-bp --skip-cadd -t snpEff extended_ped.db
+echo "##### creating oncogemini_test.db #####"
+vcf2db.py test.oncogemini.vcf oncogemini_test.manifest oncogemini_test.db 
+echo "##### creating somatic_tests_tool.db #####"
+cp oncogemini_test.db somatic_tests_tools.db
+echo "##### creating test.vep.extra.db #####"
+vcf2db.py test-vep-extra.vcf test-vep-extra.ped test.vep.extra.db 
+echo "##### creating test.eff.db #####"
+vcf2db.py test.eff.vcf test.eff.ped test.eff.db 
+echo "##### creating test.mad.db #####"
+vcf2db.py test.multiple-alts.decomp.snpeff.vcf test.mad.ped test.mad.db 
+echo "##### creating test.roh.vcf.db #####"
+vcf2db.py test.roh.vcf test.roh.ped test.roh.vcf.db 
+echo "##### creating test.snpeff.vcf.db #####"
+vcf2db.py test.snpeff.vcf test.snpeff.ped test.snpeff.vcf.db
+echo "##### creating test1.snpeff.db #####"
+vcf2db.py test1.snpeff.vcf test1.snpeff.ped test1.snpeff.db
+echo "##### creating test1.vep.db #####"
+vcf2db.py test1.vep.vcf test1.snpeff.ped test1.vep.db
+echo "##### creating test2.snpeff.db.db #####"
+vcf2db.py test2.snpeff.vcf test2.snpeff.ped test2.snpeff.db
+echo "##### creating test3.snpeff.db.db #####"
+vcf2db.py test3.snpeff.vcf test3.snpeff.ped test3.snpeff.db
+echo "##### creating test.query.db #####"
+vcf2db.py test.query.no_vep.vcf test.query.ped test.query.db
+echo "##### creating test.region.db #####"
+vcf2db.py test.region.vep.vcf test_extended_ped.ped test.region.db 
+echo "##### creating test4.snpeff.ped.db #####"
+vcf2db.py test4.snpeff.vcf test4.snpeff.ped test4.snpeff.ped.db 
+echo "##### creating test.vcf_id.snpeff.vcf.db #####"
+vcf2db.py test.vcf_id.snpeff.vcf test.vcf_id.snpeff.ped test.vcf_id.snpeff.vcf.db 
+echo "##### creating test.family.db #####"
+vcf2db.py test.family.vcf test.de_novo.ped test.family.db 
+echo "##### creating extended_ped.db #####"
+vcf2db.py test4.snpeff.vcf test_extended_ped.ped extended_ped.db 
+echo "##### creating test.amend.db #####"
 cp extended_ped.db test.amend.db
-#gemini load -p test.somatic.ped --save-info-string -v test.somatic.vcf  --skip-gerp-bp --skip-cadd -t VEP test.somatic.db &
-gemini load -p test.fusions.ped -v test.fusions.vcf  --skip-gerp-bp --skip-cadd -t VEP test.fusions.db &
-#gemini load --skip-gene-tables --test-mode -v test.exac.vcf --skip-gerp-bp --skip-cadd test.exac.db &
-#gemini load -t VEP -v test.esp.zero.vcf test.esp.db --skip-gerp-bp --skip-gene-tables --test-mode &
-#gemini load --skip-gene-tables --test-mode -v test.dashes.vcf --skip-gerp-bp --skip-cadd -t snpEff test.dashes.db -p test.dashes.ped &
-#gemini load --test-mode -t VEP -v test-lof.vcf --skip-gene-tables test-lof.db
-
-# test-phasing
-#gemini load --skip-gene-tables --test-mode -v test.comp_het.unphase.vcf --skip-gerp-bp --skip-cadd -t snpEff -p test.comp_het.ped test.comp_het.unphase.db
-
-#gemini load -v from_inheritance.vcf -p from_inheritance.ped from_inheritance.db --test-mode --skip-gene-tables
-#echo "UPDATE  variants set is_exonic = 1;" | sqlite3 from_inheritance.db
-wait
+echo "##### creating test.fusions.db #####"
+vcf2db.py test.fusions.vcf test.fusions.ped test.fusions.db 
