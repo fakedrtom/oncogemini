@@ -76,10 +76,13 @@ printf "\n"
 # Test EFF string derived elements in INFO column
 ## bash test-effstring.sh
 
-# Test loading functionality
+# Test annotate functionality
 echo "Running test-annotate-tool.sh..."
 bash test-annotate-tool.sh
 printf "\n"
+## echo "Running test-annotate-tool-vcf.sh..."
+## bash test-annotate-tool-vcf.sh
+## printf "\n"
 
 # Test stats tool
 echo "Running test-stats.sh..."
