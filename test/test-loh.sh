@@ -133,3 +133,45 @@ oncogemini loh \
     oncogemini_test.db > obs
 check obs exp
 rm obs exp
+
+###################################################################
+# 5. Test expected errors
+###################################################################
+printf "testing expected errors...\n"
+printf "    loh.specifcB5...\n"
+echo "Error: Specified sample name with --specific is not found, make sure a single sample only is provided and check the sample manifest file for available sample names" > exp
+echo "$(oncogemini loh \
+    --patient B \
+    --specific B5 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    loh.specificB0...\n"
+echo "Error: Specified sample with --specific is the first timepoint, specify a sample that has a preceding sample" > exp
+echo "$(oncogemini loh \
+    --patient B \
+    --specific B0 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    loh.no_normal...\n"
+echo "Error: There are no normal samples; check the sample manifest file for proper format and loading" > exp
+echo "$(oncogemini loh \
+    --patient A \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    loh.no_tumor...\n"
+echo 'Error: There are no tumor samples; check the sample manifest file for proper format and loading' > exp
+echo "$(oncogemini loh \
+    --patient D \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
