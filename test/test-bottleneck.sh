@@ -1,13 +1,12 @@
-check() 
+check()
 {
-    if diff <( sort "$1" ) <( sort "$2" ); then
-        echo ok
-    else
-        echo fail
-	exit 1
-    fi
+	if diff $1 $2; then
+    	echo ok
+	else
+    	echo fail
+	fi
 }
-#export -f check
+export -f check
 
 ###################################################################
 # 1. Test basic functionality
@@ -18,7 +17,7 @@ echo "chrom	start	end	ref	alt	gene	alt_AF.A1	alt_AF.A2	alt_AF.A3	slope	intercept
 oncogemini bottleneck \
     --patient A \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -29,7 +28,7 @@ echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_A
 oncogemini bottleneck \
     --patient B \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -40,7 +39,7 @@ echo "chrom	start	end	ref	alt	gene	alt_AF.C0	alt_AF.C1	alt_AF.C2	slope	intercept
 oncogemini bottleneck \
     --patient C \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -54,7 +53,7 @@ oncogemini bottleneck \
     --patient A \
     --minSlope 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -64,7 +63,7 @@ oncogemini bottleneck \
     --patient B \
     --minSlope 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -75,7 +74,7 @@ oncogemini bottleneck \
     --patient C \
     --minSlope 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -89,7 +88,7 @@ oncogemini bottleneck \
     --patient A \
     --minR 0.8 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -100,7 +99,7 @@ oncogemini bottleneck \
     --patient B \
     --minR 0.8 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -112,7 +111,7 @@ oncogemini bottleneck \
     --patient C \
     --minR 0.8 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -126,7 +125,7 @@ oncogemini bottleneck \
     --patient A \
     --minEnd 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -137,7 +136,7 @@ oncogemini bottleneck \
     --patient B \
     --minEnd 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -149,7 +148,7 @@ oncogemini bottleneck \
     --patient C \
     --minEnd 0.25 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -163,7 +162,7 @@ oncogemini bottleneck \
     --patient A \
     --endDiff 0.5 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -173,7 +172,7 @@ oncogemini bottleneck \
     --patient B \
     --endDiff 0.5 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -184,7 +183,7 @@ oncogemini bottleneck \
     --patient C \
     --endDiff 0.5 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -198,7 +197,7 @@ oncogemini bottleneck \
     --patient A \
     --maxNorm 0.6 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -210,7 +209,7 @@ oncogemini bottleneck \
     --patient B \
     --maxNorm 0.6 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
 
@@ -223,6 +222,6 @@ oncogemini bottleneck \
     --patient C \
     --maxNorm 0.6 \
     --columns "chrom,start,end,ref,alt,gene" \
-    functional_tests_tools.db > obs
+    oncogemini_test.db > obs
 check obs exp
 rm obs exp
