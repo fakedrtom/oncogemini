@@ -1,12 +1,12 @@
-check() 
+check()
 {
-    if diff <( sort "$1" ) <( sort "$2" ); then
-        echo ok
-    else
-        echo fail
-	exit 1
-    fi
+	if diff $1 $2; then
+    	echo ok
+	else
+    	echo fail
+	fi
 }
+export -f check
 
 echo "test.eff-plus.t1"
 echo "chrom	start	end	gene	ref	alt	aa_change	is_coding	is_exonic	is_splicing
