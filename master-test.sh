@@ -146,5 +146,6 @@ bash test-somatic-tools.sh
 printf "\n"
 
 # cleanup
+echo "Cleaning up DBs created and other files"
 rm ./*.db
 rm -Rf *.gts
