@@ -8,7 +8,7 @@ check()
 }
 export -f check
 
-SCRIPT_PATH=$(which gemini 2> /dev/null)
+SCRIPT_PATH=$(which oncogemini 2> /dev/null)
 
 if [ $? -eq 1 ]
 then
@@ -16,146 +16,132 @@ then
   export PATH=$PATH:"${SCRIPT_PATH}/../../bin"
 fi
 
-echo "Using gemini found at: $SCRIPT_PATH" 1>&2
-
+echo "Using oncogemini found at: $SCRIPT_PATH" 1>&2
+printf "\n"
+echo "Moving to test dir"
 cd test
+echo "Removing existing DBs"
 rm -f ./*.db
+printf "\n"
 
 # setup the testing databases from the testing VCF files
 set -e
+echo "##############################"
+echo "##### Setting up the DBs #####"
+echo "##############################"
+printf "\n"
+
 bash data-setup.sh
 
-bash test-vep-extra.sh || exit
+## bash test-vep-extra.sh || exit
 
-bash test-vcf-output.sh || exit
+## bash test-vcf-output.sh || exit
 
-#bash test-mendel-error.sh || exit
+printf "\n"
+echo "##############################"
+echo "##### Begin test scripts #####"
+echo "##############################"
+printf "\n"
 
-#bash test-genotype-likelihoods.sh || exit
-
-#bash test-t-all.sh || exit
-
-# Test gemini region
+# Test region
+echo "Running test-region.sh..."
 bash test-region.sh
+printf "\n"
 
 # Test amending the database
+echo "Running test-amend.sh..." 
 bash test-amend.sh
+printf "\n"
 
 # Test query tool
+echo "Running test-query.sh..."
 bash test-query.sh
+printf "\n"
 
 # Test database dumping
+echo "Running test-dump.sh..."
 bash test-dump.sh
-
-# Test burden tests
-#bash test-burden.sh
+printf "\n"
 
 # Test basic functionality
+echo "Running test-columns.sh..."
 bash test-columns.sh
-
-# Test cadd scores
-#bash test-cadd.sh
-
-# Test cosmic
-#bash test-cosmic.sh
-
-# Test loading functionality
-#bash test-load.sh
+printf "\n"
 
 # Test genotype BLOB functionality
+echo "Running test-genotypes.sh..."
 bash test-genotypes.sh
-
-# Test ClinVar attributes
-#bash test-clinvar.sh
-
-# Test Exac
-#bash test-exac.sh
-#bash test-gnomad.sh
-
-# Test population_gen metrics
-#bash test-pop.sh
-
-# Test mappability
-#bash test-map.sh
-
-# Test genome annotations
-#bash test-genome.sh
-
-# Test encode annotations
-#bash test-encode.sh
+printf "\n"
 
 # Test EFF string derived elements in INFO column
-bash test-effstring.sh
+## bash test-effstring.sh
 
 # Test loading functionality
+echo "Running test-annotate-tool.sh..."
 bash test-annotate-tool.sh
-
-# Test comp_hets tool
-#bash test-comphet.sh
-
-# Test pathway tool
-#bash test-pathtool.sh
-
-# Test interaction tool
-#bash test-interactions.sh
-
-# Test lof sieve tool
-#bash test-lofsieve.sh
+printf "\n"
 
 # Test stats tool
+echo "Running test-stats.sh..."
 bash test-stats.sh
+printf "\n"
 
 # Test windower
-bash test-windower.sh
-
-#
-#bash test-fitcons.sh
-
-# Test pfam domains
-#bash test-pfam.sh
-
-# Test GERP scores
-#bash test-gerp.sh
-
-# Test disease models
-#bash test-auto-dom.sh
-#bash test-auto-rec.sh
-
-# Test denovo tool
-#bash test-de-novo.sh
+## bash test-windower.sh
 
 # Test wildcards
+echo "Running test-wildcards.sh..."
 bash test-wildcards.sh
+printf "\n"
 
 # Test ROH
-bash test-roh.sh
-
-# Test somatic variants
-#bash test-somatic.sh
+## bash test-roh.sh
 
 # Test fusions
-bash test-fusions.sh
+## bash test-fusions.sh
 
-bash test-multiple-alts.sh
+## bash test-multiple-alts.sh
 
-#bash test-bcolz.sh
-
-#bash test-esp.sh
-
-#bash test-dashes.sh
-
-# backwards compat with no PL/GL columns
-#bash test-no-gls.sh
-
+# Test muliple columns
+echo "Running test-multi-col.sh..."
 bash test-multi-col.sh
+printf "\n"
 
+# Test EFF string
+echo "Running test-eff.sh..."
 bash test-eff.sh
+printf "\n"
 
-#bash test-geno2mp.sh
+# Test common oncogemini tool parameters
+echo "Running test-common-parameters.sh..."
+bash test-common-parameters.sh
+printf "\n"
 
-#bash test-genewise.sh
+# Test bottleneck
+echo "Running test-bottleneck.sh..."
+bash test-bottleneck.sh
+printf "\n"
 
-#bash test-x-linked.sh
+# Test loh
+echo "Running test-loh.sh..."
+bash test-loh.sh
+printf "\n"
+
+# Test truncal
+echo "Running test-truncal.sh..."
+bash test-truncal.sh
+printf "\n"
+
+# Test unique
+echo "Running test-unique.sh..."
+bash test-unique.sh
+printf "\n"
+
+# Test somatic tools
+echo "Running test-somatic-tools.sh..."
+bash test-somatic-tools.sh
+printf "\n"
+
 # cleanup
-#rm ./*.db
+rm ./*.db
 rm -Rf *.gts
