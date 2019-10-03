@@ -1,12 +1,12 @@
-check() 
+check()
 {
-    if diff <( sort "$1" ) <( sort "$2" ); then
-        echo ok
-    else
-        echo fail
-        exit 1
-    fi
+	if diff $1 $2; then
+    	echo ok
+	else
+    	echo fail
+	fi
 }
+export -f check
 
 ####################################################################
 # 1. Make sure we are representing the correct REF and ALT alleles.
