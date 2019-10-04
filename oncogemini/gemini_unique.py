@@ -114,7 +114,7 @@ def unique(parser, args):
     #Also make sure the samples requested with --specific are present
     for s in specific:
         if s not in samples:
-            sys.exit("Sample listed with --specific, ' + s + ', is not found, check the sample manifest file for available samples")
+            sys.exit("Sample listed with --specific, " + s + ", is not found, check the sample manifest file for available samples")
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
