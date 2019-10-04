@@ -99,3 +99,36 @@ oncogemini unique \
     oncogemini_test.db > obs
 check obs exp
 rm obs exp
+
+###################################################################
+# 4. Test expected errors
+###################################################################
+printf "testing expected errors...\n"
+printf "    unique.specificA5...\n"
+echo "Sample listed with --specific, A5, is not found, check the sample manifest file for available samples" > exp
+echo "$(oncogemini unique \
+    --patient A \
+    --specific A5 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    unique.no_specific...\n"
+echo "No sample(s) specified with --specific, please provide sample(s)" > exp
+echo "$(oncogemini unique \
+    --patient A \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    unique.no_others...\n"
+echo "There are no other samples to compare --specific samples to; check the sample manifest file for proper format and loading" > exp
+echo "$(oncogemini unique \
+    --patient D \
+    --specific D0,D1 \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
