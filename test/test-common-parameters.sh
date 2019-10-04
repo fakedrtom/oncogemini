@@ -356,3 +356,34 @@ oncogemini unique \
     oncogemini_test.db > obs
 check obs exp
 rm obs exp
+
+###################################################################
+# 6. Test expected errors
+###################################################################
+printf "testing expected errors...\n"
+printf "    bottleneck.no_patient...\n"
+echo "More than 1 patient is present, specify a patient_id with --patient" > exp
+echo "$(oncogemini bottleneck \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    bottleneck.wrong_patient...\n"
+echo "Specified patient is not found, check the sample manifest file for available patient_ids" > exp
+echo "$(oncogemini bottleneck \
+    --patient Tom \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
+
+printf "    bottleneck.wrong_sample...\n"
+echo "Specified samples, Tom, is not found" > exp
+echo "$(oncogemini bottleneck \
+    --patient B \
+    --sample Tom \
+    --columns "chrom,start,end,ref,alt,gene" \
+    oncogemini_test.db 2>&1 > /dev/null)" > obs
+check obs exp
+rm obs exp
