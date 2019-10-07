@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
-
 from . import GeminiQuery
 from . import gemini_utils as utils
-#from . import sql_utils
 import sys
 
 # Truncal mutations are categorized as being absent 
@@ -54,26 +52,17 @@ def truncal(parser, args):
         query = "pragma table_info(variants)"
         gq.run(query)
         utils.check_cancer_annotations(gq)
-#        cancer_abbrevs = 0
-#        for row in gq:
-#            fields = str(row).rstrip('\n').split('\t')
-#            if fields[1] == 'civic_gene_abbreviations':
-#                cancer_abbrevs += 1
-#            if fields[1] == 'cgi_gene_abbreviations':
-#                cancer_abbrevs += 1
- #       if cancer_abbrevs == 0:
- #           raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
     if args.purity:
         query = "select name, purity from samples"
         purity = {}
         gq.run(query)
         utils.get_purity(gq, purity)
-#    else:
+
     # define sample search query                                                                                                                                                             
     query = "select patient_id, name, time from samples"
 
-    # execute the sample search query                                                                                                                                                             
+    # execute the sample search query                                                                                                                                                            
     gq.run(query)
 
     # designating which patient to perform the query on
@@ -84,34 +73,11 @@ def truncal(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
-#    purity = {}
     utils.get_names(gq,patients,names)
     patient = utils.get_patient(patient,patients)
     if args.somatic_only:
         is_somatic = 'is_somatic_' + patient
     samples = utils.get_samples(patient,names,samples)
-#    for row in gq:
-#        patients.append(row['patient_id'])
-#        if row['patient_id'] not in names:
-#            names[row['patient_id']] = []
-#        names[row['patient_id']].append(row['name'])
-#        if args.purity:
-#            purity[row['name']] = float(row['purity'])
-#    if args.patient is None and len(set(patients)) == 1:
-#        patient = patients[0]
-#    elif args.patient is None and len(set(patients)) > 1:
-#        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
-#    if patient not in patients:
-#        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
-
-    # check that specified samples with --samples are present
-    # otherwise all names for given patient from ped will asigned to samples list
-#    if samples != 'All':
-#        for sample in samples:
-#            if sample not in names[patient]:
-#                raise NameError('Specified samples, ' + sample + ', is not found')
-#    elif samples == 'All':
-#        samples = names[patient]
     
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -124,24 +90,10 @@ def truncal(parser, args):
     timepoints = {}
     samples_tps = {}
     utils.sort_samples(gq,normal_samples,tumor_samples,timepoints,samples_tps,patient,samples)
-#    for row in gq:
-#        if row['patient_id'] == patient and row['name'] in samples:
-#            if int(row['time']) == 0:
-#                normal_samples.append(row['name'])
-#            elif int(row['time']) > 0:
-#                tumor_samples.append(row['name'])
-#            if int(row['time']) not in timepoints:
-#                timepoints[int(row['time'])] = []
-#            timepoints[int(row['time'])].append(row['name'])
-#    endpoint = max(timepoints.keys())
-#    startpoint = min(timepoints.keys())
-#    times = sorted(timepoints.keys(), reverse=True)
-    
+
     # check arrays to see if samples have been added
     # if arrays are empty there is probably a problem in samples
     # check the ped file being loaded into the db
-#    if len(normal_samples) == 0 and len(tumor_samples) == 0:
-#        raise NameError('There are no samples; check the ped file for proper format and loading')
     if len(normal_samples) == 0:
         sys.exit("There are no normal samples; check the sample manifest file for proper format and loading")
     if len(tumor_samples) == 0:
@@ -151,12 +103,6 @@ def truncal(parser, args):
     # using the database passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
-    # get from the args the maxNorm value
-    #if args.maxNorm is None:
-    #    maxNorm = str(0)
-    #elif args.maxNorm is not None:
-    #    maxNorm = args.maxNorm
-
     # define the truncal query
     if args.columns is not None:
         columns = args.columns
@@ -173,43 +119,9 @@ def truncal(parser, args):
         if args.somatic_only:
             filter = is_somatic + '==1'
     query = utils.make_query(columns,filter)
-#    if args.columns is not None:
-        # the user only wants to report a subset of the columns
-#        if cancers == 'none':
-#            query = "SELECT " + args.columns + " FROM variants"
-#        elif cancers != 'none':
-#            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
-#    else:
-        # report the kitchen sink
-#        query = "SELECT * FROM variants"
-#    if args.filter is not None:
-        # add any non-genotype column limits to the where clause
-#        query += " WHERE " + args.filter
-    # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
 
-    # create gt_filter command using saved sample info
-#    if args.purity:
-#        filter_cmd = ""
-#        for sample in normal_samples:
-#            filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-#        for sample in tumor_samples:
-#            if sample == tumor_samples[len(tumor_samples)-1]:
-#                filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
-#                continue
-#            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and "
-#    else:
-#        filter_cmd = ""
-#        for sample in normal_samples:
-#            filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-#        for sample in tumor_samples:
-#            if sample == tumor_samples[len(tumor_samples)-1]:
-#                filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase))
-#                continue 
-#            filter_cmd += "gt_alt_freqs." + sample + " > " + str(float(maxNorm) + float(increase)) + " and " 
-#    gt_filter = filter_cmd
-
-    # execute the truncal query (but don't do anything with the results)"
-    gq.run(query)#, gt_filter)
+    # execute the truncal query
+    gq.run(query)
 
     # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
     smp2idx = gq.sample_to_idx
@@ -253,8 +165,6 @@ def truncal(parser, args):
                         rawAF = row['gt_alt_freqs'][smpidx]
                     else:
                         sampleAF = row['gt_alt_freqs'][smpidx]
-#                    if sampleAF > 1:
-#                        sampleAF = 1
                     if s in normal_samples and sampleAF >= 0:
                         normAFs.append(sampleAF)
                     if s in tumor_samples and sampleAF >= 0:
@@ -278,8 +188,6 @@ def truncal(parser, args):
             continue
         if any(af <= (maxNorm + increase) for af in tumsAFs):
             continue
-#        if len(tumsAFs) > 0 and min(tumsAFs) < maxNorm + increase:
-#            continue
 
         # print results that meet the requirements
         # if args.cancer has been used, filter results to cancer matches
