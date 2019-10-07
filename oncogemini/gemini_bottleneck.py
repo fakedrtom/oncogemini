@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
-
 from . import GeminiQuery
 from . import gemini_utils as utils
-#from . import sql_utils
 from scipy import stats
 import numpy as np
 
@@ -72,23 +70,13 @@ def bottleneck(parser, args):
         query = "pragma table_info(variants)"
         gq.run(query)
         utils.check_cancer_annotations(gq)
-#        cancer_abbrevs = 0
-#        for row in gq:
-#            fields = str(row).rstrip('\n').split('\t')
-#            if fields[1] == 'civic_gene_abbreviations':
-#                cancer_abbrevs += 1
-#            if fields[1] == 'cgi_gene_abbreviations':
-#                cancer_abbrevs += 1
-#        if cancer_abbrevs == 0:
-#            raise NameError('No civic_gene_abbreviations or cgi_gene_abbreviations found in database, cannot use --cancers')
         cancers = args.cancers.split(',')
-
     if args.purity:
         query = "select name, purity from samples"
         purity = {}
         gq.run(query)
         utils.get_purity(gq, purity)
-#    else:
+
     # define sample search query
     query = "select patient_id, name, time from samples"
 
@@ -103,34 +91,11 @@ def bottleneck(parser, args):
     # sample names are saved to patient specific dict
     patients = []
     names = {}
-#    purity = {}
     utils.get_names(gq,patients,names)
     patient = utils.get_patient(patient,patients)
     if args.somatic_only:
         is_somatic = 'is_somatic_' + patient
     samples = utils.get_samples(patient,names,samples)
-#    for row in gq:
-#        patients.append(row['patient_id'])
-#        if row['patient_id'] not in names:
-#            names[row['patient_id']] = []
-#        names[row['patient_id']].append(row['name'])
-#        if args.purity:
-#            purity[row['name']] = float(row['purity'])
-#    if args.patient is None and len(set(patients)) == 1:
-#        patient = patients[0]
-#    elif args.patient is None and len(set(patients)) > 1:
-#        raise NameError('More than 1 patient is present, specify a patient_id with --patient')
-#    if patient not in patients:
-#        raise NameError('Specified patient is not found, check the ped file for available patient_ids')
-
-    # check that specified samples with --samples are present
-    # otherwise all names for given patient from ped will asigned to samples list
-#    if samples != 'All':
-#        for sample in samples:
-#            if sample not in names[patient]:
-#                raise NameError('Specified samples, ' + sample + ', is not found')
-#    elif samples == 'All':
-#        samples = names[patient]
 
     # iterate again through each sample and save which sample is the normal
     # non-normal, tumor sample names are saved to a list
@@ -143,49 +108,12 @@ def bottleneck(parser, args):
     timepoints = {}
     samples_tps = {}
     utils.sort_samples(gq,normal_samples,tumor_samples,timepoints,samples_tps,patient,samples)
-#    for row in gq:
-#        if row['patient_id'] == patient and row['name'] in samples:
-#            if int(row['time']) == 0:
-#                normal_samples.append(row['name'])
-#            elif int(row['time']) > 0:
-#                tumor_samples.append(row['name'])
-#            if int(row['time']) not in timepoints:
-#                timepoints[int(row['time'])] = []
-#            timepoints[int(row['time'])].append(row['name'])
-#        if int(row['time']) == 0 and row['patient_id'] == patient and row['name'] in samples:
-#            normal_samples.append(row['name'])
-#        elif int(row['time']) > 0 and row['patient_id'] == patient and row['name'] in samples:
-#            tumor_samples.append(row['name'])
-#        if row['patient_id'] == patient:
-#            if samples == 'All':
-#                if int(row['time']) not in timepoints:
-#                    timepoints[int(row['time'])] = []
-#                timepoints[int(row['time'])].append(row['name'])
-#            else:
-#                if row['name'] in samples:
-#                    if int(row['time']) not in timepoints:
-#                        timepoints[int(row['time'])] = []
-#                    timepoints[int(row['time'])].append(row['name'])
-#    all_samples = normal_samples + tumor_samples
-#    endpoint = max(timepoints.keys())
-#    startpoint = min(timepoints.keys())
-#    times = sorted(timepoints.keys(), reverse=True)
-    
-    # check arrays to see if samples have been added
-    # if arrays are empty there is probably a problem in samples
-    # check the ped file being loaded into the db
-#    if len(normal_samples) == 0 and len(tumor_samples) == 0:
-#        raise NameError('There are no samples; check the ped file for proper format and loading')
-#    if len(normal_samples) == 0:
-#        raise NameError('There are no normal samples; check the ped file for proper format and loading')
-#    if len(tumor_samples) == 0:
-#        raise NameError('There are no tumor samples; check the ped file for proper format and loading')
     
     # create a new connection to the database that includes the genotype columns
     # using the database passed in as an argument via the command line
     gq = GeminiQuery.GeminiQuery(args.db, include_gt_cols=True)
     
-    # define the loh query
+    # define the bottleneck query
     if args.columns is not None:
         columns = args.columns
         if cancers != 'none':
@@ -201,41 +129,8 @@ def bottleneck(parser, args):
         if args.somatic_only:
             filter = is_somatic + '==1'
     query = utils.make_query(columns,filter)
-#    if args.columns is not None:
-        # the user only wants to report a subset of the columns
-#        if cancers == 'none':
-#            query = "SELECT " + args.columns + " FROM variants"
-#        elif cancers != 'none':
-#            query = "SELECT " + args.columns + ",civic_gene_abbreviations,cgi_gene_abbreviations FROM variants"
-#    else:
-        # report the kitchen sink
-#        query = "SELECT * FROM variants"
-#    if args.filter is not None:
-        # add any non-genotype column limits to the where clause
-#        query += " WHERE " + args.filter
-    # query = "select chrom, start, end, gt_alt_freqs, gt_types from variants where impact_severity !='LOW' and (max_evi =='A' or max_evi == 'B' or max_rating >= 4)"
-
-    # create gt_filter command using saved sample info
-#    filter_cmd = ""
-#    count = 0
-#    while(count < len(times)-1):
-#        samplesA = timepoints[times[count]]
-#        samplesB = timepoints[times[count+1]]
-#        for a in samplesA:
-#            for b in samplesB:
-#                filter_cmd += "gt_alt_freqs." + a + " >= gt_alt_freqs." + b + " and "
-#        count += 1
-#    for sample in normal_samples:
-#        filter_cmd += "gt_alt_freqs." + sample + " <= " + maxNorm + " and "
-#    endpoint = timepoints[times[0]]
-#    for last in endpoint:
-#        filter_cmd += "gt_alt_freqs." + last + " > " + str(float(maxNorm) + float(endDiff)) + " and "
-#    gt_filter = filter_cmd
-#    if gt_filter.endswith(' and '):
-#        gt_filter = gt_filter[:-5]
 
     # execute a new query to process the variants
-#    gq.run(query, gt_filter)
     gq.run(query)
     
     # get the sample index numbers so we can get sample specific GT info (AFs, DPs, etc.)
@@ -272,13 +167,9 @@ def bottleneck(parser, args):
             output.extend(out)
         normAFs = []
         tumsAFs = []
-#        endAFs = []
-#        startAFs = []
         timeAFs = {}
         depths = []
         quals = []
-#        count = 0
-#        x = []
         y = []
         addEnd = []
         for key in timepoints:
@@ -290,8 +181,6 @@ def bottleneck(parser, args):
                         rawAF = row['gt_alt_freqs'][smpidx]
                     else:
                         sampleAF = row['gt_alt_freqs'][smpidx]
-#                    if sampleAF > 1:
-#                        sampleAF = 1
                     if s in normal_samples and sampleAF >= 0:
                         normAFs.append(sampleAF)
                     if s in tumor_samples and sampleAF >= 0:
@@ -300,11 +189,6 @@ def bottleneck(parser, args):
                         timeAFs[key] = []
                     if sampleAF >= 0 :
                         timeAFs[key].append(sampleAF)
-#                    if key == endpoint and sampleAF > 0:
-#                        endAFs.append(sampleAF)
-#                    if key == startpoint and sampleAF > 0:
-#                        startAFs.append(sampleAF)
-#                    x.append(count)
                     if sampleAF >= 0:
                         y.append(sampleAF)
                     sampleDP = row['gt_depths'][smpidx]
@@ -312,7 +196,6 @@ def bottleneck(parser, args):
                     sampleGQ = row['gt_quals'][smpidx]
                     quals.append(sampleGQ)
                     addEnd.append(str(sampleAF))
-#                    count += 1
                     if args.purity:
                         addEnd.append(str(rawAF))
         endAFs = []
@@ -335,8 +218,6 @@ def bottleneck(parser, args):
             continue
         x = range(0,len(y))
         slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
-        # spearman is causing some sort of double scalar, division problem when --samples reduces the number of samples
-#        spear, spear_p = stats.spearmanr(x,y, nan_policy="omit")
         addEnd.append(str(slope))
         addEnd.append(str(intercept))
         addEnd.append(str(r_value))
