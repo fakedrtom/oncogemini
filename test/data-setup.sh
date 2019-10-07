@@ -23,7 +23,7 @@ vcf2db.py test2.snpeff.vcf test2.snpeff.ped test2.snpeff.db
 echo "##### creating test3.snpeff.db.db #####"
 vcf2db.py test3.snpeff.vcf test3.snpeff.ped test3.snpeff.db
 echo "##### creating test.query.db #####"
-vcf2db.py test.query.no_vep.vcf test.query.ped test.query.db
+vcf2db.py test.query.vcf test.query.ped test.query.db
 echo "##### creating test.region.db #####"
 vcf2db.py test.region.vep.vcf test_extended_ped.ped test.region.db 
 echo "##### creating test4.snpeff.ped.db #####"
