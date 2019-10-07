@@ -149,3 +149,4 @@ printf "\n"
 echo "Cleaning up DBs created and other files"
 rm ./*.db
 rm -Rf *.gts
+rm _err
