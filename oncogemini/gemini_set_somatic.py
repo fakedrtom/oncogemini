@@ -16,8 +16,8 @@ def tag_somatic_mutations(args):
     patients = []
     names = {}
     utils.get_names(gq,patients,names)
-    patients = list(set(patients))
-    
+    patients = sorted(list(set(patients)))
+
     # iterate through each patient in the db
     for patient in patients:
         print("Processing patient " + patient)
