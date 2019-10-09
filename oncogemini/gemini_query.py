@@ -5,11 +5,11 @@ import os
 from collections import defaultdict
 
 # gemini imports
-from gemini import GeminiQuery
-from gemini.GeminiQuery import select_formatter
-from gemini.gemini_constants import *
-from gemini.gemini_region import add_region_to_query
-from gemini.gemini_subjects import (get_subjects, get_subjects_in_family,
+from oncogemini import GeminiQuery
+from oncogemini.GeminiQuery import select_formatter
+from oncogemini.gemini_constants import *
+from oncogemini.gemini_region import add_region_to_query
+from oncogemini.gemini_subjects import (get_subjects, get_subjects_in_family,
                              get_family_dict)
 #from gemini.dgidb import query_dgidb
 
