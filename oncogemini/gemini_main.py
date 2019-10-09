@@ -3,37 +3,37 @@ import os.path
 import sys
 import tempfile
 import argparse
-import gemini.version
+import oncogemini.version
 
 def examples(parser, args):
 
     print( "[stats] - report basic statistics about your variants:")
-    print( "   gemini stats --tstv my.db")
-    print( "   gemini stats --tstv-coding my.db")
-    print( "   gemini stats --sfs my.db")
-    print( "   gemini stats --snp-counts my.db")
+    print( "   oncogemini stats --tstv my.db")
+    print( "   oncogemini stats --tstv-coding my.db")
+    print( "   oncogemini stats --sfs my.db")
+    print( "   oncogemini stats --snp-counts my.db")
     print("")
 
     print( "[query] - explore the database with ad hoc queries:")
-    print( "   gemini query -q \"select * from variants where is_lof = 1 and aaf <= 0.01\" my.db")
-    print( "   gemini query -q \"select chrom, pos, gt_bases.NA12878 from variants\" my.db")
-    print( "   gemini query -q \"select chrom, pos, in_omim, clin_sigs from variants\" my.db")
+    print( "   oncogemini query -q \"select * from variants where is_lof = 1 and aaf <= 0.01\" my.db")
+    print( "   oncogemini query -q \"select chrom, pos, gt_bases.NA12878 from variants\" my.db")
+    print( "   oncogemini query -q \"select chrom, pos, in_omim, clin_sigs from variants\" my.db")
     print("")
 
     print( "[dump] - convenient \"data dumps\":")
-    print( "   gemini dump --variants my.db")
-    print( "   gemini dump --genotypes my.db")
-    print( "   gemini dump --samples my.db")
+    print( "   oncogemini dump --variants my.db")
+    print( "   oncogemini dump --genotypes my.db")
+    print( "   oncogemini dump --samples my.db")
     print("")
 
     print( "[region] - access variants in specific genomic regions:")
-    print( "   gemini region --reg chr1:100-200 my.db")
-    print( "   gemini region --gene TP53 my.db")
+    print( "   oncogemini region --reg chr1:100-200 my.db")
+    print( "   oncogemini region --gene TP53 my.db")
     print("")
 
     print( "[tools] - there are also many specific tools available")
-    print( "   1. Find compound heterozygotes.")
-    print( "     gemini comp_hets my.db")
+    print( "   1. Find truncal variants.")
+    print( "     oncogemini truncal my.db")
     print("")
 
     exit()
@@ -42,13 +42,13 @@ def main():
     #########################################
     # create the top-level parser
     #########################################
-    parser = argparse.ArgumentParser(prog='gemini', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-v", "--version", help="Installed gemini version",
+    parser = argparse.ArgumentParser(prog='oncogemini', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-v", "--version", help="Installed oncogemini version",
                         action="version",
-                        version="%(prog)s " + str(gemini.version.__version__))
+                        version="%(prog)s " + str(oncogemini.version.__version__))
     parser.add_argument('--annotation-dir', dest='annotation_dir',
                              help='Path to the annotation database.\n'
-                                'This argument is optional and if given will take precedence over the default location stored in the gemini config file.')
+                                'This argument is optional and if given will take precedence over the default location stored in the oncogemini config file.')
     subparsers = parser.add_subparsers(title='[sub-commands]', dest='command')
 
     #########################################
@@ -62,7 +62,7 @@ def main():
     # $ gemini amend
     #########################################
     parser_amend = subparsers.add_parser('amend',
-                                         help="Amend an already loaded GEMINI database.")
+                                         help="Amend an already loaded OncoGEMINI database.")
     parser_amend.add_argument('db',
                               metavar='db',
                               help='The name of the database to be amended.')
@@ -491,7 +491,7 @@ def main():
     #########################################
     # $ gemini update
     #########################################
-    parser_update = subparsers.add_parser("update", help="Update gemini software and data files.")
+    parser_update = subparsers.add_parser("update", help="Update oncogemini software and data files.")
     parser_update.add_argument("--devel", help="Get the latest development version instead of the release",
                                action="store_true", default=False)
     parser_update.add_argument("--dataonly", help="Only update data, not the underlying libraries.",
@@ -567,7 +567,7 @@ def main():
     # $ gemini fusions
     #########################################
     parser_fusions = subparsers.add_parser('fusions',
-                                         help="Identify somatic fusion genes from a GEMINI database.")
+                                         help="Identify somatic fusion genes from a OncoGEMINI database.")
     parser_fusions.add_argument('db',
                               metavar='db',
                               help='The name of the database to be queried.')
@@ -588,7 +588,7 @@ def main():
                                 help='The supporting evidence types for the variant ("PE", "SR", or "PE,SR").')
 
     def fusions_fn(parser, args):
-        from gemini.tool_fusions import run
+        from oncogemini.tool_fusions import run
         run(parser, args)
     parser_fusions.set_defaults(func=fusions_fn)
 

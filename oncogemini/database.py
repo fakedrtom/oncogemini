@@ -9,7 +9,7 @@ import sqlalchemy as sql
 from sqlalchemy.orm import mapper, create_session
 import sqlalchemy
 
-from gemini.ped import get_ped_fields
+from .ped import get_ped_fields
 
 
 def index_variation(cursor):
