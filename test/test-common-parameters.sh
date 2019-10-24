@@ -14,35 +14,50 @@ export -f check
 printf "testing --minDP parameter...\n"
 printf "    bottleneck.patientB.minDP10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287	0.0554716911435	-0.025333518655	0.73779842863
-9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.0	0.0	0.0178571428571	0.35	0.264150943396	0.0878301886792	-0.0492587601078	0.827307416385" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146	0.055	-0.025	0.738
+9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.000	0.000	0.018	0.350	0.264	0.088	-0.049	0.827" > exp
 oncogemini bottleneck \
     --patient B \
     --minDP 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 13; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $14)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    bottleneck.patientB.minDP100...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287	0.0554716911435	-0.025333518655	0.73779842863" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146	0.055	-0.025	0.738" > exp
 oncogemini bottleneck \
     --patient B \
     --minDP 100 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 13; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $14)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    loh.patientB.minDP10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4
-13	32912963	32912968	TGAAA	T	BRCA2	0.507246376812	0.986666666667	0.975	0.890625	0.875" > exp
+13	32912963	32912968	TGAAA	T	BRCA2	0.507	0.987	0.975	0.891	0.875" > exp
 oncogemini loh \
     --patient B \
     --minDP 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 10; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $11)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -58,49 +73,69 @@ rm obs exp
 
 printf "    truncal.patientC.minDP10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C0	alt_AF.C1	alt_AF.C2
-5	56168738	56168740	AC	A	MAP3K1	0.0	0.492753623188	0.476923076923
-5	56183305	56183306	C	T	MAP3K1	0.0	0.415730337079	0.341772151899" > exp
+5	56168738	56168740	AC	A	MAP3K1	0.000	0.493	0.477
+5	56183305	56183306	C	T	MAP3K1	0.000	0.416	0.342" > exp
 oncogemini truncal \
     --patient C \
     --minDP 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 8; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $9)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    truncal.patientC.minDP79...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C0	alt_AF.C1	alt_AF.C2
-5	56183305	56183306	C	T	MAP3K1	0.0	0.415730337079	0.341772151899" > exp
+5	56183305	56183306	C	T	MAP3K1	0.000	0.416	0.342" > exp
 oncogemini truncal \
     --patient C \
     --minDP 79 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 8; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $9)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC.minDP10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2
-6	152419921	152419922	T	A	ESR1	0.404255319149
-16	68842399	68842400	G	C	CDH1	0.588235294118" > exp
+6	152419921	152419922	T	A	ESR1	0.404
+16	68842399	68842400	G	C	CDH1	0.588" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --minDP 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC.minDP35...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2
-6	152419921	152419922	T	A	ESR1	0.404255319149" > exp
+6	152419921	152419922	T	A	ESR1	0.404" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --minDP 35 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -111,35 +146,50 @@ printf "testing --minGQ parameter...\n"
 
 printf "    bottleneck.patientB.minGQ10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287	0.0554716911435	-0.025333518655	0.73779842863
-9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.0	0.0	0.0178571428571	0.35	0.264150943396	0.0878301886792	-0.0492587601078	0.827307416385" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146	0.055	-0.025	0.738
+9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.000	0.000	0.018	0.350	0.264	0.088	-0.049	0.827" > exp
 oncogemini bottleneck \
     --patient B \
     --minGQ 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 13; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $14)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    bottleneck.patientB.minGQ141...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287	0.0554716911435	-0.025333518655	0.73779842863" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146	0.055	-0.025	0.738" > exp
 oncogemini bottleneck \
     --patient B \
     --minGQ 141 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 13; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $14)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    loh.patientB.minGQ10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4
-13	32912963	32912968	TGAAA	T	BRCA2	0.507246376812	0.986666666667	0.975	0.890625	0.875" > exp
+13	32912963	32912968	TGAAA	T	BRCA2	0.507	0.987	0.975	0.891	0.875" > exp
 oncogemini loh \
     --patient B \
     --minGQ 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 10; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $11)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -155,49 +205,69 @@ rm obs exp
 
 printf "    truncal.patientB.minGQ10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287
-6	152419919	152419920	T	C	ESR1	0.0	0.552631578947	0.463414634146	0.383333333333	0.40625" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146
+6	152419919	152419920	T	C	ESR1	0.000	0.553	0.463	0.383	0.406" > exp
 oncogemini truncal \
     --patient B \
     --minGQ 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 10; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $11)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    truncal.patientB.minGQ160...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4
-6	152419919	152419920	T	C	ESR1	0.0	0.552631578947	0.463414634146	0.383333333333	0.40625" > exp
+6	152419919	152419920	T	C	ESR1	0.000	0.553	0.463	0.383	0.406" > exp
 oncogemini truncal \
     --patient B \
     --minGQ 160 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 10; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $11)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC.minGQ10...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2
-6	152419921	152419922	T	A	ESR1	0.404255319149
-16	68842399	68842400	G	C	CDH1	0.588235294118" > exp
+6	152419921	152419922	T	A	ESR1	0.404
+16	68842399	68842400	G	C	CDH1	0.588" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --minGQ 10 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC.minGQ144...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2
-6	152419921	152419922	T	A	ESR1	0.404255319149" > exp
+6	152419921	152419922	T	A	ESR1	0.404" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --minGQ 144 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
  
@@ -208,50 +278,70 @@ printf "testing --samples parameter...\n"
 
 printf "    bottleneck.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B1	alt_AF.B2	alt_AF.B3	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.00588235294118	0.00806451612903	0.267605633803	0.130861640431	-0.0370108061398	0.869627975964
-6	152419921	152419922	T	A	ESR1	0.0	1.0	0.571428571429	0.285714285714	0.238095238095	0.569494797451
-9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.0	0.0178571428571	0.35	0.175	-0.052380952381	0.88778411242" > exp
+3	10089729	10089730	C	T	FANCD2	0.006	0.008	0.268	0.131	-0.037	0.870
+6	152419921	152419922	T	A	ESR1	0.000	1.000	0.571	0.286	0.238	0.569
+9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.000	0.018	0.350	0.175	-0.052	0.888" > exp
 oncogemini bottleneck \
     --patient B \
     --samples B1,B2,B3 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 11; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $12)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    loh.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B2	alt_AF.B3
-13	32912963	32912968	TGAAA	T	BRCA2	0.507246376812	0.975	0.890625" > exp
+13	32912963	32912968	TGAAA	T	BRCA2	0.507	0.975	0.891" > exp
 oncogemini loh \
     --patient B \
     --samples B0,B2,B3 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 8; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $9)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    truncal.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B4
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.146496815287
-6	152419919	152419920	T	C	ESR1	0.0	0.552631578947	0.40625" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.146
+6	152419919	152419920	T	C	ESR1	0.000	0.553	0.406" > exp
 oncogemini truncal \
     --patient B \
     --samples B0,B1,B4 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 8; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $9)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C1
-5	56168738	56168740	AC	A	MAP3K1	0.492753623188
-5	56183305	56183306	C	T	MAP3K1	0.415730337079" > exp
+5	56168738	56168740	AC	A	MAP3K1	0.493
+5	56183305	56183306	C	T	MAP3K1	0.416" > exp
 oncogemini unique \
     --patient C \
     --samples C0,C1 \
     --specific C1 \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -262,49 +352,69 @@ printf "testing --purity parameter...\n"
 
 printf "    bottleneck.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	raw.alt_AF.B0	alt_AF.B1	raw.alt_AF.B1	alt_AF.B2	raw.alt_AF.B2	alt_AF.B3	raw.alt_AF.B3	alt_AF.B4	raw.alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.0	0.00877963125549	0.00588235294118	0.0106112054329	0.00806451612903	0.334507042254	0.267605633803	0.292993630573	0.146496815287	0.0911714672145	-0.0529646325259	0.853015850722
-9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.0	0.0	0.0	0.0	0.0234962406015	0.0178571428571	0.4375	0.35	0.528301886792	0.264150943396	0.149410377358	-0.100961129238	0.90045628044" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.000	0.009	0.006	0.011	0.008	0.335	0.268	0.293	0.146	0.091	-0.053	0.853
+9	102595635	102595654	AACCTTCTCAGCCCTCTCC	A	NR4A3	0.000	0.000	0.000	0.000	0.023	0.018	0.438	0.350	0.528	0.264	0.149	-0.101	0.900" > exp
 oncogemini bottleneck \
     --patient B \
     --purity \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 18; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $19)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    loh.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	raw.alt_AF.B0	alt_AF.B1	raw.alt_AF.B1	alt_AF.B2	raw.alt_AF.B2	alt_AF.B3	raw.alt_AF.B3	alt_AF.B4	raw.alt_AF.B4
-13	32912963	32912968	TGAAA	T	BRCA2	0.507246376812	0.507246376812	1	0.986666666667	1	0.975	1	0.890625	1	0.875" > exp
+13	32912963	32912968	TGAAA	T	BRCA2	0.507	0.507	1.000	0.987	1.000	0.975	1.000	0.891	1.000	0.875" > exp
 oncogemini loh \
     --patient B \
     --purity \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 15; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $16)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    truncal.patientC...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C0	raw.alt_AF.C0	alt_AF.C1	raw.alt_AF.C1	alt_AF.C2	raw.alt_AF.C2
-5	56168738	56168740	AC	A	MAP3K1	0.0	0.0	1	0.492753623188	0.596153846154	0.476923076923
-5	56183305	56183306	C	T	MAP3K1	0.0	0.0	1	0.415730337079	0.427215189873	0.341772151899" > exp
+5	56168738	56168740	AC	A	MAP3K1	0.000	0.000	1.000	0.493	0.596	0.477
+5	56183305	56183306	C	T	MAP3K1	0.000	0.000	1.000	0.416	0.427	0.342" > exp
 oncogemini truncal \
     --patient C \
     --purity \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 11; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $12)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "    unique.patientC...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2	raw.alt_AF.C2
-6	152419921	152419922	T	A	ESR1	0.505319148936	0.404255319149
-16	68842399	68842400	G	C	CDH1	0.735294117647	0.588235294118" > exp
+6	152419921	152419922	T	A	ESR1	0.505	0.404
+16	68842399	68842400	G	C	CDH1	0.735	0.588" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --purity \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\t" "%0.3f\n", $7,$8)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -315,12 +425,17 @@ printf "testing --cancers parameter...\n"
 
 printf "    bottleneck.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4	slope	intercept	r_value
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287	0.0554716911435	-0.025333518655	0.73779842863" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146	0.055	-0.025	0.738" > exp
 oncogemini bottleneck \
     --patient B \
     --cancers AML,ST \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 13; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $14)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
@@ -336,24 +451,34 @@ rm obs exp
 
 printf "    truncal.patientB...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.B0	alt_AF.B1	alt_AF.B2	alt_AF.B3	alt_AF.B4
-3	10089729	10089730	C	T	FANCD2	0.0	0.00588235294118	0.00806451612903	0.267605633803	0.146496815287" > exp
+3	10089729	10089730	C	T	FANCD2	0.000	0.006	0.008	0.268	0.146" > exp
 oncogemini truncal \
     --patient B \
     --cancers AML,ST \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    for(i = 7; i <= 10; i++) printf("%0.3f\t"), $i; printf("%0.3f\n", $11)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
 printf "     unique.patientC...\n"
 echo "chrom	start	end	ref	alt	gene	alt_AF.C2
-16	68842399	68842400	G	C	CDH1	0.588235294118" > exp
+16	68842399	68842400	G	C	CDH1	0.588" > exp
 oncogemini unique \
     --patient C \
     --specific C2 \
     --cancers AML,ST \
     --columns "chrom,start,end,ref,alt,gene" \
-    oncogemini_test.db > obs
+    oncogemini_test.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%d\t" "%d\t" "%d\t" "%s\t" "%s\t" "%s\t", $1,$2,$3,$4,$5,$6); \
+    printf("%0.3f\n", $7)}' | \
+    grep -v "^0.000" > obs
 check obs exp
 rm obs exp
 
