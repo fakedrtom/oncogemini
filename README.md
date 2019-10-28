@@ -70,70 +70,51 @@ python vcf2db.py annotated.vcf.gz sample.manifest database.db
 Usage
 ----------------
 OncoGEMINI utilizes SQL queries in combination with tool commands to search the 
-database for variants that match requested filters. 
+database for variants that match requested filters. Some of the more prominant
+tools, and examples for using them, are listed below.
 
 ### query
 For general searches, the *query* tool allows for customization. This is carried over
 from GEMINI and further details can be found [here](https://gemini.readthedocs.io/en/latest/content/querying.html#basic-queries).
-For example, to search for a specific variant found on chromosome 13 at position 32,900,000, the following *query*
-command would return the chromosome, start and end positions, reference and alternate alleles and gene for 
-the specified variant (if it exists):
+The *query* command is highly flexible and specific. For example, to search for all
+variants on chromosome 13 that have a 'HIGH' impact severity, the following *query*
+command would return the chromosome, start and end positions, reference and alternate
+alleles and gene for all variants that meet those requirements (if any exist):
 
 ```
-oncogemini query -q "select chrom, start, end, ref, alt, gene from variants where chrom == 13 and start == 32899999 and end == 32900000" database.db
+oncogemini query -q "select chrom, start, end, ref, alt, gene from variants where chrom == 13 and impact_severity == 'HIGH'" database.db
 ```
 ### bottleneck
 The *bottleneck* tool is designed to identify variants whose allele frequencies increase across
 sampling timepoints. By default, *bottleneck* will require a variant to be absent in any normal
 samples, the slope made by all included allele frequencies is greater than 0.05, and the R
-correlation coefficient fo all allele frequencies if greater than 0.5, but these and other parameters
+correlation coefficient for all allele frequencies is greater than 0.5, but these and other parameters
 can be adjusted with the following usage options:
 
 ```
-usage: gemini bottleneck [-h] [--minDP INTEGER] [--minGQ INTEGER]
-                         [--maxNorm FLOAT] [--minSlope FLOAT] [--minR FLOAT]
-                         [--samples STRING] [--minEnd FLOAT] [--endDiff FLOAT]
-                         [--patient STRING] [--columns STRING]
-                         [--filter STRING] [--purity] [--somatic_only]
-                         [--cancers STRING]
-                         db
-
-positional arguments:
-  db                The name of the database to be queried
-
 optional arguments:
-  -h, --help        show this help message and exit
-  --minDP INTEGER   Minimum depth required in all samples default is 0)
-  --minGQ INTEGER   Minimum genotype quality required in all samples (default
-                    is 0)
   --maxNorm FLOAT   Specify a maximum normal sample AF to allow (default is 0)
   --minSlope FLOAT  Minimum slope required for the AFs across samples (default
                     is 0.05)
   --minR FLOAT      Minimum r correlation coefficient required for AFs
                     (default is 0.5)
-  --samples STRING  Rather than including all samples, a string of comma-
-                    separated specified samples to use (default is "All")
   --minEnd FLOAT    Minimum AF required of the sample representing the final
                     timepoint (default is 0)
   --endDiff FLOAT   Minimum required AF difference between the samples
                     representing the first and final timepoints (default is 0)
-  --patient STRING  Specify a patient to filter (should correspond to a
-                    patient_id in ped file)
-  --columns STRING  A list of columns that you would like returned (default is
-                    "*", which returns every column)
-  --filter STRING   Restrictions to apply to variants (SQL syntax)
-  --purity          Using purity estimates in ped file, make corrections to AF
-                    to be used
-  --somatic_only    Only include variants that have been marked as somatic via
-                    the set_somatic command
-  --cancers STRING  Restrict results to variants/genes associated with
-                    specific cancer types by entering a comma-separated string
-                    of cancer type abbreviations (see documents for
-                    abbreviations) REQUIRES that db include
-                    civic_gene_abbrevations and/or cgi_gene_abbreviations
 ```
+For example, to find variants that are increasing in allele frequency across all included
+samples, but that exhibit a steeper slope and have an impact severity that is either 'MED'
+or 'HIGH', the following command could be used:
+
+```
+oncogemini bottleneck --minSlope 0.4 --columns "chrom, start, end, ref, alt, gene" --filter "impact_severity != 'LOW'" database.db
+```
+This would return for any variants meeting those specifications the chromosome, start and
+end positions, referenece and alternate alleles, and the gene name.
+
 ### loh
-The *loh* or "loss of heterozygosity" too identifies variants that appear as heterozygotes
+The *loh* or "loss of heterozygosity" tool identifies variants that appear as heterozygotes
 in the normal samples, but as homozygotes in the tumor samples. Default settings expect an
 allele frequency between 0.3 and 0.7 in the normal samples and exceeded that of 0.8 for
 the tumor samples. These values can be adjusted from their defaults with the following
