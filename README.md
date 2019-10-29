@@ -73,7 +73,7 @@ OncoGEMINI utilizes SQL queries in combination with tool commands to search the
 database for variants that match requested filters. Some of the more prominant
 tools, and examples for using them, are listed below.
 
-### query
+### *query*
 For general searches, the *query* tool allows for customization. This is carried over
 from GEMINI and further details can be found [here](https://gemini.readthedocs.io/en/latest/content/querying.html#basic-queries).
 The *query* command is highly flexible and specific. For example, to search for all
