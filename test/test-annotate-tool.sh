@@ -509,7 +509,7 @@ bgzip -f anno.bed
 tabix -p bed anno.bed.gz
 
 # create a new column in the database using the new annotation
-echo "gemini annotate: error: argument -a: invalid choice: 'distract' (choose from 'boolean', 'count', 'extract')" > exp
+echo "oncogemini annotate: error: argument -a: invalid choice: 'distract' (choose from 'boolean', 'count', 'extract')" > exp
 
 oncogemini annotate -f anno.bed.gz -a distract -c anno23,anno24 -e 4,5 -t text,float -o last,mode  test.snpeff.vcf.db 2>&1 | tail -n1 > obs
 

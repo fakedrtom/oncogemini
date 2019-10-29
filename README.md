@@ -84,6 +84,42 @@ alleles and gene for all variants that meet those requirements (if any exist):
 ```
 oncogemini query -q "select chrom, start, end, ref, alt, gene from variants where chrom == 13 and impact_severity == 'HIGH'" database.db
 ```
+### Common Parameters
+The *bottleneck*, *loh*, *truncal*, and *unique* tools share the following parameters:
+```
+optional arguments:
+  -h, --help         show this help message and exit
+  --minDP INTEGER    Minimum depth required in all samples default is 0)
+  --minGQ INTEGER    Minimum genotype quality required in all samples (default
+                     is 0)
+  --patient STRING   Specify a patient to filter (should correspond to a
+                     patient_id in ped file)
+  --samples STRING   Rather than including all samples, enter a string of
+                     comma-separated specified samples to use (default is
+                     "All")
+  --columns STRING   A comma-separated list of columns that you would like
+                     returned (default is "*", which returns every column)
+  --filter STRING    Restrictions to apply to variants (SQL syntax)
+  --purity           Using purity estimates in cancer manidest, make
+                     corrections to AF to be used
+  --somatic_only    Only include variants that have been marked as somatic via
+                    the set_somatic command
+  --cancers STRING  Restrict results to variants/genes associated with
+                    specific cancer types by entering a comma-separated string
+                    of cancer type abbreviations (see documents for
+                    abbreviations) REQUIRES that db include
+                    civic_gene_abbrevations and/or cgi_gene_abbreviations
+```
+Of particular note are the `--columns` and `--filter` parameters. With `--columns` the desired
+output is specified while `--filter` allows for the listing of variant requirements. For example,
+`--columns "chrom, start, end, ref, alt, gene` and `--filter "impact_severity != 'LOW' and gene ==
+'BRCA2'"` will return the chromosome, start and end positions, reference and alternate allele, 
+and gene name for any variants that have an impact severity of 'MED' or 'HIGH' and are located 
+within the *BRCA2* gene. These are both highly customizable. If `--columns` is not invoked, all 
+information for a given variant that is stored in the database will be returned and if `--filter` 
+is not used, the variants will not be filtered with any criteria other than those that are built 
+into provided.
+ 
 ### bottleneck
 The *bottleneck* tool is designed to identify variants whose allele frequencies increase across
 sampling timepoints. By default, *bottleneck* will require a variant to be absent in any normal

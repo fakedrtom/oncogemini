@@ -309,18 +309,20 @@ done
 n=$(($n + 1))
 
 echo "    genotypes.$n x..."
-echo "-1.0	-1	-1
-0.0	0	2
-0.0	0	3
-0.666666666667	2	1
--1.0	-1	-1
--1.0	-1	-1
-0.0	0	79
--1.0	-1	-1
-0.142857142857	1	6
-0.0	0	4" > exp
-oncogemini query -q "select gt_alt_freqs.1094PC0009, gt_alt_depths.1094PC0009, gt_ref_depths.1094PC0009 from variants" test.snpeff.vcf.db \
-       > obs
+echo "-1.000	-1	-1
+0.000	0	2
+0.000	0	3
+0.667	2	1
+-1.000	-1	-1
+-1.000	-1	-1
+0.000	0	79
+-1.000	-1	-1
+0.143	1	6
+0.000	0	4" > exp
+oncogemini query -q "select gt_alt_freqs.1094PC0009, gt_alt_depths.1094PC0009, gt_ref_depths.1094PC0009 from variants" test.snpeff.vcf.db | \
+    awk '{if ($1=="chrom") print $0}; \
+    {if ($1 != "chrom") \
+    printf("%0.3f\t" "%d\t" "%d\n", $1,$2,$3)}' > obs
 
 check obs exp
 rm obs exp
