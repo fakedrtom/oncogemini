@@ -82,10 +82,11 @@ oncogemini query -q "select chrom, start, end, ref, alt, gene from variants wher
 ```
 ### *bottleneck*
 The *bottleneck* tool is designed to identify variants whose allele frequencies increase across
-sampling timepoints. By default, *bottleneck* will require a variant to be absent in any normal
-samples, the slope made by all included allele frequencies is greater than 0.05, and the R
-correlation coefficient for all allele frequencies is greater than 0.5, but these and other parameters
-can be adjusted with the following usage options:
+sampling timepoints. By default, *bottleneck* will require the slope made by all included allele
+frequencies to be greater than 0.05, and the R correlation coefficient for all allele frequencies
+to be greater than 0.5. If a normal sample has been included, it will also require that variant
+allele frquencies for that sample be 0. These and other parameters can be adjusted with the
+following usage options:
 
 ```
 optional arguments:
@@ -107,7 +108,8 @@ oncogemini bottleneck --minSlope 0.4 --minR 0.8 database.db
 ```
 ### *loh*
 The *loh* or "loss of heterozygosity" tool identifies variants that appear as heterozygotes
-in the normal samples, but as homozygotes in the tumor samples. Default settings expect an
+in the normal samples, but as homozygotes in the tumor samples. A normal sample must be
+including for the *loh* tool to function properly. Default settings expect an
 allele frequency between 0.3 and 0.7 in the normal samples and exceeded that of 0.8 for
 the tumor samples. These values can be adjusted from their defaults with the following
 usage options:
@@ -144,11 +146,12 @@ oncogemini loh --specific A3 --maxNorm 0.55 --minNorm 0.45 database.db
 In this example case, the `--maxNorm` and `--minNorm` parameters would be applied to
 the A2 sample.
 
-### truncal
+### *truncal*
 The *truncal* tool recovers variants that appear to be present in all included tumor
-samples, but absent from all normal samples. By default it will require that the
-allele frequency of any variant be 0 in the normal samples, but greater than that
-in all tumor samples. These requirements can be adjusted with the following usage options:
+samples, but absent from all normal samples. A normal sample muct be included for
+the *truncal* tool to work. By default it will require that the allele frequency of
+any variant be 0 in the normal samples, but greater than that in all tumor samples.
+These requirements can be adjusted with the following usage options:
 
 ```
 optional arguments:
@@ -157,7 +160,14 @@ optional arguments:
   --increase FLOAT  Optional: add amount to increase truncal AF filter between
                     normal and tumor samples (default is 0)
 ```
-### unique
+Here is a command that would allow for variants with non-zero allele frequencies in
+the normal sample(s) and require that the tumor samples have allele frequencies that
+are at least 0.2 greater than the maximum allowed allele frequencies in the normal
+sample(s):
+```
+oncogemini truncal --maxNorm 0.05 --increase 0.2 database.db
+```
+### *unique*
 To identify variants that appear to be unique to a sample (or group) or sample(s), the
 *unique* tool can be used. By default thsi tool expects the allele frequency of all other
 non-specified samples that are included to be 0, while all specified samples have an
@@ -172,6 +182,11 @@ optional arguments:
                      (default is 0)
   --increase FLOAT   Add amount to increase AF filter between unique and other
                      samples (default is 0)
+```
+If the database contains samples B0, B1, and B2, the *unique* tool can identify variants
+that are only found in B2:
+```
+oncogemini unique --specific B2
 ```
 ### Common Parameters
 The *bottleneck*, *loh*, *truncal*, and *unique* tools share the following parameters:
