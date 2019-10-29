@@ -112,13 +112,13 @@ optional arguments:
 ```
 Of particular note are the `--columns` and `--filter` parameters. With `--columns` the desired
 output is specified while `--filter` allows for the listing of variant requirements. For example,
-`--columns "chrom, start, end, ref, alt, gene` and `--filter "impact_severity != 'LOW' and gene ==
+`--columns "chrom, start, end, ref, alt, gene"` and `--filter "impact_severity != 'LOW' and gene ==
 'BRCA2'"` will return the chromosome, start and end positions, reference and alternate allele, 
 and gene name for any variants that have an impact severity of 'MED' or 'HIGH' and are located 
 within the *BRCA2* gene. These are both highly customizable. If `--columns` is not invoked, all 
 information for a given variant that is stored in the database will be returned and if `--filter` 
 is not used, the variants will not be filtered with any criteria other than those that are built 
-into provided.
+into provided tools.
  
 ### bottleneck
 The *bottleneck* tool is designed to identify variants whose allele frequencies increase across
@@ -157,45 +157,17 @@ the tumor samples. These values can be adjusted from their defaults with the fol
 usage options:
 
 ```
-usage: gemini loh [-h] [--minDP INTEGER] [--minGQ INTEGER] [--maxNorm FLOAT]
-                  [--minNorm FLOAT] [--minTumor FLOAT] [--patient STRING]
-                  [--samples STRING] [--columns STRING] [--filter STRING]
-                  [--purity] [--specific STRING] [--cancers STRING]
-                  db
-
-positional arguments:
-  db                 The name of the database to be queried.
-
 optional arguments:
-  -h, --help         show this help message and exit
-  --minDP INTEGER    Minimum depth required in all samples default is 0)
-  --minGQ INTEGER    Minimum genotype quality required in all samples (default
-                     is 0)
   --maxNorm FLOAT    Specify a maximum normal sample AF to allow (default is
                      0.7)
   --minNorm FLOAT    Specify a minimum normal sample AF to allow (default is
                      0.3)
   --minTumor FLOAT   Specify a minimum AF for tumor samples to require
                      (default is 0.8)
-  --patient STRING   Specify a patient to filter (should correspond to a
-                     patient_id in ped file)
-  --samples STRING   Rather than including all samples, enter a string of
-                     comma-separated specified samples to use (default is
-                     "All")
-  --columns STRING   A comma-separated list of columns that you would like
-                     returned (default is "*", which returns every column)
-  --filter STRING    Restrictions to apply to variants (SQL syntax)
-  --purity           Using purity estimates in cancer manidest, make
-                     corrections to AF to be used
   --specific STRING  Search for LOH variants in a single sample compared to
                      the sample(s) that precede it (must specify single sample
                      included among --samples, also --minNorm, --maxNorm will
                      now apply to the preceding sample)
-  --cancers STRING   Restrict results to variants/genes associated with
-                     specific cancer types by entering a comma-separated
-                     string of cancer type abbreviations (see documents for
-                     abbreviations) REQUIRES that db include
-                     civic_gene_abbrevations and/or cgi_gene_abbreviations
 ```
 ### truncal
 The *truncal* tool recovers variants that appear to be present in all included tumor
@@ -204,41 +176,11 @@ allele frequency of any variant be 0 in the normal samples, but greater than tha
 in all tumor samples. These requirements can be adjusted with the following usage options:
 
 ```
-usage: gemini truncal [-h] [--minDP INTEGER] [--minGQ INTEGER]
-                      [--maxNorm FLOAT] [--patient STRING] [--samples STRING]
-                      [--increase FLOAT] [--columns STRING] [--filter STRING]
-                      [--purity] [--somatic_only] [--cancers STRING]
-                      db
-
-positional arguments:
-  db                The name of the database to be queried.
-
 optional arguments:
-  -h, --help        show this help message and exit
-  --minDP INTEGER   Minimum depth required in all samples default is 0)
-  --minGQ INTEGER   Minimum genotype quality required in all samples (default
-                    is 0)
   --maxNorm FLOAT   Optional: specify a maximum normal sample AF to allow
                     (default is 0)
-  --patient STRING  Specify a patient to filter (should correspond to a
-                    patient_id in ped file)
-  --samples STRING  Optional: rather than including all samples, a string of
-                    comma-separated specified samples to use (default is
-                    "All")
   --increase FLOAT  Optional: add amount to increase truncal AF filter between
                     normal and tumor samples (default is 0)
-  --columns STRING  A list of columns that you would like returned (default is
-                    "*", which returns every column)
-  --filter STRING   Restrictions to apply to variants (SQL syntax)
-  --purity          Using purity estimates in ped file, make corrections to AF
-                    to be used
-  --somatic_only    Only include variants that have been marked as somatic via
-                    the set_somatic command
-  --cancers STRING  Restrict results to variants/genes associated with
-                    specific cancer types by entering a comma-separated string
-                    of cancer type abbreviations (see documents for
-                    abbreviations) REQUIRES that db include
-                    civic_gene_abbrevations and/or cgi_gene_abbreviations
 ```
 ### unique
 To identify variants that appear to be unique to a sample (or group) or sample(s), the
@@ -248,44 +190,13 @@ allele frequency greater than 0. These parameters can be adjusted with the follo
 usage options:
 
 ```
-usage: gemini unique [-h] [--minDP INTEGER] [--minGQ INTEGER]
-                     [--specific STRING] [--maxOthers FLOAT]
-                     [--patient STRING] [--samples STRING] [--increase FLOAT]
-                     [--columns STRING] [--filter STRING] [--purity]
-                     [--somatic_only] [--cancers STRING]
-                     db
-
-positional arguments:
-  db                 The name of the database to be queried.
-
 optional arguments:
-  -h, --help         show this help message and exit
-  --minDP INTEGER    Minimum depth required in all samples default is 0)
-  --minGQ INTEGER    Minimum genotype quality required in all samples (default
-                     is 0)
   --specific STRING  Identify unique variants that exist only in samples from
                      this comma-separated list
   --maxOthers FLOAT  Specify a maximum sample AF to allow in other samples
                      (default is 0)
-  --patient STRING   Specify a patient to filter (should correspond to a
-                     patient_id in ped file)
-  --samples STRING   Rather than including all samples in filters, a string of
-                     comma-separated specified samples to use (default is
-                     "All")
   --increase FLOAT   Add amount to increase AF filter between unique and other
                      samples (default is 0)
-  --columns STRING   A list of columns that you would like returned (default
-                     is "*", which returns every column)
-  --filter STRING    Restrictions to apply to variants (SQL syntax)
-  --purity           Using purity estimates in ped file, make corrections to
-                     AF to be used
-  --somatic_only     Only include variants that have been marked as somatic
-                     via the set_somatic command
-  --cancers STRING   Restrict results to variants/genes associated with
-                     specific cancer types by entering a comma-separated
-                     string of cancer type abbreviations (see documents for
-                     abbreviations) REQUIRES that db include
-                     civic_gene_abbrevations and/or cgi_gene_abbreviations
 ```
 Citation
 ================
@@ -295,5 +206,4 @@ If you use OncoGEMINI in your research, please cite the following manuscript:
 Acknowledgements
 ================
 OncoGEMINI is being developed in the Quinlan lab (quinlanlab.org) at the University
-of Utah and is led by Tom Nicholas and Aaron Quinlan.  Substantial contributions and discussions 
-have been made by Michael Cormier, Brent Pedersen, Yi Qiao, Xiaomeng Huang, and Gabor Marth.
+of Utah and is led by Tom Nicholas and Aaron Quinlan.
