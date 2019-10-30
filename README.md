@@ -35,7 +35,6 @@ a completed vcfanno configuration file, VCFs can be annotated quite simply:
 ```
 ./vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf.gz
 ```
-
 OncoGEMINI was also developed alongside [CRAB](https://github.com/fakedrtom/cancer_annotations) and many useful, cancer-relevant
 annotations can be found and downloaded there, including a vcfanno configuration for many
 of the included annotations.
@@ -57,7 +56,6 @@ tumor samples with different sampling times), and any sample purity values, if k
 1               B0      0               0               2       1               B               0       0
 1               B1      0               0               2       2               B               1       0.5
 ```
-
 Together, the annotated VCF and sample manifest file are used by the vcf2db script to generate
 the OncoGEMINI database:
 ```
@@ -152,7 +150,6 @@ samples, but absent from all normal samples. A normal sample muct be included fo
 the *truncal* tool to work. By default it will require that the allele frequency of
 any variant be 0 in the normal samples, but greater than that in all tumor samples.
 These requirements can be adjusted with the following usage options:
-
 ```
 optional arguments:
   --maxNorm FLOAT   Optional: specify a maximum normal sample AF to allow
@@ -173,7 +170,6 @@ To identify variants that appear to be unique to a sample (or group) or sample(s
 non-specified samples that are included to be 0, while all specified samples have an
 allele frequency greater than 0. These parameters can be adjusted with the following
 usage options:
-
 ```
 optional arguments:
   --specific STRING  Identify unique variants that exist only in samples from
