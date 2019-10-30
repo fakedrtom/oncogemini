@@ -85,7 +85,6 @@ frequencies to be greater than 0.05, and the R correlation coefficient for all a
 to be greater than 0.5. If a normal sample has been included, it will also require that variant
 allele frquencies for that sample be 0. These and other parameters can be adjusted with the
 following usage options:
-
 ```
 optional arguments:
   --maxNorm FLOAT   Specify a maximum normal sample AF to allow (default is 0)
@@ -111,7 +110,6 @@ including for the *loh* tool to function properly. Default settings expect an
 allele frequency between 0.3 and 0.7 in the normal samples and exceeded that of 0.8 for
 the tumor samples. These values can be adjusted from their defaults with the following
 usage options:
-
 ```
 optional arguments:
   --maxNorm FLOAT    Specify a maximum normal sample AF to allow (default is
