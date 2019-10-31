@@ -1,4 +1,4 @@
-numpy>=1.7.1
+numpy>=1.7.1,<=1.15.4
 inheritance>=0.1.3
 sqlalchemy>=1
 PyYAML>=3.10
