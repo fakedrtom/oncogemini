@@ -11,9 +11,9 @@ long_description = """
 with open("requirements.txt", "r") as f:
     install_requires = [x.strip() for x in f.readlines() if not
                         x.startswith(("oncogemini", "http", "git", "vcfanno", "vcf2db"))]
-with open("requirements.txt", "r") as f:
-    conda_install_requires = [x.strip() for x in f.readlines() if 
-                        x.startswith(("vcfanno", "vcf2db"))]
+#with open("requirements.txt", "r") as f:
+#    conda_install_requires = [x.strip() for x in f.readlines() if 
+#                        x.startswith(("vcfanno", "vcf2db"))]
 
 setup(
         name="oncogemini",
@@ -50,4 +50,4 @@ setup(
             'Topic :: Scientific/Engineering :: Bio-Informatics']
     )
 
-sp.check_call(["conda","install","-y","-c","bioconda", "vcf2db", "vcfanno"])
+#sp.check_call(["conda","install","-y","-c","bioconda", "vcf2db", "vcfanno"])
