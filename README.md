@@ -12,7 +12,23 @@ annotations and various allele frequency signatures.
 
 Installation
 ============
-
+To create an `oncogemini` executable:
+```
+conda install -c bioconda oncogemini
+```
+For full access to all oncogemini scripts and files, clone this repo:
+```
+git clone https://github.com/fakedrtom/oncogemini.git
+```
+Test the executable by running the `master-test.sh` script:
+```
+cd oncogemini
+./master-test.sh
+```
+This will first create several test oncogemini databases and then run through a series of tests that will
+see if basic functionalities of various oncogemini tools and commands are functioning as expected. All tests
+that pass will be indicated with an ok or the lack of an error. If all tests pass, the test databases and
+temporary files generated throughout the tests will then be removed.
 
 Documentation
 ================
@@ -50,7 +66,7 @@ alongside [vcfanno](https://github.com/brentp/vcfanno) to accomplish all VCF ann
 Please consult the vcfanno link for details regarding its proper usage, but in short, with
 a completed vcfanno configuration file, VCFs can be annotated quite simply:
 ```
-./vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf.gz
+vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf.gz
 ```
 OncoGEMINI was also developed alongside [CRAB](https://github.com/fakedrtom/cancer_annotations) and many useful, cancer-relevant
 annotations can be found and downloaded there, including a vcfanno configuration for many
@@ -64,7 +80,7 @@ sample manifest, to be included. The structure of this file is similar to a more
 pedigree file, but inlcudes additional columns corresponding to a patient
 identifier, the sequential point in which that sample was obtained (to reflect longitudinal
 data across multiple timepoints where time = 0 reflect a normal or non-tumor sample and time > 0 indicates
-tumor samples with different sampling times), and any sample purity values, if known.
+tumor samples with different sampling times), and any sample purity values (optional), if known.
 ```
 #family_id      name    paternal_id     maternal_id     sex     phenotype       patient_id      time    purity
 1               A0      0               0               2       1               A               0       0
@@ -76,7 +92,7 @@ tumor samples with different sampling times), and any sample purity values, if k
 Together, the annotated VCF and sample manifest file are used by the vcf2db script to generate
 the OncoGEMINI database:
 ```
-python vcf2db.py annotated.vcf.gz sample.manifest database.db
+vcf2db.py annotated.vcf.gz sample.manifest database.db
 ```
 
 Usage
@@ -100,7 +116,7 @@ The *bottleneck* tool is designed to identify variants whose allele frequencies 
 sampling timepoints. By default, *bottleneck* will require the slope made by all included allele
 frequencies to be greater than 0.05, and the R correlation coefficient for all allele frequencies
 to be greater than 0.5. If a normal sample has been included, it will also require that variant
-allele frquencies for that sample be 0. These and other parameters can be adjusted with the
+allele frequencies for that sample be 0. These and other parameters can be adjusted with the
 following usage options:
 ```
 optional arguments:
