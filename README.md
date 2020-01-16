@@ -12,13 +12,24 @@ annotations and various allele frequency signatures.
 
 Installation
 ============
-To create an `oncogemini` executable:
+To create an `oncogemini` executable, first make sure the proper conda channels are added:
+```
+$ conda config --add channels defaults
+$ conda config --add channels bioconda
+$ conda config --add channels conda-forge
+```
+Then simply install `oncogemini`:
 ```
 conda install -c bioconda oncogemini
 ```
 For full access to all OncoGEMINI scripts and files, clone this repo:
 ```
 git clone https://github.com/fakedrtom/oncogemini.git
+```
+The `setup.py` can also create a `oncogemini`, but will not create executables for `vcfanno` and `vcf2db.py` like
+the the conda installer will.
+```
+python setup.py install
 ```
 Test the executable by running the `master-test.sh` script:
 ```
