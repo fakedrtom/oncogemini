@@ -22,7 +22,7 @@ Then simply install `oncogemini`:
 ```
 conda install -c bioconda oncogemini
 ```
-This will also create executables for `vcfanno` and vcf2db.py`, which OncoGEMINI is designed to work with.
+This will also create executables for `vcfanno` and `vcf2db.py`, which OncoGEMINI is designed to work with.
 
 For all OncoGEMINI scripts and files, clone this repo:
 ```
