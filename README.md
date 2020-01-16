@@ -16,7 +16,7 @@ To create an `oncogemini` executable:
 ```
 conda install -c bioconda oncogemini
 ```
-For full access to all oncogemini scripts and files, clone this repo:
+For full access to all OncoGEMINI scripts and files, clone this repo:
 ```
 git clone https://github.com/fakedrtom/oncogemini.git
 ```
@@ -25,8 +25,8 @@ Test the executable by running the `master-test.sh` script:
 cd oncogemini
 ./master-test.sh
 ```
-This will first create several test oncogemini databases and then run through a series of tests that will
-see if basic functionalities of various oncogemini tools and commands are functioning as expected. All tests
+This will first create several test OncoGEMINI databases and then run through a series of tests that will
+see if basic functionalities of various OncoGEMINI tools and commands are functioning as expected. All tests
 that pass will be indicated with an ok or the lack of an error. If all tests pass, the test databases and
 temporary files generated throughout the tests will then be removed.
 
