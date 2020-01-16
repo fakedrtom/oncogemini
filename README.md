@@ -244,13 +244,13 @@ optional arguments:
   --columns STRING   A comma-separated list of columns that you would like
                      returned (default is "*", which returns every column)
   --filter STRING    Restrictions to apply to variants (SQL syntax)
-  --purity           Using purity estimates in cancer manidest, make
+  --purity           Using purity estimates in cancer manifest file, make
                      corrections to AF to be used
   --somatic_only    Only include variants that have been marked as somatic via
                     the set_somatic command
   --cancers STRING  Restrict results to variants/genes associated with
                     specific cancer types by entering a comma-separated string
-                    of cancer type abbreviations (see documents for
+                    of cancer type abbreviations (see documents for 
                     abbreviations) REQUIRES that db include
                     civic_gene_abbrevations and/or cgi_gene_abbreviations
 ```
@@ -263,6 +263,12 @@ within the *BRCA2* gene. These are both highly customizable. If `--columns` is n
 information for a given variant that is stored in the database will be returned and if `--filter` 
 is not used, the variants will not be filtered with any criteria other than those that are built 
 into provided tools.
+
+The `--cancers` parameter allows filtered results to be limited to variants in genes with
+reported associations with specific cancer types. Currently this is intended to be used alongside
+annotations from CIViC and CGI and is not available for use without these annotations (please refer
+to the [CRAB](https://github.com/fakedrtom/crab) to include these annotations). For a list of cancer
+types and their accepted abbreviations, please refer to [this](https://github.com/fakedrtom/crab/blob/master/cancer_names_abbreviations.txt).
 
 Citation
 ================
