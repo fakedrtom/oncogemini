@@ -271,5 +271,5 @@ If you use OncoGEMINI in your research, please cite the following manuscript:
 
 Acknowledgements
 ================
-OncoGEMINI is being developed in the [Quinlan lab](quinlanlab.org) at the University
+OncoGEMINI is being developed in the [Quinlan lab](http://quinlanlab.org/) at the University
 of Utah and is led by Tom Nicholas.
