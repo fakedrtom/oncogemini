@@ -22,12 +22,14 @@ Then simply install `oncogemini`:
 ```
 conda install -c bioconda oncogemini
 ```
-For full access to all OncoGEMINI scripts and files, clone this repo:
+This will also create executables for `vcfanno` and vcf2db.py`, which OncoGEMINI is designed to work with.
+
+For all OncoGEMINI scripts and files, clone this repo:
 ```
 git clone https://github.com/fakedrtom/oncogemini.git
 ```
-The `setup.py` can also create a `oncogemini`, but will not create executables for `vcfanno` and `vcf2db.py` like
-the the conda installer will.
+The `setup.py` can also create an `oncogemini` executable, but will not create executables for `vcfanno`
+and `vcf2db.py` like the the conda installer will.
 ```
 python setup.py install
 ```
