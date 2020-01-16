@@ -634,7 +634,7 @@ def main():
             help='Restrictions to apply to variants (SQL syntax)')
     parser_truncal.add_argument('--purity',
             action="store_true",
-            help='Using purity estimates in ped file, make corrections to AF to be used')
+            help='Using purity estimates in sample manifest file, make corrections to AF to be used')
     parser_truncal.add_argument('--somatic_only',
             action="store_true",                       
             help='Only include variants that have been marked as somatic via the set_somatic command')
@@ -694,7 +694,7 @@ def main():
             help='Restrictions to apply to variants (SQL syntax)')
     parser_loh.add_argument('--purity',
             action="store_true",
-            help='Using purity estimates in cancer manidest, make corrections to AF to be used')
+            help='Using purity estimates in sample manifest file, make corrections to AF to be used')
     parser_loh.add_argument('--specific',
             dest='specific',
             metavar='STRING',
@@ -763,7 +763,7 @@ def main():
             help='Restrictions to apply to variants (SQL syntax)')
     parser_bottleneck.add_argument('--purity',
             action="store_true",                       
-            help='Using purity estimates in ped file, make corrections to AF to be used')
+            help='Using purity estimates in sample manifest file, make corrections to AF to be used')
     parser_bottleneck.add_argument('--somatic_only',
             action="store_true",                       
             help='Only include variants that have been marked as somatic via the set_somatic command')
@@ -823,7 +823,7 @@ def main():
             help='Restrictions to apply to variants (SQL syntax)')
     parser_unique.add_argument('--purity',
             action="store_true",
-            help='Using purity estimates in ped file, make corrections to AF to be used')
+            help='Using purity estimates in sample manifest file, make corrections to AF to be used')
     parser_unique.add_argument('--somatic_only',
             action="store_true",                       
             help='Only include variants that have been marked as somatic via the set_somatic command')
