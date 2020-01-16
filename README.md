@@ -23,6 +23,23 @@ VCF Preparation
 ----------------
 Like GEMINI, multi-allelic sites need to be decomposed and normalized using [vt](https://genome.sph.umich.edu/wiki/Vt).
 A more thorough explanation and guide for doing this can be found at the [GEMINI documentation](https://gemini.readthedocs.io/en/latest/#new-gemini-workflow).
+Provided that vt is available and in your path, the following from the GEMINI docs
+should be sufficient for decomposing and normalizing a VCF:
+```
+# setup
+VCF=your.vcf.gz
+NORMVCF=your.norm.vcf.gz
+REF=your_reference.fasta
+
+# decompose, normalize and annotate VCF with snpEff.
+# NOTE: can also swap snpEff with VEP
+zless $VCF \
+   | sed 's/ID=AD,Number=./ID=AD,Number=R/' \
+   | vt decompose -s - \
+   | vt normalize -r $REF - \
+   | bgzip -c > $NORMVCF
+tabix -p vcf $NORMVCF
+```
 Similarly, it is recommended that a VCF be annotated with either VEP or SnpEff before
 additional annotations are included.
 
