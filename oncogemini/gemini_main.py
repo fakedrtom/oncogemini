@@ -438,37 +438,37 @@ def main():
             dest='normAF',
             type=float,
             default=0,
-            help='The max freq. of the alt. allele in the normal sample (def: %(default)s).')
+            help='The maximum frequency of the alternate allele in the normal sample (default 0).')
 
     parser_set_somatic.add_argument('--normCount',
             dest='normCount',
             type=int,
             default=0,
-            help='The max count. of the alt. allele in the normal sample (def: %(default)s).')
+            help='The maximum count of the alternate allele in the normal sample (default 0).')
 
     parser_set_somatic.add_argument('--normDP',
             dest='normDP',
             type=int,
             default=0,
-            help='The minimum depth allowed in the normal sample to believe somatic (def: %(default)s).')
+            help='The minimum depth allowed in the normal sample to believe somatic (default 0).')
 
     parser_set_somatic.add_argument('--tumAF',
             dest='tumAF',
             type=float,
             default=0,
-            help='The min freq. of the alt. allele in the tumor sample (def: %(default)s).')
+            help='The minimum frequency of the alternate allele in the tumor sample (default 0).')
 
     parser_set_somatic.add_argument('--tumCount',
             dest='tumCount',
             type=int,
             default=0,
-            help='The min count. of the alt. allele in the tumor sample (def: %(default)s).')
+            help='The minimum count of the alternate allele in the tumor sample (default 0).')
 
     parser_set_somatic.add_argument('--tumDP',
             dest='tumDP',
             type=int,
             default=0,
-            help='The minimum depth allowed in the tumor sample to believe somatic (def: %(default)s).')
+            help='The minimum depth allowed in the tumor sample to believe somatic (default 0).')
 
 #    parser_set_somatic.add_argument('--chrom',
 #            dest='chrom',

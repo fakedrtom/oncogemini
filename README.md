@@ -226,7 +226,7 @@ optional arguments:
 If the database contains samples B0, B1, and B2, the *unique* tool can identify variants
 that are only found in B2:
 ```
-oncogemini unique --specific B2
+oncogemini unique --specific B2 database.db
 ```
 ### Common Parameters
 The *bottleneck*, *loh*, *truncal*, and *unique* tools share the following parameters:
@@ -269,6 +269,49 @@ reported associations with specific cancer types. Currently this is intended to 
 annotations from CIViC and CGI and is not available for use without these annotations (please refer
 to the [CRAB](https://github.com/fakedrtom/crab) to include these annotations). For a list of cancer
 types and their accepted abbreviations, please refer to [this](https://github.com/fakedrtom/crab/blob/master/cancer_names_abbreviations.txt).
+
+###Somatic Mutations
+OncoGEMINI will evaluate all variants within the database and select those that meet specified tool
+and annotation filter requirements. Thus, if the VCF used to create the database contained both
+germline and somatic mutations, both mutation types would be considered by OncoGEMINI commands. To
+focus solely on somatic mutations, it is recommended that the VCF used for the creation of a OncoGEMINI
+database be pre-filtered to only include somatic mutations. If that is not possible, the *set_somatic*
+tool may be employed which allows for variants within a OncoGEMINI database to be “flagged” as somatic
+based on user defined criteria regarding normal and tumor sample sequencing depths and allele frequencies.
+OncoGEMINI tools may then take advantage of the `--somatic-only` parameter to restrict variant evaluations
+to only those variants that have been marked as somatic in the database by the *set_somatic* tool.
+
+### *set_somatic*
+The following parameters are available to *set_somatic* for defining potential somatic mutations:
+```
+optional arguments:
+  -h, --help            show this help message and exit
+  --minDP MINDP         Minimum depth required in all samples (default is 0)
+  --minGQ MINGQ         Minimum genotype quality required in all samples
+                        (default is 0)
+  --normAF NORMAF       The maximum frequency of the alternate allele in the
+                        normal sample (default 0).
+  --normCount NORMCOUNT
+                        The maximum count of the alternate allele in the
+                        normal sample (default 0).
+  --normDP NORMDP       The minimum depth allowed in the normal sample to
+                        believe somatic (default 0).
+  --tumAF TUMAF         The minimum frequency of the alternate allele in the
+                        tumor sample (default 0).
+  --tumCount TUMCOUNT   The minimum count of the alternate allele in the tumor
+                        sample (default 0).
+  --tumDP TUMDP         The minimum depth allowed in the tumor sample to
+                        believe somatic (default 0).
+  --dry-run             Don't set the is_somatic flag, just report what
+                        _would_ be set. For testing parameters.
+```
+For example, to for all normal samples to have a slight alternate allele frequency (AF < 0.05), but require
+a higher read depth threshold (DP >= 20) and tumor samples have a higher allele frequency threshold (AF > 0.2),
+using *set_somatic*, variants in the database can be mark as somatic with the following:
+
+```
+oncogemini set_somatic --normAF 0.05 --normDP 20 --tumAF 0.2 database.db
+```
 
 Citation
 ================
