@@ -270,7 +270,7 @@ annotations from CIViC and CGI and is not available for use without these annota
 to the [CRAB](https://github.com/fakedrtom/crab) to include these annotations). For a list of cancer
 types and their accepted abbreviations, please refer to [this](https://github.com/fakedrtom/crab/blob/master/cancer_names_abbreviations.txt).
 
-###Somatic Mutations
+### Somatic Mutations
 OncoGEMINI will evaluate all variants within the database and select those that meet specified tool
 and annotation filter requirements. Thus, if the VCF used to create the database contained both
 germline and somatic mutations, both mutation types would be considered by OncoGEMINI commands. To
