@@ -79,7 +79,7 @@ alongside [vcfanno](https://github.com/brentp/vcfanno) to accomplish all VCF ann
 Please consult the vcfanno link for details regarding its proper usage, but in short, with
 a completed vcfanno configuration file, VCFs can be annotated quite simply:
 ```
-vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf.gz
+vcfanno vcfanno.config prepared.vcf.gz > annotated.vcf
 ```
 OncoGEMINI was also developed alongside [CRAB](https://github.com/fakedrtom/cancer_annotations) and many useful, cancer-relevant
 annotations can be found and downloaded there, including a vcfanno configuration for many
