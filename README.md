@@ -275,11 +275,13 @@ OncoGEMINI will evaluate all variants within the database and select those that 
 and annotation filter requirements. Thus, if the VCF used to create the database contained both
 germline and somatic mutations, both mutation types would be considered by OncoGEMINI commands. To
 focus solely on somatic mutations, it is recommended that the VCF used for the creation of a OncoGEMINI
-database be pre-filtered to only include somatic mutations. If that is not possible, the *set_somatic*
-tool may be employed which allows for variants within a OncoGEMINI database to be “flagged” as somatic
-based on user defined criteria regarding normal and tumor sample sequencing depths and allele frequencies.
-OncoGEMINI tools may then take advantage of the `--somatic-only` parameter to restrict variant evaluations
-to only those variants that have been marked as somatic in the database by the *set_somatic* tool.
+database be pre-filtered to only include somatic mutations or that somatic mutations be clearly labeled
+in the VCF so they are incorporated as a filterable annotation within the database. If that is not
+possible, the *set_somatic* tool may be employed which allows for variants within a OncoGEMINI database
+to be “flagged” as somatic based on user defined criteria regarding normal and tumor sample sequencing
+depths and allele frequencies. OncoGEMINI tools may then take advantage of the `--somatic-only`
+parameter to restrict variant evaluations to only those variants that have been marked as somatic in
+the database by the *set_somatic* tool.
 
 ### *set_somatic*
 The following parameters are available to *set_somatic* for defining potential somatic mutations:
