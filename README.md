@@ -210,8 +210,8 @@ sample(s):
 oncogemini truncal --maxNorm 0.05 --increase 0.2 database.db
 ```
 ### *unique*
-To identify variants that appear to be unique to a sample (or group) or sample(s), the
-*unique* tool can be used. By default thsi tool expects the allele frequency of all other
+To identify variants that appear to be unique to a sample (or group of samples), the
+*unique* tool can be used. By default this tool expects the allele frequency of all other
 non-specified samples that are included to be 0, while all specified samples have an
 allele frequency greater than 0. These parameters can be adjusted with the following
 usage options:
