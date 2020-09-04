@@ -317,7 +317,7 @@ oncogemini set_somatic --normAF 0.05 --normDP 20 --tumAF 0.2 database.db
 
 Citation
 ================
-If you use OncoGEMINI in your research, please cite the following manuscript:
+If you use OncoGEMINI in your research, please cite this [manuscript](https://www.biorxiv.org/content/10.1101/2020.03.10.979591v1).
 
 
 Acknowledgements
