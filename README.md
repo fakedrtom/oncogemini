@@ -9,6 +9,7 @@ tumor sequencing data. Using a GEMINI-compatible database (generated from an ann
 VCF file), OncoGEMINI is able to filter tumor variants based on included genomic
 annotations and various allele frequency signatures. 
 
+![overview](https://github.com/fakedrtom/oncogemini/blob/master/images/overview.png)
 
 Installation
 ============
@@ -317,7 +318,7 @@ oncogemini set_somatic --normAF 0.05 --normDP 20 --tumAF 0.2 database.db
 
 Citation
 ================
-If you use OncoGEMINI in your research, please cite this [manuscript](https://www.biorxiv.org/content/10.1101/2020.03.10.979591v1).
+If you use OncoGEMINI in your research, please cite [this manuscript](https://www.biorxiv.org/content/10.1101/2020.03.10.979591v1).
 
 
 Acknowledgements
