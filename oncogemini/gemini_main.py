@@ -477,6 +477,10 @@ def main():
 #            default=None,
 #            )
 
+    parser_set_somatic.add_argument('--purity',
+            action="store_true",
+            help='Using purity estimates in sample manifest file, make corrections to AF to be used')
+    
     parser_set_somatic.add_argument('--dry-run',
             dest='dry_run',
             action='store_true',

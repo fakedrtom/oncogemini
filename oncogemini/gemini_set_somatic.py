@@ -8,6 +8,13 @@ def tag_somatic_mutations(args):
 
     gq = GeminiQuery.GeminiQuery(args.db)
 
+    # if purity is invoked, get the purity values
+    if args.purity:
+        query = "select name, purity from samples"
+        purity = {}
+        gq.run(query)
+        utils.get_purity(gq, purity)
+    
     # first query is to establish the patients in db and assign sample names 
     # to patient_ids
     query = "select patient_id, name, time from samples"
@@ -81,7 +88,10 @@ def tag_somatic_mutations(args):
                 sampleGQ = row['gt_quals'][smpidx]
                 quals.append(sampleGQ)
                 sample_count = row['gt_alt_depths'][smpidx]
-                sampleAF = row['gt_alt_freqs'][smpidx]
+                if args.purity:
+                    sampleAF = utils.purityAF(row['gt_alt_freqs'][smpidx],purity[s])
+                else:
+                    sampleAF = row['gt_alt_freqs'][smpidx]
                 sampleGT = row['gt_types'][smpidx]
                 if s in normal_samples:
                     normDPs.append(sampleDP)
