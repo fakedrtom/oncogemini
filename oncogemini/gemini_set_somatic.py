@@ -8,6 +8,48 @@ def tag_somatic_mutations(args):
 
     gq = GeminiQuery.GeminiQuery(args.db)
 
+    # interpret parameters
+    if args.minDP:
+        minDP = args.minDP
+    else:
+        minDP = 0
+    if args.minGQ:
+        minGQ = args.minGQ
+    else:
+        minGQ = 0
+    normFlag = 0
+    if args.normAF:
+        normAF = args.normAF
+        normFlag = 1
+    else:
+        normAF = 0
+    if args.normCount:
+        normCount = args.normCount
+        normFlag = 1
+    else:
+        normCount = 0
+    if args.normDP:
+        normDP = args.normDP
+        normFlag = 1
+    else:
+        normDP = 0
+    tumFlag = 0
+    if args.tumAF:
+        tumAF = args.tumAF
+        tumFlag = 1
+    else:
+        tumAF = 0
+    if args.tumCount:
+        tumCount = args.tumCount
+        tumFlag = 1
+    else:
+        tumCount = 0
+    if args.tumDP:
+        tumDP = args.tumDP
+        tumFlag = 1
+    else:
+        tumDP = 0
+
     # if purity is invoked, get the purity values
     if args.purity:
         query = "select name, purity from samples"
@@ -105,30 +147,69 @@ def tag_somatic_mutations(args):
                     tumGTs.append(sampleGT)
             
             # start filtering
-            if min(depths) < args.minDP or min(quals) < args.minGQ:
+            if min(depths) < minDP or min(quals) < minGQ:
                 continue
-            if any(gt != HOM_REF for gt in normGTs):
-                continue
-            if all(gt == HOM_REF for gt in tumGTs):
-                continue
-            if args.normDP:
-                if min(normDPs) < args.normDP: #or max(norm_counts) > args.normCount or max(normAFs) > args.normAF:
+
+            # normal samples filtering
+            if normFlag == 0:
+                if any(gt != HOM_REF for gt in normGTs):
                     continue
-            if args.normCount:
-                if max(norm_counts) > args.normCount:
+            elif normFlag == 1:
+                if args.normDP:
+                    if min(normDPs) < args.normDP: #or max(norm_counts) > args.normCount or max(normAFs) > args.normAF:
+                        continue
+                if args.normCount:
+                    if max(norm_counts) > args.normCount:
+                        continue
+                if args.normAF:
+                    if max(normAFs) > args.normAF:
+                        continue
+
+            # tumor samples filtering
+            # if parameters are provided, have to make sure the same sample passes them
+            if tumFlag == 0:
+                if all(gt == HOM_REF for gt in tumGTs):
                     continue
-            if args.normAF:
-                if max(normAFs) > args.normAF:
+                if any(gt == HET for gt in tumGTs) or any(gt == HOM_ALT for gt in tumGTs):
+                    somatic_counter += 1
+                    somatic_v_ids.append((1, row['variant_id']))
+                    print('\t'.join(str(s) for s in [row['variant_id'], row['chrom'], row['start'], row['end'], row['ref'], \
+                                                     row['alt'], row['gene'], normGTs, tumGTs, normDPs, tumDPs, norm_counts, \
+                                                     tum_counts, normAFs, tumAFs]))
+            elif tumFlag == 1:
+                tum_passed = {}
+                if args.tumDP:
+                    passed = [i for i, x in enumerate(tumDPs) if x >= args.tumDP]
+                    tum_passed['DP'] = passed
+                if args.tumCount:
+                    passed = [i for i, x in enumerate(tum_counts) if x >= args.tumCount]
+                    tum_passed['Count'] = passed
+                if args.tumAF:
+                    passed = [i for i, x in enumerate(tumAFs) if x >= args.tumAF]
+                    tum_passed['AF'] = passed
+                if len(tum_passed) == 0:
                     continue
-            if any(dp >= args.tumDP for dp in tumDPs):
-                if any(count >= args.tumCount for count in tum_counts):
-                    if any(af >= args.tumAF for af in tumAFs):
+                else:
+                    final = []
+                    for i in tum_passed:
+                        if len(final) == 0:
+                            final = final + tum_passed[i]
+                        else:
+                            final = list(set(final) & set(tum_passed[i]))
+                    if len(final) > 0:
                         somatic_counter += 1
                         somatic_v_ids.append((1, row['variant_id']))
-                        
                         print('\t'.join(str(s) for s in [row['variant_id'], row['chrom'], row['start'], row['end'], row['ref'], \
                                                         row['alt'], row['gene'], normGTs, tumGTs, normDPs, tumDPs, norm_counts, \
                                                         tum_counts, normAFs, tumAFs]))
+#            if any(dp >= args.tumDP for dp in tumDPs):
+#                if any(count >= args.tumCount for count in tum_counts):
+#                    if any(af >= args.tumAF for af in tumAFs):
+#                        somatic_counter += 1
+#                        somatic_v_ids.append((1, row['variant_id']))                        
+#                        print('\t'.join(str(s) for s in [row['variant_id'], row['chrom'], row['start'], row['end'], row['ref'], \
+#                                                        row['alt'], row['gene'], normGTs, tumGTs, normDPs, tumDPs, norm_counts, \
+#                                                        tum_counts, normAFs, tumAFs]))
 
         if not args.dry_run:
             # establish a connection to the database
