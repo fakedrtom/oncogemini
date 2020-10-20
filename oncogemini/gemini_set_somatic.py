@@ -111,8 +111,15 @@ def tag_somatic_mutations(args):
                 continue
             if all(gt == HOM_REF for gt in tumGTs):
                 continue
-            if min(normDPs) < args.normDP or max(norm_counts) > args.normCount or max(normAFs) > args.normAF:
-                continue
+            if args.normDP:
+                if min(normDPs) < args.normDP: #or max(norm_counts) > args.normCount or max(normAFs) > args.normAF:
+                    continue
+            if args.normCount:
+                if max(norm_counts) > args.normCount:
+                    continue
+            if args.normAF:
+                if max(normAFs) > args.normAF:
+                    continue
             if any(dp >= args.tumDP for dp in tumDPs):
                 if any(count >= args.tumCount for count in tum_counts):
                     if any(af >= args.tumAF for af in tumAFs):
