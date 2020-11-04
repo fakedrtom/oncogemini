@@ -344,8 +344,8 @@ variants in the database as somatic if these criteria are met:
 ```
 oncogemini set_somatic --normAF 0.05 --normDP 20 --tumAF 0.2 database.db
 ```
-It is important to note that *set_somatic* is **NOT** a somatic variant caller. However, in the absence of a proper somatic
-variant caller, the *set_somatic* tool enables users to define criteria that is acceptable to them as being consistent
+It is important to note that *set_somatic* is **NOT** a somatic variant caller. However, in the absence of proper somatic
+variant calls, the *set_somatic* tool enables users to define criteria that is acceptable to them as being consistent
 with their expectations for a somatic variant.
 
 Citation
