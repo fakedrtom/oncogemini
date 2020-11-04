@@ -130,8 +130,9 @@ The *bottleneck* tool is designed to identify variants whose allele frequencies 
 sampling timepoints. By default, *bottleneck* will require the slope made by all included allele
 frequencies to be greater than 0.05, and the R correlation coefficient for all allele frequencies
 to be greater than 0.5. If a normal sample has been included, it will also require that variant
-allele frequencies for that sample be 0. These and other parameters can be adjusted with the
-following usage options:
+allele frequencies for that sample be 0. Please note that the *bottleneck* tool will also require
+that all included tumor samples have a positive (> 0) slope. These and other parameters can be
+adjusted with the following usage options:
 ```
 optional arguments:
   --maxNorm FLOAT   Specify a maximum normal sample AF to allow (default is 0)
@@ -279,13 +280,19 @@ focus solely on somatic mutations, it is recommended that the VCF used for the c
 database be pre-filtered to only include somatic mutations or that somatic mutations be clearly labeled
 in the VCF so they are incorporated as a filterable annotation within the database. If that is not
 possible, the *set_somatic* tool may be employed which allows for variants within a OncoGEMINI database
-to be “flagged” as somatic based on user defined criteria regarding normal and tumor sample sequencing
+to be “flagged” as somatic based on user defined criteria regarding normal and tumor genotypes or sample sequencing
 depths and allele frequencies. OncoGEMINI tools may then take advantage of the `--somatic-only`
 parameter to restrict variant evaluations to only those variants that have been marked as somatic in
 the database by the *set_somatic* tool.
 
 ### *set_somatic*
-The following parameters are available to *set_somatic* for defining potential somatic mutations:
+By default the *set_somatic* tool flags variants as somatic if all normal samples provided are genotyped
+as homozygous for the reference allele and at least one of the included tumor samples is genotyped as
+heterozygous or homozygous for the alternate allele. Users may override these defaults by providing more
+detailed requirements regarding allele frequencies, sequencing depths, and alternate read counts in both
+the normal and tumor samples, thus allowing more specific designation of variants that should be flagged
+as somatic or not. The following parameters are available to *set_somatic* for defining potential somatic
+mutations:
 ```
 optional arguments:
   -h, --help            show this help message and exit
@@ -308,13 +315,38 @@ optional arguments:
   --dry-run             Don't set the is_somatic flag, just report what
                         _would_ be set. For testing parameters.
 ```
-For example, to for all normal samples to have a slight alternate allele frequency (AF < 0.05), but require
-a higher read depth threshold (DP >= 20) and tumor samples have a higher allele frequency threshold (AF > 0.2),
-using *set_somatic*, variants in the database can be mark as somatic with the following:
+If none of the additional normal sample parameters are invoked (`--normAF`, `--normCount`, or `--normDP`)
+then the default of all normal samples must be genotyped as homozygous reference for the given variant will
+be used. Similarly, if none of the additional tumor sample parameters are invoked (`--tumAF`, `--tumCount`,
+or `--tumDP`) then the default of at least one tumor sample being genotyped as heterozygous or homozygous for
+the alternate allele is used. For example, the following command will use genotype defaults for both the normal
+and tumor samples included in the database and only variants that are entirely genotyped as homozygous for the
+reference allele in the normal samples and at least one of the included tumor samples is genotyped as heterozygous
+or homozygous for the alternate allele will be flagged as somatic by the *set_somatic* tool:
+
+```
+oncogemini set_somatic database.db
+```
+By invoking any of the normal or tumor sample parameters, the genotype defaults can be replaced with more
+specific criteria. For example, to require that somatic variants include at least a single tumor sample with
+a higher alternate allele frequency (AF >= 0.2), but otherwise keep the genotype defaults for the normal samples,
+we can include the `--tumAF` parameter:
+
+```
+oncogemini set_somatic --tumAF 0.2 database.db
+```
+Similarly we can replace the genotype defaults for the normal and tumor samples all at once. With the following
+command we can allow that variants be flagged as somatic while exhibiting greater than 0 alternate allele
+frequencies in normal samples, while also requiring a specific read depth for all normal samples and create a
+minimum AF to be found in at least a single tumor sample. Using *set_somatic* with the following options will mark
+variants in the database as somatic if these criteria are met:
 
 ```
 oncogemini set_somatic --normAF 0.05 --normDP 20 --tumAF 0.2 database.db
 ```
+It is important to note that *set_somatic* is **NOT** a somatic variant caller. However, in the absence of a proper somatic
+variant caller, the *set_somatic* tool enables users to define criteria that is acceptable to them as being consistent
+with their expectations for a somatic variant.
 
 Citation
 ================
